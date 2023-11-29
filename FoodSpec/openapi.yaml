@@ -1,0 +1,658 @@
+openapi: 3.0.1
+info:
+  title: ""
+  description: ""
+  version: "2.0"
+servers:
+- url: https://api.edamam.com/
+tags:
+- name: Food Request Step 1 - Parser
+- name: Food Request Step 2 - Nutrients
+- name: Food Search Autocomplete
+paths:
+  /api/food-database/v2/parser:
+    get:
+      tags:
+      - Food Request Step 1 - Parser
+      summary: <b>Click here to view the documentation</b>
+      description: "The parser access point handles text search for foods as well\
+        \ as filters for the foods like presence specific nutrient content or exclusion\
+        \ of allergens. <ul> <li>Search for a phrase or keyword using NLP to get food\
+        \ entities from it.</li> <li> Get basic nutrition facts and ingredients for\
+        \ each food </li> <li> Search for food by given nutrient quantity for 28 nutrients\
+        \ </li> <li> Search for foods within a given brand </li> <li> With the build\
+        \ in food-logging context it allows for requests which do not contain quantity\
+        \ and suggest expected quantities for them. </li> </ul>\n \n <b>Access Point:</b>\
+        \ https://api.edamam.com/api/food-database/v2/parser"
+      parameters:
+      - name: app_id
+        in: query
+        description: The application ID
+        required: true
+        schema:
+          type: string
+          x-data-threescale-name: app_ids
+        x-data-threescale-name: app_ids
+      - name: app_key
+        in: query
+        description: The application key
+        required: true
+        schema:
+          type: string
+          x-data-threescale-name: app_keys
+        x-data-threescale-name: app_keys
+      - name: Edamam-Account-User
+        in: header
+        description: ID of the account user. Should be used *only* if the account
+          is configured for active user tracking.
+        schema:
+          type: string
+      - name: ingr
+        in: query
+        description: A keyword search parameter to be found in the food name. <b>REQUIRED</b>
+          if 'upc' <b>and</b> 'brand' are not specified. <b>NOT REQUIRED</b> if 'brand'
+          is specified. <b>DO NOT POPULATE</b> if 'upc' is specified.
+        schema:
+          type: string
+      - name: brand
+        in: query
+        description: A keyword search parameter to be found in the food's brand. <b>REQUIRED</b>
+          if 'ingr' <b>and</b> 'upc' are not specified. <b>NOT REQUIRED</b> if 'ingr'
+          is specified. <b>DO NOT POPULATE</b> if 'upc' is specified.
+        schema:
+          type: string
+      - name: upc
+        in: query
+        description: "Valid UPC, EAN, or PLU code. <b>REQUIRED</b> if neither 'ingr'\
+          \ <b>nor</b> 'brand' are specified. <b>DO NOT POPULATE</b> otherwise."
+        schema:
+          type: string
+      - name: nutrition-type
+        in: query
+        description: Select between cooking and food logging processor.
+        schema:
+          type: string
+          default: cooking
+          enum:
+          - cooking
+          - logging
+      - name: health
+        in: query
+        description: Health label
+        style: form
+        explode: true
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - alcohol-free
+            - celery-free
+            - crustacean-free
+            - dairy-free
+            - egg-free
+            - fish-free
+            - fodmap-free
+            - gluten-free
+            - immuno-supportive
+            - keto-friendly
+            - kidney-friendly
+            - kosher
+            - low-fat-abs
+            - low-potassium
+            - low-sugar
+            - lupine-free
+            - mustard-free
+            - no-oil-added
+            - paleo
+            - peanut-free
+            - pescatarian
+            - pork-free
+            - red-meat-free
+            - sesame-free
+            - shellfish-free
+            - soy-free
+            - sugar-conscious
+            - tree-nut-free
+            - vegan
+            - vegetarian
+            - wheat-free
+      - name: calories
+        in: query
+        description: "The format is calories=RANGE where RANGE is replaced by the\
+          \ value in kcal. RANGE is in one of MIN+, MIN-MAX or MAX, where MIN and\
+          \ MAX are non-negative integer numbers. The + symbol needs to be properly\
+          \ encoded. Examples: â€œcalories=100-300â€\x9d will return all recipes with\
+          \ which have between 100 and 300 kcal per serving."
+        schema:
+          type: string
+      - name: category
+        in: query
+        description: Categories
+        style: form
+        explode: true
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - generic-foods
+            - generic-meals
+            - packaged-foods
+            - fast-foods
+      - name: "nutrients[CA]"
+        in: query
+        description: "Calcium, Ca. Unit: mg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> For example: nutrients[CA]=50+ means minimum 50mg calcium, where\
+          \ â€˜50+â€™ has to be properly encoded as â€˜50%2Bâ€™ nutrients[FAT]=30\
+          \ means maximum 30g fat and nutrients[FE]=5-10 means iron between 5mg and\
+          \ 10mg inclusive"
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[CHOCDF]"
+        in: query
+        description: "Carbohydrate, by difference. Unit: g. Input the range which\
+          \ is one of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating\
+          \ point numbers. <br> <br> See calcium for an example for how to fill in\
+          \ the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[CHOCDF.net]"
+        in: query
+        description: "Carbohydrates (net). Unit: g. Input the range which is one of\
+          \ MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating point\
+          \ numbers. <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[CHOLE]"
+        in: query
+        description: "Cholesterol. Unit: mg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br>See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[ENERC_KCAL]"
+        in: query
+        description: "Energy. Unit: kcal. Input the range which is one of MIN+, MIN-MAX\
+          \ or MAX, where MIN and MAX are non-negative floating point numbers. <br>\
+          \ <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FAMS]"
+        in: query
+        description: "Fatty acids, total monounsaturated. Unit: g. Input the range\
+          \ which is one of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative\
+          \ floating point numbers. <br> <br> See calcium for an example for how to\
+          \ fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FAPU]"
+        in: query
+        description: "Fatty acids, total polyunsaturated. Unit: g. Input the range\
+          \ which is one of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative\
+          \ floating point numbers. <br> <br> See calcium for an example for how to\
+          \ fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FASAT]"
+        in: query
+        description: "Fatty acids, total saturated. Unit: g. Input the range which\
+          \ is one of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating\
+          \ point numbers. <br> <br> See calcium for an example for how to fill in\
+          \ the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FAT]"
+        in: query
+        description: "Total lipid (fat). Unit: g. Input the range which is one of\
+          \ MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating point\
+          \ numbers. <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FATRN]"
+        in: query
+        description: "Fatty acids, total trans. Unit: g. Input the range which is\
+          \ one of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating\
+          \ point numbers. <br> <br> See calcium for an example for how to fill in\
+          \ the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FE]"
+        in: query
+        description: "Iron, Fe. Unit: mg. Input the range which is one of MIN+, MIN-MAX\
+          \ or MAX, where MIN and MAX are non-negative floating point numbers. <br>\
+          \ <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FIBTG]"
+        in: query
+        description: "Fiber, total dietary. Unit: g. Input the range which is one\
+          \ of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating point\
+          \ numbers. <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FOLAC]"
+        in: query
+        description: "Folic acid. Unit: Âµg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FOLDFE]"
+        in: query
+        description: "Folate, DFE. Unit: Âµg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[FOLFD]"
+        in: query
+        description: "Folate (food). Unit: Âµg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[K]"
+        in: query
+        description: "Potassium, K. Unit: mg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[MG]"
+        in: query
+        description: "Magnesium. Unit: mg. Input the range which is one of MIN+, MIN-MAX\
+          \ or MAX, where MIN and MAX are non-negative floating point numbers. <br>\
+          \ <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[NA]"
+        in: query
+        description: "Sodium, Na. Unit: mg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[NIA]"
+        in: query
+        description: "Niacin. Unit: mg. Input the range which is one of MIN+, MIN-MAX\
+          \ or MAX, where MIN and MAX are non-negative floating point numbers. <br>\
+          \ <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[P]"
+        in: query
+        description: "Phosphorus, P. Unit: mg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[PROCNT]"
+        in: query
+        description: "Protein. Unit: g. Input the range which is one of MIN+, MIN-MAX\
+          \ or MAX, where MIN and MAX are non-negative floating point numbers. <br>\
+          \ <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[RIBF]"
+        in: query
+        description: "Riboflavin. Unit: mg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[SUGAR]"
+        in: query
+        description: "Sugars, total. Unit: g. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[SUGAR.added]"
+        in: query
+        description: "Sugars, added. Unit: g. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[Sugar.alcohol]"
+        in: query
+        description: "Sugar alcohols. Unit: g. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[THIA]"
+        in: query
+        description: "Thiamin. Unit: mg. Input the range which is one of MIN+, MIN-MAX\
+          \ or MAX, where MIN and MAX are non-negative floating point numbers. <br>\
+          \ <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[TOCPHA]"
+        in: query
+        description: "Vitamin E (alpha-tocopherol). Unit: mg. Input the range which\
+          \ is one of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating\
+          \ point numbers. <br> <br> See calcium for an example for how to fill in\
+          \ the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[VITA_RAE]"
+        in: query
+        description: "Vitamin A, RAE. Unit: Âµg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[VITB12]"
+        in: query
+        description: "Vitamin B12. Unit: Âµg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[VITB6A]"
+        in: query
+        description: "Vitamin B6. Unit: mg. Input the range which is one of MIN+,\
+          \ MIN-MAX or MAX, where MIN and MAX are non-negative floating point numbers.\
+          \ <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[VITC]"
+        in: query
+        description: "Vitamin C, total ascorbic acid. Unit: mg. Input the range which\
+          \ is one of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating\
+          \ point numbers. <br> <br> See calcium for an example for how to fill in\
+          \ the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[VITD]"
+        in: query
+        description: "Vitamin D (D2 + D3). Unit: Âµg. Input the range which is one\
+          \ of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating point\
+          \ numbers. <br> <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[VITK1]"
+        in: query
+        description: "Vitamin K (phylloquinone). Unit: Âµg. Input the range which\
+          \ is one of MIN+, MIN-MAX or MAX, where MIN and MAX are non-negative floating\
+          \ point numbers. <br> <br> See calcium for an example for how to fill in\
+          \ the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[WATER]"
+        in: query
+        description: "Water. Unit: g. Input the range which is one of MIN+, MIN-MAX\
+          \ or MAX, where MIN and MAX are non-negative floating point numbers. <br>\
+          \ <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      - name: "nutrients[ZN]"
+        in: query
+        description: "Zinc, Zn. Unit: mg. Input the range which is one of MIN+, MIN-MAX\
+          \ or MAX, where MIN and MAX are non-negative floating point numbers. <br>\
+          \ <br> See calcium for an example for how to fill in the range."
+        schema:
+          pattern: "(?:[+-]?\\d+(?:\\.\\d*)?)|(?:(?:[+-]?\\d+(?:\\.\\d*)?)-(?:[+-]?\\\
+            d+(?:\\.\\d*)?))|(?:(?:[+-]?\\d+(?:\\.\\d*)?)[+-])"
+          type: string
+      responses:
+        "200":
+          description: "List of food objects, with each food object containing: kcal\
+            \ per 100gr, protein per 100 grams, carbohydrates per 100 grams, brand\
+            \ of the food, if the food is generic or branded, a list of existing measures\
+            \ for the food, contents label of the food"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodList'
+        "404":
+          description: The specified URL was not found or couldn't be retrieved
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+  /api/food-database/v2/nutrients:
+    post:
+      tags:
+      - Food Request Step 2 - Nutrients
+      summary: <b>Click here to view the documentation</b>
+      description: "In the response to your parser request you receive the a food\
+        \ ID for each database match. Using the food ID and the measure URI, which\
+        \ parser provides, you can make a request to the nutrients access point. The\
+        \ nutrients access points returns nutrition with diet and health labels for\
+        \ a given quantity of the food.\n \n <b>Access Point:</b> https://api.edamam.com/api/food-database/v2/nutrients"
+      parameters:
+      - name: app_id
+        in: query
+        description: App ID from your dashboard
+        required: true
+        schema:
+          type: string
+          x-data-threescale-name: app_ids
+        x-data-threescale-name: app_ids
+      - name: app_key
+        in: query
+        description: App key from your dashboard
+        required: true
+        schema:
+          type: string
+          x-data-threescale-name: app_keys
+        x-data-threescale-name: app_keys
+      - name: Edamam-Account-User
+        in: header
+        description: ID of the account user. Should be used *only* if the account
+          is configured for active user tracking.
+        schema:
+          type: string
+      requestBody:
+        description: Using the food ID and the measure URI which parser provides you
+          can make a request to the nutrients access point. The nutrients access points
+          returns nutrition with diet and health labels for a given quantity of the
+          food.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+        required: true
+      responses:
+        "200":
+          description: "Object containing number of servings (yield), total calories\
+            \ for the food (calories), nutrient content by nutrient type (totalNutrients,\
+            \ totalDaily), diet and health classification (dietLabels, healthLabels)"
+          content: {}
+        "404":
+          description: The specified URL was not found or couldn't be retrieved
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        "422":
+          description: Couldn't parse the request or extract the nutritional info
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+        "555":
+          description: Text with insufficient quality to process correctly
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Errors'
+      x-codegen-request-body-name: ingredients
+  /auto-complete:
+    get:
+      tags:
+      - Food Search Autocomplete
+      summary: <b>Click here to view the documentation</b>
+      description: "Edamam provides a convenient autocomplete functionality which\
+        \ can be implemented for use when searching for ingredients. Just send in\
+        \ the current query as the \"q\" parameter and the number of suggestions you\
+        \ wish to receive as the \"limit\" parameter. \n \n <b>Access Point:</b> https://api.edamam.com/auto-complete"
+      parameters:
+      - name: app_id
+        in: query
+        description: The application ID
+        required: true
+        schema:
+          type: string
+          x-data-threescale-name: app_ids
+        x-data-threescale-name: app_ids
+      - name: app_key
+        in: query
+        description: The application key
+        required: true
+        schema:
+          type: string
+          x-data-threescale-name: app_keys
+        x-data-threescale-name: app_keys
+      - name: Edamam-Account-User
+        in: header
+        description: ID of the account user. Should be used *only* if the account
+          is configured for active user tracking.
+        schema:
+          type: string
+      - name: q
+        in: query
+        description: Query text. For example q=chi. This or the r parameter are required
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: response limit
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: The autocomplete suggestions.
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+components:
+  schemas:
+    Ingredients:
+      type: object
+      properties:
+        quantity:
+          type: number
+        measureURI:
+          type: string
+        qualifiers:
+          type: array
+          items:
+            type: string
+        foodId:
+          type: string
+    Errors:
+      type: array
+      items:
+        $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        params:
+          type: array
+          items:
+            type: string
+    List:
+      type: object
+      properties:
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ingredients'
+    SearchResults:
+      type: object
+      properties:
+        text:
+          type: string
+        parsed:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+    SearchResult:
+      type: object
+      properties:
+        food: object
+
+x-original-swagger-version: "2.0"

@@ -7,12 +7,13 @@
 
 import SwiftUI
 import SwiftData
+import FoodClient
 
 @main
 struct FoodSpecApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Food.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -28,5 +29,20 @@ struct FoodSpecApp: App {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
+    }
+}
+
+extension FoodClient: EnvironmentKey {
+    public static let defaultValue: Self = .init()
+}
+
+extension EnvironmentValues {
+    var foodClient: FoodClient {
+        get {
+            self[FoodClient.self]
+        }
+        set {
+            self[FoodClient.self] = newValue
+        }
     }
 }

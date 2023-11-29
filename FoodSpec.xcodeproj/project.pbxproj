@@ -9,12 +9,17 @@
 /* Begin PBXBuildFile section */
 		EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E5592B175A140007CD40 /* FoodSpecApp.swift */; };
 		EC43E55C2B175A140007CD40 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E55B2B175A140007CD40 /* ContentView.swift */; };
-		EC43E55E2B175A140007CD40 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E55D2B175A140007CD40 /* Item.swift */; };
+		EC43E55E2B175A140007CD40 /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E55D2B175A140007CD40 /* Food.swift */; };
 		EC43E5602B175A160007CD40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E55F2B175A160007CD40 /* Assets.xcassets */; };
 		EC43E5632B175A160007CD40 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E5622B175A160007CD40 /* Preview Assets.xcassets */; };
 		EC43E56F2B175A160007CD40 /* FoodSpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E56E2B175A160007CD40 /* FoodSpecTests.swift */; };
 		EC43E5792B175A160007CD40 /* FoodSpecUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E5782B175A160007CD40 /* FoodSpecUITests.swift */; };
 		EC43E57B2B175A160007CD40 /* FoodSpecUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E57A2B175A160007CD40 /* FoodSpecUITestsLaunchTests.swift */; };
+		ECCA83ED2B1779DA00C9EF4D /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = ECCA83EC2B1779DA00C9EF4D /* OpenAPIURLSession */; };
+		ECCA83F02B1779E500C9EF4D /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = ECCA83EF2B1779E500C9EF4D /* OpenAPIRuntime */; };
+		ECCA83F82B177A1400C9EF4D /* FoodClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCA83F52B177A1400C9EF4D /* FoodClient.swift */; };
+		ECCA83F92B177A1400C9EF4D /* openapi-generator-config.yaml in Resources */ = {isa = PBXBuildFile; fileRef = ECCA83F62B177A1400C9EF4D /* openapi-generator-config.yaml */; };
+		ECCA83FA2B177A1400C9EF4D /* openapi.yaml in Resources */ = {isa = PBXBuildFile; fileRef = ECCA83F72B177A1400C9EF4D /* openapi.yaml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +43,7 @@
 		EC43E5562B175A140007CD40 /* FoodSpec.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FoodSpec.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC43E5592B175A140007CD40 /* FoodSpecApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSpecApp.swift; sourceTree = "<group>"; };
 		EC43E55B2B175A140007CD40 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		EC43E55D2B175A140007CD40 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		EC43E55D2B175A140007CD40 /* Food.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
 		EC43E55F2B175A160007CD40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EC43E5622B175A160007CD40 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EC43E5642B175A160007CD40 /* FoodSpec.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FoodSpec.entitlements; sourceTree = "<group>"; };
@@ -48,6 +53,9 @@
 		EC43E5742B175A160007CD40 /* FoodSpecUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodSpecUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC43E5782B175A160007CD40 /* FoodSpecUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSpecUITests.swift; sourceTree = "<group>"; };
 		EC43E57A2B175A160007CD40 /* FoodSpecUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSpecUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		ECCA83F52B177A1400C9EF4D /* FoodClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodClient.swift; sourceTree = "<group>"; };
+		ECCA83F62B177A1400C9EF4D /* openapi-generator-config.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = "openapi-generator-config.yaml"; sourceTree = "<group>"; };
+		ECCA83F72B177A1400C9EF4D /* openapi.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = openapi.yaml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +63,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECCA83ED2B1779DA00C9EF4D /* OpenAPIURLSession in Frameworks */,
+				ECCA83F02B1779E500C9EF4D /* OpenAPIRuntime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +92,7 @@
 				EC43E56D2B175A160007CD40 /* FoodSpecTests */,
 				EC43E5772B175A160007CD40 /* FoodSpecUITests */,
 				EC43E5572B175A140007CD40 /* Products */,
+				EC43E59F2B176FE90007CD40 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -98,9 +109,12 @@
 		EC43E5582B175A140007CD40 /* FoodSpec */ = {
 			isa = PBXGroup;
 			children = (
+				ECCA83F52B177A1400C9EF4D /* FoodClient.swift */,
+				ECCA83F62B177A1400C9EF4D /* openapi-generator-config.yaml */,
+				ECCA83F72B177A1400C9EF4D /* openapi.yaml */,
 				EC43E5592B175A140007CD40 /* FoodSpecApp.swift */,
 				EC43E55B2B175A140007CD40 /* ContentView.swift */,
-				EC43E55D2B175A140007CD40 /* Item.swift */,
+				EC43E55D2B175A140007CD40 /* Food.swift */,
 				EC43E55F2B175A160007CD40 /* Assets.xcassets */,
 				EC43E5642B175A160007CD40 /* FoodSpec.entitlements */,
 				EC43E5652B175A160007CD40 /* Info.plist */,
@@ -134,6 +148,13 @@
 			path = FoodSpecUITests;
 			sourceTree = "<group>";
 		};
+		EC43E59F2B176FE90007CD40 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -148,8 +169,13 @@
 			buildRules = (
 			);
 			dependencies = (
+				ECCA83F32B1779FE00C9EF4D /* PBXTargetDependency */,
 			);
 			name = FoodSpec;
+			packageProductDependencies = (
+				ECCA83EC2B1779DA00C9EF4D /* OpenAPIURLSession */,
+				ECCA83EF2B1779E500C9EF4D /* OpenAPIRuntime */,
+			);
 			productName = FoodSpec;
 			productReference = EC43E5562B175A140007CD40 /* FoodSpec.app */;
 			productType = "com.apple.product-type.application";
@@ -222,6 +248,11 @@
 				Base,
 			);
 			mainGroup = EC43E54D2B175A140007CD40;
+			packageReferences = (
+				ECCA83EB2B1779DA00C9EF4D /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
+				ECCA83EE2B1779E500C9EF4D /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */,
+				ECCA83F12B1779F300C9EF4D /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
+			);
 			productRefGroup = EC43E5572B175A140007CD40 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -239,7 +270,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC43E5632B175A160007CD40 /* Preview Assets.xcassets in Resources */,
+				ECCA83FA2B177A1400C9EF4D /* openapi.yaml in Resources */,
 				EC43E5602B175A160007CD40 /* Assets.xcassets in Resources */,
+				ECCA83F92B177A1400C9EF4D /* openapi-generator-config.yaml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,7 +298,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC43E55C2B175A140007CD40 /* ContentView.swift in Sources */,
-				EC43E55E2B175A140007CD40 /* Item.swift in Sources */,
+				EC43E55E2B175A140007CD40 /* Food.swift in Sources */,
+				ECCA83F82B177A1400C9EF4D /* FoodClient.swift in Sources */,
 				EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -299,6 +333,10 @@
 			isa = PBXTargetDependency;
 			target = EC43E5552B175A140007CD40 /* FoodSpec */;
 			targetProxy = EC43E5752B175A160007CD40 /* PBXContainerItemProxy */;
+		};
+		ECCA83F32B1779FE00C9EF4D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = ECCA83F22B1779FE00C9EF4D /* OpenAPIGenerator */;
 		};
 /* End PBXTargetDependency section */
 
@@ -600,6 +638,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ECCA83EB2B1779DA00C9EF4D /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-urlsession";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = "1.0.0-alpha.1";
+			};
+		};
+		ECCA83EE2B1779E500C9EF4D /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-runtime";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = "1.0.0-alpha.1";
+			};
+		};
+		ECCA83F12B1779F300C9EF4D /* XCRemoteSwiftPackageReference "swift-openapi-generator" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-openapi-generator";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = "1.0.0-alpha.1";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ECCA83EC2B1779DA00C9EF4D /* OpenAPIURLSession */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECCA83EB2B1779DA00C9EF4D /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
+			productName = OpenAPIURLSession;
+		};
+		ECCA83EF2B1779E500C9EF4D /* OpenAPIRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECCA83EE2B1779E500C9EF4D /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */;
+			productName = OpenAPIRuntime;
+		};
+		ECCA83F22B1779FE00C9EF4D /* OpenAPIGenerator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECCA83F12B1779F300C9EF4D /* XCRemoteSwiftPackageReference "swift-openapi-generator" */;
+			productName = "plugin:OpenAPIGenerator";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EC43E54E2B175A140007CD40 /* Project object */;
 }
