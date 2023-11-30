@@ -6,55 +6,50 @@
 //
 
 import Foundation
-import OpenAPIURLSession
-import OpenAPIRuntime
-import HTTPTypes
 
-struct ApiKeyMiddleware: ClientMiddleware {
-    func intercept(
-        _ request: HTTPTypes.HTTPRequest,
-        body: OpenAPIRuntime.HTTPBody?,
-        baseURL: URL,
-        operationID: String,
-        next: @Sendable (HTTPTypes.HTTPRequest, OpenAPIRuntime.HTTPBody?, URL) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?)
-    ) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?) {
-        var rq = request
-//        rq.path?.append("&api_key=Y7l7jgqFbdWcZV0MoUvicSBpNeLshxGpIB908WZv")
-
-        return try await next(rq, body, baseURL)
+struct FoodClient {
+    func getFoods(query: String) async throws -> [FoodApiModel] {
+        guard var url = URL(string: "https://api.api-ninjas.com/v1/nutrition") else { return [] }
+        url.append(
+            queryItems: [
+                .init(name: "query", value: query)
+            ]
+        )
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Z04HpCDGo4d9SuK4tdLbPw==PfKrz60ZTOx5MNLi", forHTTPHeaderField: "X-Api-Key")
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let items = try JSONDecoder().decode([FoodApiModel].self, from: data)
+        return items
     }
 }
 
-public struct FoodClient {
-    private let client = Client(
-        serverURL: try! Servers.server1(),
-        transport: URLSessionTransport(),
-        middlewares: [
-            ApiKeyMiddleware()
-        ]
-    )
+struct FoodApiModel: Hashable, Codable {
+    let name: String
+    let calories: Double
+    let servingSizeG: Double
+    let fatTotalG: Double
+    let fatSaturatedG: Double
+    let proteinG: Double
+    let sodiumMg: Double
+    let potassiumMg: Double
+    let cholesterolMg: Double
+    let carbohydratesTotalG: Double
+    let fiberG: Double
+    let sugarG: Double
 
-    public init() { }
-
-    public func getFoods(query: String) async throws -> [Int] {
-        let response = try await client.get_sol_api_sol_food_hyphen_database_sol_v2_sol_parser(
-            query: .init(
-                app_id: "22c40eea",
-                app_key: "0ee43ebf69435402b531a1217a6fa22a",
-                ingr: query
-            )
-        )
-
-        switch response {
-            case .ok(let ok):
-                dump(ok)
-            case .notFound(let notFound):
-                dump(notFound)
-            case .undocumented(let statusCode, let payload):
-                print("Error: \(statusCode)")
-                dump(payload)
-        }
-
-        return []
+    enum CodingKeys: String, CodingKey {
+        case name
+        case calories = "calories"
+        case servingSizeG = "serving_size_g"
+        case fatTotalG = "fat_total_g"
+        case fatSaturatedG = "fat_saturated_g"
+        case proteinG = "protein_g"
+        case sodiumMg = "sodium_mg"
+        case potassiumMg = "potassium_mg"
+        case cholesterolMg = "cholesterol_mg"
+        case carbohydratesTotalG = "carbohydrates_total_g"
+        case fiberG = "fiber_g"
+        case sugarG = "sugar_g"
     }
 }

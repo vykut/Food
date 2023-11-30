@@ -11,11 +11,12 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.foodClient) private var foodClient
-    @Query private var recentFoods: [Food]
+    @Query(sort: \Food.openDate, order: .reverse) private var recentFoods: [Food]
+    @State private var navigationStack: [Food] = []
     @State private var searchQuery = ""
     @State private var isSearchFocused = false
     @State private var isSearching = false
-    @State private var searchResults: [Food] = []
+    @State private var searchResults: [FoodApiModel] = []
     @State private var searchTask: Task<Void, Error>?
 
     private var shouldShowRecentSearches: Bool {
@@ -30,12 +31,13 @@ struct ContentView: View {
         isSearching
     }
 
-    private var hasSearchResults: Bool {
-        !searchResults.isEmpty
+    private var shouldShowSearchResults: Bool {
+        isSearchFocused && !searchResults.isEmpty
     }
 
     var body: some View {
-        NavigationSplitView {
+        let _ = Self._printChanges()
+        NavigationStack(path: $navigationStack) {
             List {
                 if shouldShowRecentSearches {
                     recentSearches
@@ -43,8 +45,11 @@ struct ContentView: View {
                 if shouldShowPrompt {
                     ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
                 }
-                // search results list
+                if shouldShowSearchResults {
+                    searchResultsList
+                }
             }
+            .listStyle(.sidebar)
             .searchable(text: $searchQuery, isPresented: $isSearchFocused)
             .overlay {
                 if isSearching {
@@ -53,22 +58,28 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Search")
-        } detail: {
-            Text("Select an item")
+            .navigationDestination(for: Food.self) { food in
+                FoodDetail(food: food)
+            }
         }
         .onChange(of: searchQuery) { old, new in
             searchTask?.cancel()
-            searchTask = Task {
-                try await Task.sleep(for: .milliseconds(300))
-                isSearching = true
-                defer { isSearching = false }
-                do {
-                    let items = try await foodClient.getFoods(query: searchQuery)
-                } catch {
-                    dump(error)
+            if !new.isEmpty {
+                searchTask = Task {
+                    try await Task.sleep(for: .milliseconds(300))
+                    isSearching = true
+                    defer { isSearching = false }
+                    do {
+                        let items = try await foodClient.getFoods(query: searchQuery)
+                        print(items)
+                        searchResults = items
+                    } catch {
+                        // handle errors
+                        dump(error)
+                    }
                 }
-                // make network request
-                // update results
+            } else {
+                searchResults = []
             }
         }
         .onAppear {
@@ -81,13 +92,32 @@ struct ContentView: View {
     private var recentSearches: some View {
         Section {
             ForEach(recentFoods) { item in
-                
+                Button {
+                    navigationStack.append(item)
+                } label: {
+                    Text(item.name.capitalized)
+                }
             }
             .onDelete(perform: deleteItems)
         } header: {
             Text("Recent Searches")
         }
-        .headerProminence(.increased)
+    }
+
+    private var searchResultsList: some View {
+        Section {
+            ForEach(searchResults, id: \.self) { item in
+                Button {
+                    let food = Food(foodApiModel: item, date: .now)
+                    modelContext.insert(food)
+                    navigationStack.append(food)
+                } label: {
+                    Text(item.name.capitalized)
+                }
+            }
+        } header: {
+            Text("Results")
+        }
     }
 
     private func deleteItems(offsets: IndexSet) {

@@ -7,11 +7,12 @@
 
 import SwiftUI
 import SwiftData
-import FoodClient
 
 @main
 struct FoodSpecApp: App {
     var sharedModelContainer: ModelContainer = {
+        ValueTransformer.setValueTransformer(QuantityTransformer(), forName: .quantityTransformerName)
+
         let schema = Schema([
             Food.self,
         ])
