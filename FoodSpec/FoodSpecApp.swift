@@ -7,29 +7,21 @@
 
 import SwiftUI
 import SwiftData
+import ComposableArchitecture
 
 @main
 struct FoodSpecApp: App {
-    var sharedModelContainer: ModelContainer = {
-        ValueTransformer.setValueTransformer(QuantityTransformer(), forName: .quantityTransformerName)
-
-        let schema = Schema([
-            Food.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+    let store = Store(
+        initialState: FoodListReducer.State(),
+        reducer: {
+            FoodListReducer()
         }
-    }()
+    )
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            FoodList(store: store)
         }
-        .modelContainer(sharedModelContainer)
     }
 }
 

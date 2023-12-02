@@ -1,14 +1,15 @@
 //
-//  FoodDetail.swift
+//  FoodDetails.swift
 //  FoodSpec
 //
 //  Created by Victor Socaciu on 30/11/2023.
 //
 
 import SwiftUI
+import ComposableArchitecture
 
-struct FoodDetail: View {
-    let food: Food
+struct FoodDetails: View {
+    @Bindable var store: StoreOf<FoodDetailsReducer>
 
     var body: some View {
         let _ = Self._printChanges()
@@ -17,7 +18,7 @@ struct FoodDetail: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Protein",
-                        value: food.protein,
+                        value: store.food.protein,
                         breakdown: []
                     )
                 )
@@ -25,15 +26,15 @@ struct FoodDetail: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Carbohydrates",
-                        value: food.carbohydrates,
+                        value: store.food.carbohydrates,
                         breakdown: [
                             .init(
                                 title: "Fiber",
-                                value: food.fiber
+                                value: store.food.fiber
                             ),
                             .init(
                                 title: "Sugar",
-                                value: food.sugar
+                                value: store.food.sugar
                             ),
                         ]
                     )
@@ -42,11 +43,11 @@ struct FoodDetail: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Total Fat",
-                        value: food.fatTotal,
+                        value: store.food.fatTotal,
                         breakdown: [
                             .init(
                                 title: "Saturated Fat",
-                                value: food.fatSaturated
+                                value: store.food.fatSaturated
                             )
                         ]
                     )
@@ -55,7 +56,7 @@ struct FoodDetail: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Potassium",
-                        value: food.potassium,
+                        value: store.food.potassium,
                         breakdown: []
                     )
                 )
@@ -63,7 +64,7 @@ struct FoodDetail: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Sodium",
-                        value: food.sodium,
+                        value: store.food.sodium,
                         breakdown: []
                     )
                 )
@@ -76,25 +77,32 @@ struct FoodDetail: View {
             }
             .padding(.horizontal)
         }
-        .navigationTitle(food.name.capitalized)
+        .navigationTitle(store.food.name.capitalized)
     }
 }
 
 #Preview {
-    FoodDetail(
-        food: .init(
-            name: "eggplant",
-            openDate: .now,
-            calories: 34.7,
-            fatTotal: .init(value: 0.2, unit: .grams),
-            fatSaturated: .init(value: 0.0, unit: .grams),
-            protein: .init(value: 0.8, unit: .grams),
-            sodium: .init(value: 0.0, unit: .milligrams),
-            potassium: .init(value: 15.0, unit: .milligrams),
-            cholesterol: .init(value: 0.0, unit: .milligrams),
-            carbohydrates: .init(value: 8.7, unit: .grams),
-            fiber: .init(value: 2.5, unit: .grams),
-            sugar: .init(value: 3.2, unit: .grams)
+    FoodDetails(
+        store: Store(
+            initialState: .init(
+                food: .init(
+                    name: "eggplant",
+                    openDate: .now,
+                    calories: 34.7,
+                    fatTotal: .init(value: 0.2, unit: .grams),
+                    fatSaturated: .init(value: 0.0, unit: .grams),
+                    protein: .init(value: 0.8, unit: .grams),
+                    sodium: .init(value: 0.0, unit: .milligrams),
+                    potassium: .init(value: 15.0, unit: .milligrams),
+                    cholesterol: .init(value: 0.0, unit: .milligrams),
+                    carbohydrates: .init(value: 8.7, unit: .grams),
+                    fiber: .init(value: 2.5, unit: .grams),
+                    sugar: .init(value: 3.2, unit: .grams)
+                )
+            ),
+            reducer: {
+                FoodDetailsReducer()
+            }
         )
     )
 }

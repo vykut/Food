@@ -10,54 +10,26 @@ import SwiftData
 
 typealias Quantity = Measurement<UnitMass>
 
-@Model
-final class Food {
-    typealias Grams = Double
-
-    @Attribute(.unique) let name: String
+//@Model
+/* final class */ struct Food: Hashable, Identifiable {
+    /* @Attribute(.unique) */ let name: String
     let openDate: Date
     let calories: Double
-    @Attribute(.transformable(by: "QuantityTransformer")) let fatTotal: Quantity
-    @Attribute(.transformable(by: "QuantityTransformer")) let fatSaturated: Quantity
-    @Attribute(.transformable(by: "QuantityTransformer")) let protein: Quantity
-    @Attribute(.transformable(by: "QuantityTransformer")) let sodium: Quantity
-    @Attribute(.transformable(by: "QuantityTransformer")) let potassium: Quantity
-    @Attribute(.transformable(by: "QuantityTransformer")) let cholesterol: Quantity
-    @Attribute(.transformable(by: "QuantityTransformer")) let carbohydrates: Quantity
-    @Attribute(.transformable(by: "QuantityTransformer")) let fiber: Quantity
-    @Attribute(.transformable(by: "QuantityTransformer")) let sugar: Quantity
+    /* @Attribute(.transformable(by: QuantityTransformer.self)) */ let fatTotal: Quantity
+    /* @Attribute(.transformable(by: QuantityTransformer.self)) */ let fatSaturated: Quantity
+    /* @Attribute(.transformable(by: QuantityTransformer.self)) */ let protein: Quantity
+    /* @Attribute(.transformable(by: QuantityTransformer.self)) */ let sodium: Quantity
+    /* @Attribute(.transformable(by: QuantityTransformer.self)) */ let potassium: Quantity
+    /* @Attribute(.transformable(by: QuantityTransformer.self)) */ let cholesterol: Quantity
+    /* @Attribute(.transformable(by: QuantityTransformer.self)) */ let carbohydrates: Quantity
+    /* @Attribute(.transformable(by: QuantityTransformer.self)) */ let fiber: Quantity
+    /* @Attribute(.transformable(by: QuantityTransformer.self)) */ let sugar: Quantity
 
-    init(
-        name: String,
-        openDate: Date,
-        calories: Double,
-        fatTotal: Quantity,
-        fatSaturated: Quantity,
-        protein: Quantity,
-        sodium: Quantity,
-        potassium: Quantity,
-        cholesterol: Quantity,
-        carbohydrates: Quantity,
-        fiber: Quantity,
-        sugar: Quantity
-    ) {
-        self.name = name
-        self.openDate = openDate
-        self.calories = calories
-        self.fatTotal = fatTotal
-        self.fatSaturated = fatSaturated
-        self.protein = protein
-        self.sodium = sodium
-        self.potassium = potassium
-        self.cholesterol = cholesterol
-        self.carbohydrates = carbohydrates
-        self.fiber = fiber
-        self.sugar = sugar
-    }
+    var id: String { name }
 }
 
 extension Food {
-    convenience init(foodApiModel: FoodApiModel, date: Date) {
+    init(foodApiModel: FoodApiModel, date: Date) {
         self.init(
             name: foodApiModel.name,
             openDate: date,
@@ -85,12 +57,12 @@ final class QuantityTransformer: ValueTransformer {
 
     override func transformedValue(_ value: Any?) -> Any? {
         guard let mass = value as? Quantity else { return nil }
-        return try? encoder.encode(mass)
+        return try? encoder.encode(mass) as NSData
     }
 
     override func reverseTransformedValue(_ value: Any?) -> Any? {
-        guard let data = value as? Data else { return nil }
-        let measurement = try? decoder.decode(Quantity.self, from: data)
+        guard let data = value as? NSData else { return nil }
+        let measurement = try? decoder.decode(Quantity.self, from: data as Data)
         return measurement
     }
 

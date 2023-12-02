@@ -6,21 +6,40 @@
 //
 
 import Foundation
+import ComposableArchitecture
 
+@DependencyClient
 struct FoodClient {
-    func getFoods(query: String) async throws -> [FoodApiModel] {
-        guard var url = URL(string: "https://api.api-ninjas.com/v1/nutrition") else { return [] }
-        url.append(
-            queryItems: [
-                .init(name: "query", value: query)
-            ]
-        )
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Z04HpCDGo4d9SuK4tdLbPw==PfKrz60ZTOx5MNLi", forHTTPHeaderField: "X-Api-Key")
-        let (data, _) = try await URLSession.shared.data(for: request)
-        let items = try JSONDecoder().decode([FoodApiModel].self, from: data)
-        return items
+    var getFoods: (_ query: String) async throws -> [FoodApiModel]
+}
+
+private enum FoodClientKey: DependencyKey {
+    static let liveValue: FoodClient = .init(
+        getFoods: { query in
+            @Dependency(\.apiKeysClient) var apiKeysClient
+            @Dependency(\.urlSession) var session
+
+            let apiKeys = try await apiKeysClient.getApiKeys()
+            guard var url = URL(string: "https://api.api-ninjas.com/v1/nutrition") else { return [] }
+            url.append(
+                queryItems: [
+                    .init(name: "query", value: query)
+                ]
+            )
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue(apiKeys.ninja, forHTTPHeaderField: "X-Api-Key")
+            let (data, _) = try await session.data(for: request)
+            let items = try JSONDecoder().decode([FoodApiModel].self, from: data)
+            return items
+        }
+    )
+}
+
+extension DependencyValues {
+    var foodClient: FoodClient {
+        get { self[FoodClientKey.self] }
+        set { self[FoodClientKey.self] = newValue }
     }
 }
 
