@@ -352,6 +352,38 @@
             endingLineNumber = "59"
             landmarkName = "transformedValue(_:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "D491854C-E79E-4A52-AC0F-4633FC44B5A9 - 58326c9c18d286ff"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.transformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "59"
+                  endingLineNumber = "59"
+                  offsetFromSymbolStart = "220">
+               </Location>
+               <Location
+                  uuid = "D491854C-E79E-4A52-AC0F-4633FC44B5A9 - 58326c9c18d286ff"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.transformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "59"
+                  endingLineNumber = "59"
+                  offsetFromSymbolStart = "260">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -368,6 +400,38 @@
             endingLineNumber = "60"
             landmarkName = "transformedValue(_:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6D7BE8D4-E32D-4C5C-9CA0-29A9AF46C38F - 58326c9c18d2861e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.transformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "432">
+               </Location>
+               <Location
+                  uuid = "6D7BE8D4-E32D-4C5C-9CA0-29A9AF46C38F - 58326c9c18d2861e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.transformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "472">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -413,6 +477,36 @@
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "90"
                   endingLineNumber = "90"
+                  offsetFromSymbolStart = "236">
+               </Location>
+               <Location
+                  uuid = "9D3E02E7-5A30-4747-B1D3-5C52402C7948 - bd85da273157b006"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.reverseTransformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "64"
+                  endingLineNumber = "64"
+                  offsetFromSymbolStart = "196">
+               </Location>
+               <Location
+                  uuid = "9D3E02E7-5A30-4747-B1D3-5C52402C7948 - bd85da273157b006"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.reverseTransformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "64"
+                  endingLineNumber = "64"
                   offsetFromSymbolStart = "236">
                </Location>
             </Locations>
@@ -463,6 +557,36 @@
                   endingLineNumber = "91"
                   offsetFromSymbolStart = "408">
                </Location>
+               <Location
+                  uuid = "792BC3FA-A01D-4164-BEC0-771F9810C795 - bd85da273157b059"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.reverseTransformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "65"
+                  endingLineNumber = "65"
+                  offsetFromSymbolStart = "368">
+               </Location>
+               <Location
+                  uuid = "792BC3FA-A01D-4164-BEC0-771F9810C795 - bd85da273157b059"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.reverseTransformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "65"
+                  endingLineNumber = "65"
+                  offsetFromSymbolStart = "408">
+               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -511,7 +635,53 @@
                   endingLineNumber = "92"
                   offsetFromSymbolStart = "600">
                </Location>
+               <Location
+                  uuid = "AC19F783-3790-4A5D-8008-82E910CA7839 - bd85da273157b078"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.reverseTransformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "552">
+               </Location>
+               <Location
+                  uuid = "AC19F783-3790-4A5D-8008-82E910CA7839 - bd85da273157b078"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.QuantityTransformer.reverseTransformedValue(Swift.Optional&lt;Any&gt;) -&gt; Swift.Optional&lt;Any&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "66"
+                  endingLineNumber = "66"
+                  offsetFromSymbolStart = "600">
+               </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "22D94D3A-D36B-4E49-A8F3-A6A8AFCCB10D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FoodSpec/Food List/FoodListReducer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "118"
+            endingLineNumber = "118"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

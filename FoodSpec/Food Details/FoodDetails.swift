@@ -72,8 +72,8 @@ struct FoodDetails: View {
                 Text(
                     "Nutritional values per \(Quantity(value: 100, unit: .grams).formatted(.measurement(width: .wide, usage: .asProvided)))"
                 )
-                    .font(.title2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.title2)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal)
         }

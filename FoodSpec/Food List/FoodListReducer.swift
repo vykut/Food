@@ -12,7 +12,6 @@ import ComposableArchitecture
 struct FoodListReducer {
     @ObservableState
     struct State {
-        var navigationStack: [FoodDetailsReducer.State] = []
         var recentFoods: [Food] = []
         var searchQuery = ""
         var isSearchFocused = false
@@ -20,6 +19,8 @@ struct FoodListReducer {
         var searchResults: [FoodApiModel] = []
         var shouldShowNoResults: Bool = false
         var searchTask: Task<Void, Error>?
+        var inlineFood: FoodDetailsReducer.State?
+        @PresentationState var foodDetails: FoodDetailsReducer.State?
 
         var shouldShowRecentSearches: Bool {
             searchQuery.isEmpty && !recentFoods.isEmpty
@@ -34,7 +35,7 @@ struct FoodListReducer {
         }
 
         var shouldShowSearchResults: Bool {
-            isSearchFocused && !searchResults.isEmpty
+            isSearchFocused && !searchResults.isEmpty && inlineFood == nil
         }
     }
     @CasePathable
@@ -42,14 +43,16 @@ struct FoodListReducer {
         case onAppear
         case updateSearchQuery(String)
         case updateSearchFocus(Bool)
-        case updateNavigationStack([FoodDetailsReducer.State])
         case didSelectRecentFood(Food)
         case didSelectSearchResult(FoodApiModel)
         case didDeleteRecentFoods(IndexSet)
-        case didReceiveSearchResult(Result<[FoodApiModel], Error>)
+        case startSearching
+        case didReceiveSearchFoods([FoodApiModel])
+        case foodDetails(PresentationAction<FoodDetailsReducer.Action>)
+        case inlineFood(FoodDetailsReducer.Action)
     }
 
-    enum ID {
+    enum CancelID {
         case search
     }
 
@@ -66,48 +69,53 @@ struct FoodListReducer {
                     }
                     return .none
 
-                case .updateNavigationStack(let navigationStack):
-                    state.navigationStack = navigationStack
-                    return .none
-
                 case .updateSearchQuery(let query):
+                    guard state.searchQuery != query else { return .none }
                     state.searchQuery = query
                     state.shouldShowNoResults = false
                     state.searchResults = []
+                    state.inlineFood = nil
                     if query.isEmpty {
-                        return .cancel(id: ID.search)
+                        state.isSearching = false
+                        return .cancel(id: CancelID.search)
                     } else {
-                        state.isSearching = true
                         return .run { [searchQuery = state.searchQuery] send in
-                            let result = await Result {
-                                try await foodClient.getFoods(query: searchQuery)
-                            }
-
-                            await send(.didReceiveSearchResult(result))
+                            await send(.startSearching)
+                            let foods = try await foodClient.getFoods(query: searchQuery)
+                            await send(.didReceiveSearchFoods(foods))
+                        } catch: { error, send in
+                            dump(error)
                         }
-                        .debounce(id: ID.search, for: .milliseconds(300), scheduler: mainQueue)
+                        .debounce(id: CancelID.search, for: .milliseconds(300), scheduler: mainQueue)
                     }
 
-                case .didReceiveSearchResult(let result):
+                case .startSearching:
+                    state.isSearching = true
+                    return .none
+
+                case .didReceiveSearchFoods(let foods):
                     state.isSearching = false
-                    switch result {
-                        case .success(let foods):
-                            if foods.isEmpty {
-                                state.shouldShowNoResults = true
-                            } else {
-                                state.searchResults = foods
-                            }
-                        case .failure(let error):
-                            print(error) // handle errors
+                    if foods.isEmpty {
+                        state.shouldShowNoResults = true
+                    } else if foods.count == 1 {
+                        let food = Food(foodApiModel: foods[0], date: .now)
+                        state.recentFoods.insert(food, at: 0)
+                        state.inlineFood = .init(food: food)
+                    } else {
+                        state.searchResults = foods
                     }
                     return .none
 
                 case .updateSearchFocus(let focus):
+                    guard state.isSearchFocused != focus else { return .none }
                     state.isSearchFocused = focus
+                    if !focus {
+                        state.inlineFood = nil
+                    }
                     return .none
 
                 case .didSelectRecentFood(let food):
-                    state.navigationStack.append(.init(food: food))
+                    state.foodDetails = .init(food: food)
                     return .none
 
                 case .didSelectSearchResult(let food):
@@ -115,11 +123,17 @@ struct FoodListReducer {
                     if !state.recentFoods.contains(where: { $0.name == food.name }) {
                         state.recentFoods.insert(food, at: 0)
                     }
-                    state.navigationStack.append(.init(food: food))
+                    state.foodDetails = .init(food: food)
                     return .none
 
                 case .didDeleteRecentFoods(let indices):
                     state.recentFoods.remove(atOffsets: indices)
+                    return .none
+
+                case .foodDetails(let foodDetails):
+                    return .none
+
+                case .inlineFood(let foodDetails):
                     return .none
             }
         }

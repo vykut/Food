@@ -132,8 +132,6 @@
 		EC43E5582B175A140007CD40 /* FoodSpec */ = {
 			isa = PBXGroup;
 			children = (
-				EC27998E2B1B38EC00D9E4B0 /* Food Details */,
-				EC27998B2B1B382500D9E4B0 /* Food List */,
 				EC43E5642B175A160007CD40 /* FoodSpec.entitlements */,
 				EC2799872B1B2BBA00D9E4B0 /* APIKeys.json */,
 				EC43E5652B175A160007CD40 /* Info.plist */,
@@ -143,6 +141,8 @@
 				EC43E5592B175A140007CD40 /* FoodSpecApp.swift */,
 				EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */,
 				EC43E55F2B175A160007CD40 /* Assets.xcassets */,
+				EC27998E2B1B38EC00D9E4B0 /* Food Details */,
+				EC27998B2B1B382500D9E4B0 /* Food List */,
 				EC43E5612B175A160007CD40 /* Preview Content */,
 			);
 			path = FoodSpec;

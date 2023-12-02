@@ -15,6 +15,7 @@ struct FoodSpecApp: App {
         initialState: FoodListReducer.State(),
         reducer: {
             FoodListReducer()
+                ._printChanges()
         }
     )
 

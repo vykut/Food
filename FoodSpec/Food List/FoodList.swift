@@ -14,22 +14,28 @@ struct FoodList: View {
 
     var body: some View {
         let _ = Self._printChanges()
-        NavigationStack(path: self.$store.navigationStack.sending(\.updateNavigationStack)) {
-            List {
-                if self.store.shouldShowRecentSearches {
-                    recentSearches
-                }
-                if self.store.shouldShowPrompt {
-                    ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
-                }
-                if self.store.shouldShowSearchResults {
-                    searchResultsList
-                }
-                if self.store.shouldShowNoResults {
-                    ContentUnavailableView.search(text: self.store.searchQuery)
+        NavigationStack {
+            ZStack {
+                if let store = store.scope(state: \.inlineFood, action: \.inlineFood) {
+                    FoodDetails(store: store)
+                } else {
+                    List {
+                        if self.store.shouldShowRecentSearches {
+                            recentSearches
+                        }
+                        if self.store.shouldShowPrompt {
+                            ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
+                        }
+                        if self.store.shouldShowSearchResults {
+                            searchResultsList
+                        }
+                        if self.store.shouldShowNoResults {
+                            ContentUnavailableView.search(text: self.store.searchQuery)
+                        }
+                    }
+                    .listStyle(.sidebar)
                 }
             }
-            .listStyle(.sidebar)
             .searchable(
                 text: self.$store.searchQuery.sending(\.updateSearchQuery),
                 isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus)
@@ -40,12 +46,12 @@ struct FoodList: View {
                         .progressViewStyle(.circular)
                 }
             }
-            .navigationTitle("Search")
-            .navigationDestination(for: FoodDetailsReducer.State.self) { food in
-                FoodDetails(store: .init(initialState: food) {
-                    FoodDetailsReducer()
-                })
+            .navigationDestination(
+                item: $store.scope(state: \.foodDetails, action: \.foodDetails)
+            ) { store in
+                FoodDetails(store: store)
             }
+            .navigationTitle("Search")
         }
         .onAppear {
             self.store.send(.onAppear)
