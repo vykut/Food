@@ -12,7 +12,6 @@ struct FoodDetails: View {
     @Bindable var store: StoreOf<FoodDetailsReducer>
 
     var body: some View {
-        let _ = Self._printChanges()
         ScrollView {
             Section {
                 NutritionalValueCard(

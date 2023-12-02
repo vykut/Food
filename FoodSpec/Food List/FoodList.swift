@@ -13,7 +13,6 @@ struct FoodList: View {
     @Bindable var store: StoreOf<FoodListReducer>
 
     var body: some View {
-        let _ = Self._printChanges()
         NavigationStack {
             ZStack {
                 if let store = store.scope(state: \.inlineFood, action: \.inlineFood) {
