@@ -37,8 +37,7 @@ struct FoodList: View {
             }
             .searchable(
                 text: self.$store.searchQuery.sending(\.updateSearchQuery),
-                isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus),
-                placement: .navigationBarDrawer(displayMode: .always)
+                isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus)
             )
             .overlay {
                 if self.store.isSearching {

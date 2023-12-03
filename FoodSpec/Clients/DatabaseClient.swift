@@ -11,8 +11,8 @@ import ComposableArchitecture
 @DependencyClient
 struct DatabaseClient {
     var getRecentFoods: () async throws -> [Food]
-    var insert: (_ food: Food) async -> Void
-    var delete: (_ food: Food) async -> Void
+    var insert: (_ food: Food) async throws -> Void
+    var delete: (_ food: Food) async throws -> Void
     var save: () async throws -> Void
 }
 
@@ -22,21 +22,23 @@ private enum DatabaseClientKey: DependencyKey {
             let container = PersistenceController.sharedModelContainer
 
             let foods = try await MainActor.run {
-                return try container.mainContext.fetch(.init(sortBy: [.init(\Food.openDate, order: .reverse)]))
+                try container.mainContext.fetch(.init(sortBy: [.init(\Food.name)]))
             }
 
             return foods
         },
         insert: { food in
             let container = PersistenceController.sharedModelContainer
-            await MainActor.run {
+            try await MainActor.run {
                 container.mainContext.insert(food)
+                try container.mainContext.save()
             }
         },
         delete: { food in
             let container = PersistenceController.sharedModelContainer
-            await MainActor.run {
+            try await MainActor.run {
                 container.mainContext.delete(food)
+                try container.mainContext.save()
             }
         },
         save: {

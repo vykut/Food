@@ -411,22 +411,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "6BEC0C5E-E2E5-4F89-AA89-BFD1A9776661"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FoodSpec/Food List/FoodListReducer.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "133"
-            endingLineNumber = "133"
-            landmarkName = "body"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "617ADE4B-D39C-4E3B-A771-203071CB3D64"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -438,6 +422,69 @@
             endingLineNumber = "1"
             landmarkName = "unknown"
             landmarkType = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5F9A65FE-3426-4026-9A64-33DB81A31CA8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FoodSpec/Food List/FoodListReducer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "76"
+            endingLineNumber = "76"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "5F9A65FE-3426-4026-9A64-33DB81A31CA8 - df244c65d49ad571"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (inout FoodSpec.FoodListReducer.State, FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt; in FoodSpec.FoodListReducer.body.getter : some"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/FoodListReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "76"
+                  endingLineNumber = "76"
+                  offsetFromSymbolStart = "1212">
+               </Location>
+               <Location
+                  uuid = "5F9A65FE-3426-4026-9A64-33DB81A31CA8 - df244c65d49ad571"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (inout FoodSpec.FoodListReducer.State, FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt; in FoodSpec.FoodListReducer.body.getter : some"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/FoodListReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "76"
+                  endingLineNumber = "76"
+                  offsetFromSymbolStart = "1040">
+               </Location>
+               <Location
+                  uuid = "5F9A65FE-3426-4026-9A64-33DB81A31CA8 - df244c65d49ad571"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (inout FoodSpec.FoodListReducer.State, FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt; in FoodSpec.FoodListReducer.body.getter : some"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/FoodListReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "76"
+                  endingLineNumber = "76"
+                  offsetFromSymbolStart = "1012">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

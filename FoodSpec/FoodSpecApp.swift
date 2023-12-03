@@ -22,7 +22,6 @@ struct FoodSpecApp: App {
     var body: some Scene {
         WindowGroup {
             FoodList(store: store)
-                .modelContainer(PersistenceController.sharedModelContainer)
         }
     }
 }

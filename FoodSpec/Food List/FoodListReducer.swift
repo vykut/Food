@@ -109,12 +109,11 @@ struct FoodListReducer {
                         state.shouldShowNoResults = true
                     } else if foods.count == 1 {
                         let food = Food(foodApiModel: foods[0], date: .now)
-                        if !state.recentFoods.contains(where: { $0.name == food.name }) {
-                            state.recentFoods.insert(food, at: 0)
-                        }
                         state.inlineFood = .init(food: food)
                         return .run { send in
-                            await databaseClient.insert(food: food)
+                            try await databaseClient.insert(food: food)
+                            let foods = try await databaseClient.getRecentFoods()
+                            await send(.didFetchRecentFoods(foods))
                         }
                     } else {
                         state.searchResults = foods.map { .init(foodApiModel: $0, date: nil) }
@@ -135,21 +134,21 @@ struct FoodListReducer {
 
                 case .didSelectSearchResult(let food):
                     food.openDate = now
-                    if !state.recentFoods.contains(where: { $0.name == food.name }) {
-                        state.recentFoods.insert(food, at: 0)
-                    }
                     state.foodDetails = .init(food: food)
                     return .run { send in
-                        await databaseClient.insert(food: food)
+                        try await databaseClient.insert(food: food)
+                        let foods = try await databaseClient.getRecentFoods()
+                        await send(.didFetchRecentFoods(foods))
                     }
 
                 case .didDeleteRecentFoods(let indices):
-                    let foods = indices.map { state.recentFoods[$0] }
-                    state.recentFoods.remove(atOffsets: indices)
-                    return .run { send in
-                        for food in foods {
-                            await databaseClient.delete(food: food)
+                    return .run { [recentFoods = state.recentFoods] send in
+                        let foodsToDelete = indices.map { recentFoods[$0] }
+                        for food in foodsToDelete {
+                            try await databaseClient.delete(food: food)
                         }
+                        let foods = try await databaseClient.getRecentFoods()
+                        await send(.didFetchRecentFoods(foods))
                     }
 
                 case .foodDetails(let foodDetails):
