@@ -25,3 +25,14 @@ struct FoodSpecApp: App {
         }
     }
 }
+
+private enum BundleKey: DependencyKey {
+    static let liveValue: Bundle = .main
+}
+
+extension DependencyValues {
+    var bundle: Bundle {
+        get { self[BundleKey.self] }
+        set { self[BundleKey.self] = newValue }
+    }
+}

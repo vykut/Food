@@ -16,9 +16,10 @@ struct ApiKeysClient {
 private enum ApiKeysClientKey: DependencyKey {
     static let liveValue: ApiKeysClient = .init(
         getApiKeys: {
+            @Dependency(\.bundle) var bundle
             let request = NSBundleResourceRequest(tags: ["APIKeys"])
             try await request.beginAccessingResources()
-            let url = Bundle.main.url(forResource: "APIKeys", withExtension: "json")!
+            let url = bundle.url(forResource: "APIKeys", withExtension: "json")!
             let data = try Data(contentsOf: url)
             // TODO: Store in keychain and skip NSBundleResourceRequest on next launches
             let apiKeys = try JSONDecoder().decode(ApiKeys.self, from: data)
