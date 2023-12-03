@@ -22,21 +22,7 @@ struct FoodSpecApp: App {
     var body: some Scene {
         WindowGroup {
             FoodList(store: store)
-        }
-    }
-}
-
-extension FoodClient: EnvironmentKey {
-    public static let defaultValue: Self = .init()
-}
-
-extension EnvironmentValues {
-    var foodClient: FoodClient {
-        get {
-            self[FoodClient.self]
-        }
-        set {
-            self[FoodClient.self] = newValue
+                .modelContainer(PersistenceController.sharedModelContainer)
         }
     }
 }

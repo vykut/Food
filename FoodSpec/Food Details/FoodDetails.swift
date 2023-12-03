@@ -69,7 +69,7 @@ struct FoodDetails: View {
                 )
             } header: {
                 Text(
-                    "Nutritional values per \(Quantity(value: 100, unit: .grams).formatted(.measurement(width: .wide, usage: .asProvided)))"
+                    "Nutritional values per \(Quantity(value: 100, unit: .grams).formatted(width: .wide))"
                 )
                 .font(.title2)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -84,20 +84,7 @@ struct FoodDetails: View {
     FoodDetails(
         store: Store(
             initialState: .init(
-                food: .init(
-                    name: "eggplant",
-                    openDate: .now,
-                    calories: 34.7,
-                    fatTotal: .init(value: 0.2, unit: .grams),
-                    fatSaturated: .init(value: 0.0, unit: .grams),
-                    protein: .init(value: 0.8, unit: .grams),
-                    sodium: .init(value: 0.0, unit: .milligrams),
-                    potassium: .init(value: 15.0, unit: .milligrams),
-                    cholesterol: .init(value: 0.0, unit: .milligrams),
-                    carbohydrates: .init(value: 8.7, unit: .grams),
-                    fiber: .init(value: 2.5, unit: .grams),
-                    sugar: .init(value: 3.2, unit: .grams)
-                )
+                food: .preview
             ),
             reducer: {
                 FoodDetailsReducer()

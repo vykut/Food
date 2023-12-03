@@ -64,7 +64,7 @@ struct FoodList: View {
                 Button {
                     self.store.send(.didSelectRecentFood(item))
                 } label: {
-                    Text(item.name.capitalized)
+                    FoodListRow(food: item)
                 }
             }
             .onDelete(perform: deleteItems)
@@ -79,7 +79,7 @@ struct FoodList: View {
                 Button {
                     self.store.send(.didSelectSearchResult(item))
                 } label: {
-                    Text(item.name.capitalized)
+                    FoodListRow(food: item)
                 }
             }
         } header: {

@@ -16,7 +16,7 @@ struct FoodListReducer {
         var searchQuery = ""
         var isSearchFocused = false
         var isSearching = false
-        var searchResults: [FoodApiModel] = []
+        var searchResults: [Food] = []
         var shouldShowNoResults: Bool = false
         var searchTask: Task<Void, Error>?
         var inlineFood: FoodDetailsReducer.State?
@@ -41,10 +41,11 @@ struct FoodListReducer {
     @CasePathable
     enum Action {
         case onAppear
+        case didFetchRecentFoods([Food])
         case updateSearchQuery(String)
         case updateSearchFocus(Bool)
         case didSelectRecentFood(Food)
-        case didSelectSearchResult(FoodApiModel)
+        case didSelectSearchResult(Food)
         case didDeleteRecentFoods(IndexSet)
         case startSearching
         case didReceiveSearchFoods([FoodApiModel])
@@ -56,6 +57,7 @@ struct FoodListReducer {
         case search
     }
 
+    @Dependency(\.databaseClient) private var databaseClient
     @Dependency(\.foodClient) private var foodClient
     @Dependency(\.mainQueue) private var mainQueue
     @Dependency(\.date.now) private var now
@@ -64,7 +66,15 @@ struct FoodListReducer {
         Reduce { state, action in
             switch action {
                 case .onAppear:
-                    if state.recentFoods.isEmpty && state.searchQuery.isEmpty {
+                    return .run { send in
+                        let recentFoods = try await databaseClient.getRecentFoods()
+
+                        await send(.didFetchRecentFoods(recentFoods))
+                    }
+
+                case .didFetchRecentFoods(let foods):
+                    state.recentFoods = foods
+                    if foods.isEmpty && state.searchQuery.isEmpty {
                         state.isSearchFocused = true
                     }
                     return .none
@@ -99,10 +109,15 @@ struct FoodListReducer {
                         state.shouldShowNoResults = true
                     } else if foods.count == 1 {
                         let food = Food(foodApiModel: foods[0], date: .now)
-                        state.recentFoods.insert(food, at: 0)
+                        if !state.recentFoods.contains(where: { $0.name == food.name }) {
+                            state.recentFoods.insert(food, at: 0)
+                        }
                         state.inlineFood = .init(food: food)
+                        return .run { send in
+                            await databaseClient.insert(food: food)
+                        }
                     } else {
-                        state.searchResults = foods
+                        state.searchResults = foods.map { .init(foodApiModel: $0, date: nil) }
                     }
                     return .none
 
@@ -119,16 +134,23 @@ struct FoodListReducer {
                     return .none
 
                 case .didSelectSearchResult(let food):
-                    let food = Food(foodApiModel: food, date: now)
+                    food.openDate = now
                     if !state.recentFoods.contains(where: { $0.name == food.name }) {
                         state.recentFoods.insert(food, at: 0)
                     }
                     state.foodDetails = .init(food: food)
-                    return .none
+                    return .run { send in
+                        await databaseClient.insert(food: food)
+                    }
 
                 case .didDeleteRecentFoods(let indices):
+                    let foods = indices.map { state.recentFoods[$0] }
                     state.recentFoods.remove(atOffsets: indices)
-                    return .none
+                    return .run { send in
+                        for food in foods {
+                            await databaseClient.delete(food: food)
+                        }
+                    }
 
                 case .foodDetails(let foodDetails):
                     return .none
