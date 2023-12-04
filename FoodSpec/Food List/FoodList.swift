@@ -39,6 +39,24 @@ struct FoodList: View {
                 text: self.$store.searchQuery.sending(\.updateSearchQuery),
                 isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus)
             )
+            .toolbar {
+                Menu("Menu", systemImage: "ellipsis.circle") {
+                    Picker(
+                        "Sort",
+                        selection: self.$store.recentFoodsSortingStrategy.sending(\.updateRecentFoodsSortingStrategy)
+                    ) {
+                        ForEach(Food.SortingStrategy.allCases) { strategy in
+                            let text = strategy.text.capitalized
+                            if strategy == self.store.recentFoodsSortingStrategy {
+                                Label(text, systemImage: self.store.recentFoodsSortingOrder == .forward ? "chevron.up" : "chevron.down")
+                            } else {
+                                Text(text)
+                                    .tag(strategy)
+                            }
+                        }
+                    }
+                }
+            }
             .overlay {
                 if self.store.isSearching {
                     ProgressView()

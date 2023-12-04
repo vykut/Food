@@ -34,6 +34,12 @@ struct Energy: Codable, Hashable {
     }
 }
 
+extension Energy: Comparable {
+    static func < (lhs: Energy, rhs: Energy) -> Bool {
+        lhs.measurement < rhs.measurement
+    }
+}
+
 extension Energy {
     func formatted<Style: FormatStyle>(
         _ style: Style

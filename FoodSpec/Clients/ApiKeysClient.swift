@@ -13,7 +13,7 @@ struct ApiKeysClient {
     var getApiKeys: () async throws -> ApiKeys
 }
 
-private enum ApiKeysClientKey: DependencyKey {
+extension ApiKeysClient: DependencyKey {
     static let liveValue: ApiKeysClient = .init(
         getApiKeys: {
             @Dependency(\.bundle) var bundle
@@ -31,8 +31,8 @@ private enum ApiKeysClientKey: DependencyKey {
 
 extension DependencyValues {
     var apiKeysClient: ApiKeysClient {
-        get { self[ApiKeysClientKey.self] }
-        set { self[ApiKeysClientKey.self] = newValue }
+        get { self[ApiKeysClient.self] }
+        set { self[ApiKeysClient.self] = newValue }
     }
 }
 

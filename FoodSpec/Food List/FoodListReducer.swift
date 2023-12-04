@@ -13,12 +13,13 @@ struct FoodListReducer {
     @ObservableState
     struct State {
         var recentFoods: [Food] = []
+        var recentFoodsSortingStrategy: Food.SortingStrategy = .name
+        var recentFoodsSortingOrder: SortOrder = .forward
         var searchQuery = ""
         var isSearchFocused = false
         var isSearching = false
         var searchResults: [Food] = []
         var shouldShowNoResults: Bool = false
-        var searchTask: Task<Void, Error>?
         var inlineFood: FoodDetailsReducer.State?
         @PresentationState var foodDetails: FoodDetailsReducer.State?
 
@@ -38,9 +39,12 @@ struct FoodListReducer {
             isSearchFocused && !searchResults.isEmpty && inlineFood == nil
         }
     }
+
     @CasePathable
     enum Action {
         case onAppear
+        case updateFromUserDefaults(Food.SortingStrategy?, SortOrder?)
+        case fetchRecentFoods
         case didFetchRecentFoods([Food])
         case updateSearchQuery(String)
         case updateSearchFocus(Bool)
@@ -51,6 +55,7 @@ struct FoodListReducer {
         case didReceiveSearchFoods([FoodApiModel])
         case foodDetails(PresentationAction<FoodDetailsReducer.Action>)
         case inlineFood(FoodDetailsReducer.Action)
+        case updateRecentFoodsSortingStrategy(Food.SortingStrategy)
     }
 
     enum CancelID {
@@ -60,15 +65,31 @@ struct FoodListReducer {
     @Dependency(\.databaseClient) private var databaseClient
     @Dependency(\.foodClient) private var foodClient
     @Dependency(\.mainQueue) private var mainQueue
-    @Dependency(\.date.now) private var now
+    @Dependency(\.userDefaults) private var userDefaults
 
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
                 case .onAppear:
                     return .run { send in
-                        let recentFoods = try await databaseClient.getRecentFoods()
+                        let strategy = userDefaults.recentSearchesSortingStrategy
+                        let order = userDefaults.recentSearchesSortingOrder
+                        await send(.updateFromUserDefaults(strategy, order))
+                        await send(.fetchRecentFoods)
+                    }
 
+                case .updateFromUserDefaults(let strategy, let order):
+                    if let strategy {
+                        state.recentFoodsSortingStrategy = strategy
+                    }
+                    if let order {
+                        state.recentFoodsSortingOrder = order
+                    }
+                    return .none
+
+                case .fetchRecentFoods:
+                    return .run { [sortingStrategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
+                        let recentFoods = try await databaseClient.getRecentFoods(sortedBy: sortingStrategy, order: order)
                         await send(.didFetchRecentFoods(recentFoods))
                     }
 
@@ -108,15 +129,14 @@ struct FoodListReducer {
                     if foods.isEmpty {
                         state.shouldShowNoResults = true
                     } else if foods.count == 1 {
-                        let food = Food(foodApiModel: foods[0], date: .now)
+                        let food = Food(foodApiModel: foods[0])
                         state.inlineFood = .init(food: food)
                         return .run { send in
                             try await databaseClient.insert(food: food)
-                            let foods = try await databaseClient.getRecentFoods()
-                            await send(.didFetchRecentFoods(foods))
+                            await send(.fetchRecentFoods)
                         }
                     } else {
-                        state.searchResults = foods.map { .init(foodApiModel: $0, date: nil) }
+                        state.searchResults = foods.map { .init(foodApiModel: $0) }
                     }
                     return .none
 
@@ -133,22 +153,19 @@ struct FoodListReducer {
                     return .none
 
                 case .didSelectSearchResult(let food):
-                    food.openDate = now
                     state.foodDetails = .init(food: food)
-                    return .run { send in
+                    return .run { [sortingStrategy = state.recentFoodsSortingStrategy] send in
                         try await databaseClient.insert(food: food)
-                        let foods = try await databaseClient.getRecentFoods()
-                        await send(.didFetchRecentFoods(foods))
+                        await send(.fetchRecentFoods)
                     }
 
                 case .didDeleteRecentFoods(let indices):
-                    return .run { [recentFoods = state.recentFoods] send in
+                    return .run { [recentFoods = state.recentFoods, sortingStrategy = state.recentFoodsSortingStrategy] send in
                         let foodsToDelete = indices.map { recentFoods[$0] }
                         for food in foodsToDelete {
                             try await databaseClient.delete(food: food)
                         }
-                        let foods = try await databaseClient.getRecentFoods()
-                        await send(.didFetchRecentFoods(foods))
+                        await send(.fetchRecentFoods)
                     }
 
                 case .foodDetails(let foodDetails):
@@ -156,7 +173,32 @@ struct FoodListReducer {
 
                 case .inlineFood(let foodDetails):
                     return .none
+
+                case .updateRecentFoodsSortingStrategy(let newStrategy):
+                    if newStrategy == state.recentFoodsSortingStrategy {
+                        state.recentFoodsSortingOrder.toggle()
+                    } else {
+                        state.recentFoodsSortingStrategy = newStrategy
+                        state.recentFoodsSortingOrder = .forward
+                    }
+                    return .run { [strategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
+                        userDefaults.recentSearchesSortingStrategy = strategy
+                        userDefaults.recentSearchesSortingOrder = order
+                        await send(.fetchRecentFoods)
+                    }
             }
+        }
+        .ifLet(\.$foodDetails, action: \.foodDetails) {
+            FoodDetailsReducer()
+        }
+    }
+}
+
+extension SortOrder {
+    mutating func toggle() {
+        self = switch self {
+            case .forward: .reverse
+            case .reverse: .forward
         }
     }
 }

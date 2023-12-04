@@ -11,8 +11,7 @@ import SwiftData
 @Model 
 final class Food {
     @Attribute(.unique) var name: String
-    var openDate: Date?
-    var calories: Energy
+    var energy: Energy
     var fatTotal: Quantity
     var fatSaturated: Quantity
     var protein: Quantity
@@ -25,8 +24,7 @@ final class Food {
 
     init(
         name: String,
-        openDate: Date? = nil,
-        calories: Energy,
+        energy: Energy,
         fatTotal: Quantity,
         fatSaturated: Quantity,
         protein: Quantity,
@@ -38,8 +36,7 @@ final class Food {
         sugar: Quantity
     ) {
         self.name = name
-        self.openDate = openDate
-        self.calories = calories
+        self.energy = energy
         self.fatTotal = fatTotal
         self.fatSaturated = fatSaturated
         self.protein = protein
@@ -53,10 +50,32 @@ final class Food {
 }
 
 extension Food {
-    convenience init(foodApiModel: FoodApiModel, date: Date?) {
+    enum SortingStrategy: Codable, Hashable, Identifiable, CaseIterable {
+        case name
+        case energy
+        case protein
+        case carbohydrates
+        case fat
+
+        var id: Self { self }
+
+        var text: String {
+            switch self {
+                case .name: "name"
+                case .energy: "energy"
+                case .protein: "protein"
+                case .carbohydrates: "carbohydrates"
+                case .fat: "fat"
+            }
+        }
+    }
+}
+
+extension Food {
+    convenience init(foodApiModel: FoodApiModel) {
         self.init(
             name: foodApiModel.name,
-            calories: .init(value: foodApiModel.calories, unit: .kilocalories),
+            energy: .init(value: foodApiModel.calories, unit: .kilocalories),
             fatTotal: .init(value: foodApiModel.fatTotalG, unit: .grams),
             fatSaturated: .init(value: foodApiModel.fatSaturatedG, unit: .grams),
             protein: .init(value: foodApiModel.proteinG, unit: .grams),
@@ -74,7 +93,7 @@ extension Food {
     static var preview: Self {
         .init(
             name: "eggplant",
-            calories: .init(value: 34.7, unit: .kilocalories),
+            energy: .init(value: 34.7, unit: .kilocalories),
             fatTotal: .init(value: 0.2, unit: .grams),
             fatSaturated: .init(value: 0.0, unit: .grams),
             protein: .init(value: 0.8, unit: .grams),

@@ -13,7 +13,7 @@ struct FoodClient {
     var getFoods: (_ query: String) async throws -> [FoodApiModel]
 }
 
-private enum FoodClientKey: DependencyKey {
+extension FoodClient: DependencyKey {
     static let liveValue: FoodClient = .init(
         getFoods: { query in
             @Dependency(\.apiKeysClient) var apiKeysClient
@@ -38,8 +38,8 @@ private enum FoodClientKey: DependencyKey {
 
 extension DependencyValues {
     var foodClient: FoodClient {
-        get { self[FoodClientKey.self] }
-        set { self[FoodClientKey.self] = newValue }
+        get { self[FoodClient.self] }
+        set { self[FoodClient.self] = newValue }
     }
 }
 

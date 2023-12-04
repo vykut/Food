@@ -6,53 +6,72 @@
 //
 
 import Foundation
+import SwiftData
 import ComposableArchitecture
 
 @DependencyClient
 struct DatabaseClient {
-    var getRecentFoods: () async throws -> [Food]
+    var getRecentFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) async throws -> [Food]
     var insert: (_ food: Food) async throws -> Void
     var delete: (_ food: Food) async throws -> Void
     var save: () async throws -> Void
 }
 
-private enum DatabaseClientKey: DependencyKey {
-    static var liveValue: DatabaseClient = .init(
-        getRecentFoods: {
-            let container = PersistenceController.sharedModelContainer
+extension DatabaseClient: DependencyKey {
+    static var liveValue: DatabaseClient = {
+        let container: ModelContainer = {
+            let schema = Schema([
+                Food.self,
+            ])
+            let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
-            let foods = try await MainActor.run {
-                try container.mainContext.fetch(.init(sortBy: [.init(\Food.name)]))
+            do {
+                let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+                return container
+            } catch {
+                fatalError("Could not create ModelContainer: \(error)")
             }
+        }()
+        return .init(
+            getRecentFoods: { sortedBy, order in
+                let sortDescriptor: SortDescriptor<Food> = switch sortedBy {
+                case .name: SortDescriptor(\.name, order: order)
+                case .energy: SortDescriptor(\.energy.value, order: order)
+                case .protein: SortDescriptor(\.protein.value, order: order)
+                case .carbohydrates: SortDescriptor(\.carbohydrates.value, order: order)
+                case .fat: SortDescriptor(\.fatTotal.value, order: order)
+                }
 
-            return foods
-        },
-        insert: { food in
-            let container = PersistenceController.sharedModelContainer
-            try await MainActor.run {
-                container.mainContext.insert(food)
-                try container.mainContext.save()
+                let foods = try await MainActor.run {
+                    try container.mainContext.fetch(.init(sortBy: [sortDescriptor]))
+                }
+
+                return foods
+            },
+            insert: { food in
+                try await MainActor.run {
+                    container.mainContext.insert(food)
+                    try container.mainContext.save()
+                }
+            },
+            delete: { food in
+                try await MainActor.run {
+                    container.mainContext.delete(food)
+                    try container.mainContext.save()
+                }
+            },
+            save: {
+                try await MainActor.run {
+                    try container.mainContext.save()
+                }
             }
-        },
-        delete: { food in
-            let container = PersistenceController.sharedModelContainer
-            try await MainActor.run {
-                container.mainContext.delete(food)
-                try container.mainContext.save()
-            }
-        },
-        save: {
-            let container = PersistenceController.sharedModelContainer
-            try await MainActor.run {
-                try container.mainContext.save()
-            }
-        }
-    )
+        )
+    }()
 }
 
 extension DependencyValues {
     var databaseClient: DatabaseClient {
-        get { self[DatabaseClientKey.self] }
-        set { self[DatabaseClientKey.self] = newValue }
+        get { self[DatabaseClient.self] }
+        set { self[DatabaseClient.self] = newValue }
     }
 }

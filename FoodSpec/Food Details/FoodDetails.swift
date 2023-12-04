@@ -17,7 +17,7 @@ struct FoodDetails: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Energy",
-                        value: store.food.calories.measurement,
+                        value: store.food.energy.measurement,
                         breakdown: []
                     )
                 )

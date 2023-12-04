@@ -56,6 +56,12 @@ struct Quantity: Codable, Hashable {
     }
 }
 
+extension Quantity: Comparable {
+    static func < (lhs: Quantity, rhs: Quantity) -> Bool {
+        lhs.measurement < rhs.measurement
+    }
+}
+
 extension Quantity {
     func formatted<Style: FormatStyle>(
         _ style: Style
