@@ -26,6 +26,7 @@
 		EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577AF2B1869760082A0D1 /* FoodDetails.swift */; };
 		EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */; };
 		ECA64C202B1C52970036EE4F /* DatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA64C1F2B1C52970036EE4F /* DatabaseClient.swift */; };
+		ECA64C232B1DB18E0036EE4F /* Energy.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA64C222B1DB18E0036EE4F /* Energy.swift */; };
 		ECCA83F82B177A1400C9EF4D /* FoodClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCA83F52B177A1400C9EF4D /* FoodClient.swift */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +71,7 @@
 		EC9577AF2B1869760082A0D1 /* FoodDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetails.swift; sourceTree = "<group>"; };
 		EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionalValueCard.swift; sourceTree = "<group>"; };
 		ECA64C1F2B1C52970036EE4F /* DatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseClient.swift; sourceTree = "<group>"; };
+		ECA64C222B1DB18E0036EE4F /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
 		ECCA83F52B177A1400C9EF4D /* FoodClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -186,6 +188,7 @@
 			children = (
 				EC4717A22B1B804B007B491C /* Food */,
 				EC4717A32B1B8474007B491C /* Quantity.swift */,
+				ECA64C222B1DB18E0036EE4F /* Energy.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -360,6 +363,7 @@
 				EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */,
 				EC4717A62B1C4DD5007B491C /* FoodListRow.swift in Sources */,
 				EC4717A42B1B8474007B491C /* Quantity.swift in Sources */,
+				ECA64C232B1DB18E0036EE4F /* Energy.swift in Sources */,
 				EC27998D2B1B385200D9E4B0 /* FoodListReducer.swift in Sources */,
 				EC27998A2B1B304900D9E4B0 /* ApiKeysClient.swift in Sources */,
 			);

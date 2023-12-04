@@ -16,6 +16,7 @@ struct FoodListRow: View {
             Text(food.name.capitalized)
             Spacer()
             HStack {
+                Text(food.calories.formatted(width: .narrow))
                 Text("P: \(food.protein.formatted(width: .narrow))")
                 Text("C: \(food.carbohydrates.formatted(width: .narrow))")
                 Text("F: \(food.fatTotal.formatted(width: .narrow))")

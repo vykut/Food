@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-struct NutritionalValueCard: View {
+struct NutritionalValueCard<U: Dimension>: View {
     struct Model: Hashable {
         let title: String
-        let value: Quantity
+        let value: Measurement<U>
         let breakdown: [Breakdown]
 
         struct Breakdown: Hashable {
             let title: String
-            let value: Quantity
+            let value: Measurement<U>
         }
     }
 
@@ -26,7 +26,7 @@ struct NutritionalValueCard: View {
             LabeledContent(
                 model.title,
                 value: model.value,
-                format: .measurement(width: .narrow, usage: .asProvided)
+                format: .measurement(width: .wide, usage: .asProvided)
             )
             .font(.title2)
             if !model.breakdown.isEmpty {
@@ -35,7 +35,7 @@ struct NutritionalValueCard: View {
                     LabeledContent(
                         breakdown.title,
                         value: breakdown.value,
-                        format: .measurement(width: .narrow, usage: .asProvided)
+                        format: .measurement(width: .wide, usage: .asProvided)
                     )
                 }
             }
@@ -46,7 +46,7 @@ struct NutritionalValueCard: View {
 }
 
 #Preview {
-    NutritionalValueCard(
+    NutritionalValueCard<UnitMass>(
         model: .init(
             title: "Total Fat",
             value: .init(value: 1.5, unit: .grams),

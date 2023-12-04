@@ -12,6 +12,7 @@ import SwiftData
 final class Food {
     @Attribute(.unique) var name: String
     var openDate: Date?
+    var calories: Energy
     var fatTotal: Quantity
     var fatSaturated: Quantity
     var protein: Quantity
@@ -23,18 +24,22 @@ final class Food {
     var sugar: Quantity
 
     init(
-        sugar: Quantity,
-        carbohydrates: Quantity,
-        cholesterol: Quantity,
-        fatSaturated: Quantity,
-        fatTotal: Quantity,
-        fiber: Quantity,
         name: String,
-        potassium: Quantity,
+        openDate: Date? = nil,
+        calories: Energy,
+        fatTotal: Quantity,
+        fatSaturated: Quantity,
         protein: Quantity,
-        sodium: Quantity
+        sodium: Quantity,
+        potassium: Quantity,
+        cholesterol: Quantity,
+        carbohydrates: Quantity,
+        fiber: Quantity,
+        sugar: Quantity
     ) {
         self.name = name
+        self.openDate = openDate
+        self.calories = calories
         self.fatTotal = fatTotal
         self.fatSaturated = fatSaturated
         self.protein = protein
@@ -50,16 +55,17 @@ final class Food {
 extension Food {
     convenience init(foodApiModel: FoodApiModel, date: Date?) {
         self.init(
-            sugar: .init(value: foodApiModel.sugarG, unit: .grams),
-            carbohydrates:  .init(value: foodApiModel.carbohydratesTotalG, unit: .grams),
-            cholesterol: .init(value: foodApiModel.cholesterolMg, unit: .milligrams),
-            fatSaturated: .init(value: foodApiModel.fatSaturatedG, unit: .grams),
-            fatTotal: .init(value: foodApiModel.fatTotalG, unit: .grams),
-            fiber: .init(value: foodApiModel.fiberG, unit: .grams),
             name: foodApiModel.name,
-            potassium: .init(value: foodApiModel.potassiumMg, unit: .milligrams),
+            calories: .init(value: foodApiModel.calories, unit: .kilocalories),
+            fatTotal: .init(value: foodApiModel.fatTotalG, unit: .grams),
+            fatSaturated: .init(value: foodApiModel.fatSaturatedG, unit: .grams),
             protein: .init(value: foodApiModel.proteinG, unit: .grams),
-            sodium: .init(value: foodApiModel.sodiumMg, unit: .milligrams)
+            sodium: .init(value: foodApiModel.sodiumMg, unit: .milligrams),
+            potassium: .init(value: foodApiModel.potassiumMg, unit: .milligrams),
+            cholesterol: .init(value: foodApiModel.cholesterolMg, unit: .milligrams),
+            carbohydrates:  .init(value: foodApiModel.carbohydratesTotalG, unit: .grams),
+            fiber: .init(value: foodApiModel.fiberG, unit: .grams),
+            sugar: .init(value: foodApiModel.sugarG, unit: .grams)
         )
     }
 }
@@ -67,16 +73,17 @@ extension Food {
 extension Food {
     static var preview: Self {
         .init(
-            sugar: .init(value: 3.2, unit: .grams),
-            carbohydrates: .init(value: 8.7, unit: .grams),
-            cholesterol: .init(value: 0.0, unit: .milligrams),
-            fatSaturated: .init(value: 0.0, unit: .grams),
-            fatTotal: .init(value: 0.2, unit: .grams),
-            fiber: .init(value: 2.5, unit: .grams),
             name: "eggplant",
-            potassium: .init(value: 15.0, unit: .milligrams),
+            calories: .init(value: 34.7, unit: .kilocalories),
+            fatTotal: .init(value: 0.2, unit: .grams),
+            fatSaturated: .init(value: 0.0, unit: .grams),
             protein: .init(value: 0.8, unit: .grams),
-            sodium: .init(value: 0.0, unit: .milligrams)
+            sodium: .init(value: 0.0, unit: .milligrams),
+            potassium: .init(value: 15.0, unit: .milligrams),
+            cholesterol: .init(value: 0.0, unit: .milligrams),
+            carbohydrates: .init(value: 8.7, unit: .grams),
+            fiber: .init(value: 2.5, unit: .grams),
+            sugar: .init(value: 3.2, unit: .grams)
         )
     }
 }

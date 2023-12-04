@@ -16,8 +16,16 @@ struct FoodDetails: View {
             Section {
                 NutritionalValueCard(
                     model: .init(
+                        title: "Energy",
+                        value: store.food.calories.measurement,
+                        breakdown: []
+                    )
+                )
+
+                NutritionalValueCard(
+                    model: .init(
                         title: "Protein",
-                        value: store.food.protein,
+                        value: store.food.protein.measurement,
                         breakdown: []
                     )
                 )
@@ -25,15 +33,15 @@ struct FoodDetails: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Carbohydrates",
-                        value: store.food.carbohydrates,
+                        value: store.food.carbohydrates.measurement,
                         breakdown: [
                             .init(
                                 title: "Fiber",
-                                value: store.food.fiber
+                                value: store.food.fiber.measurement
                             ),
                             .init(
                                 title: "Sugar",
-                                value: store.food.sugar
+                                value: store.food.sugar.measurement
                             ),
                         ]
                     )
@@ -42,11 +50,11 @@ struct FoodDetails: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Total Fat",
-                        value: store.food.fatTotal,
+                        value: store.food.fatTotal.measurement,
                         breakdown: [
                             .init(
                                 title: "Saturated Fat",
-                                value: store.food.fatSaturated
+                                value: store.food.fatSaturated.measurement
                             )
                         ]
                     )
@@ -55,7 +63,7 @@ struct FoodDetails: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Potassium",
-                        value: store.food.potassium,
+                        value: store.food.potassium.measurement,
                         breakdown: []
                     )
                 )
@@ -63,7 +71,7 @@ struct FoodDetails: View {
                 NutritionalValueCard(
                     model: .init(
                         title: "Sodium",
-                        value: store.food.sodium,
+                        value: store.food.sodium.measurement,
                         breakdown: []
                     )
                 )
