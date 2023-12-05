@@ -17,12 +17,10 @@
 		EC43E55E2B175A140007CD40 /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E55D2B175A140007CD40 /* Food.swift */; };
 		EC43E5602B175A160007CD40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E55F2B175A160007CD40 /* Assets.xcassets */; };
 		EC43E5632B175A160007CD40 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E5622B175A160007CD40 /* Preview Assets.xcassets */; };
-		EC43E56F2B175A160007CD40 /* FoodSpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E56E2B175A160007CD40 /* FoodSpecTests.swift */; };
-		EC43E5792B175A160007CD40 /* FoodSpecUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E5782B175A160007CD40 /* FoodSpecUITests.swift */; };
-		EC43E57B2B175A160007CD40 /* FoodSpecUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E57A2B175A160007CD40 /* FoodSpecUITestsLaunchTests.swift */; };
 		EC4717A42B1B8474007B491C /* Quantity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4717A32B1B8474007B491C /* Quantity.swift */; };
 		EC4717A62B1C4DD5007B491C /* FoodListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4717A52B1C4DD5007B491C /* FoodListRow.swift */; };
 		EC7DC2872B1DC38100BC8FD5 /* UserDefaultsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */; };
+		EC7DC2892B1DF22900BC8FD5 /* FoodListReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */; };
 		EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577AF2B1869760082A0D1 /* FoodDetails.swift */; };
 		EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */; };
 		ECA64C202B1C52970036EE4F /* DatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA64C1F2B1C52970036EE4F /* DatabaseClient.swift */; };
@@ -32,13 +30,6 @@
 
 /* Begin PBXContainerItemProxy section */
 		EC43E56B2B175A160007CD40 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EC43E54E2B175A140007CD40 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EC43E5552B175A140007CD40;
-			remoteInfo = FoodSpec;
-		};
-		EC43E5752B175A160007CD40 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EC43E54E2B175A140007CD40 /* Project object */;
 			proxyType = 1;
@@ -61,13 +52,11 @@
 		EC43E5642B175A160007CD40 /* FoodSpec.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FoodSpec.entitlements; sourceTree = "<group>"; };
 		EC43E5652B175A160007CD40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EC43E56A2B175A160007CD40 /* FoodSpecTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodSpecTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EC43E56E2B175A160007CD40 /* FoodSpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSpecTests.swift; sourceTree = "<group>"; };
-		EC43E5742B175A160007CD40 /* FoodSpecUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodSpecUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EC43E5782B175A160007CD40 /* FoodSpecUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSpecUITests.swift; sourceTree = "<group>"; };
-		EC43E57A2B175A160007CD40 /* FoodSpecUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSpecUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		EC4717A32B1B8474007B491C /* Quantity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quantity.swift; sourceTree = "<group>"; };
 		EC4717A52B1C4DD5007B491C /* FoodListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodListRow.swift; sourceTree = "<group>"; };
 		EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsClient.swift; sourceTree = "<group>"; };
+		EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodListReducerTests.swift; sourceTree = "<group>"; };
+		EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = FoodSpec.xctestplan; sourceTree = "<group>"; };
 		EC9577AF2B1869760082A0D1 /* FoodDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetails.swift; sourceTree = "<group>"; };
 		EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionalValueCard.swift; sourceTree = "<group>"; };
 		ECA64C1F2B1C52970036EE4F /* DatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseClient.swift; sourceTree = "<group>"; };
@@ -85,13 +74,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		EC43E5672B175A160007CD40 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EC43E5712B175A160007CD40 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -124,9 +106,9 @@
 		EC43E54D2B175A140007CD40 = {
 			isa = PBXGroup;
 			children = (
+				EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */,
 				EC43E5582B175A140007CD40 /* FoodSpec */,
 				EC43E56D2B175A160007CD40 /* FoodSpecTests */,
-				EC43E5772B175A160007CD40 /* FoodSpecUITests */,
 				EC43E5572B175A140007CD40 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -136,7 +118,6 @@
 			children = (
 				EC43E5562B175A140007CD40 /* FoodSpec.app */,
 				EC43E56A2B175A160007CD40 /* FoodSpecTests.xctest */,
-				EC43E5742B175A160007CD40 /* FoodSpecUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -169,18 +150,9 @@
 		EC43E56D2B175A160007CD40 /* FoodSpecTests */ = {
 			isa = PBXGroup;
 			children = (
-				EC43E56E2B175A160007CD40 /* FoodSpecTests.swift */,
+				EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */,
 			);
 			path = FoodSpecTests;
-			sourceTree = "<group>";
-		};
-		EC43E5772B175A160007CD40 /* FoodSpecUITests */ = {
-			isa = PBXGroup;
-			children = (
-				EC43E5782B175A160007CD40 /* FoodSpecUITests.swift */,
-				EC43E57A2B175A160007CD40 /* FoodSpecUITestsLaunchTests.swift */,
-			);
-			path = FoodSpecUITests;
 			sourceTree = "<group>";
 		};
 		EC4717A12B1B8041007B491C /* Model */ = {
@@ -253,24 +225,6 @@
 			productReference = EC43E56A2B175A160007CD40 /* FoodSpecTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		EC43E5732B175A160007CD40 /* FoodSpecUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EC43E5842B175A160007CD40 /* Build configuration list for PBXNativeTarget "FoodSpecUITests" */;
-			buildPhases = (
-				EC43E5702B175A160007CD40 /* Sources */,
-				EC43E5712B175A160007CD40 /* Frameworks */,
-				EC43E5722B175A160007CD40 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				EC43E5762B175A160007CD40 /* PBXTargetDependency */,
-			);
-			name = FoodSpecUITests;
-			productName = FoodSpecUITests;
-			productReference = EC43E5742B175A160007CD40 /* FoodSpecUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -288,10 +242,6 @@
 						CreatedOnToolsVersion = 15.0.1;
 					};
 					EC43E5692B175A160007CD40 = {
-						CreatedOnToolsVersion = 15.0.1;
-						TestTargetID = EC43E5552B175A140007CD40;
-					};
-					EC43E5732B175A160007CD40 = {
 						CreatedOnToolsVersion = 15.0.1;
 						TestTargetID = EC43E5552B175A140007CD40;
 					};
@@ -315,7 +265,6 @@
 			targets = (
 				EC43E5552B175A140007CD40 /* FoodSpec */,
 				EC43E5692B175A160007CD40 /* FoodSpecTests */,
-				EC43E5732B175A160007CD40 /* FoodSpecUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -332,13 +281,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		EC43E5682B175A160007CD40 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EC43E5722B175A160007CD40 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -373,16 +315,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EC43E56F2B175A160007CD40 /* FoodSpecTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EC43E5702B175A160007CD40 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EC43E57B2B175A160007CD40 /* FoodSpecUITestsLaunchTests.swift in Sources */,
-				EC43E5792B175A160007CD40 /* FoodSpecUITests.swift in Sources */,
+				EC7DC2892B1DF22900BC8FD5 /* FoodListReducerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,11 +326,6 @@
 			isa = PBXTargetDependency;
 			target = EC43E5552B175A140007CD40 /* FoodSpec */;
 			targetProxy = EC43E56B2B175A160007CD40 /* PBXContainerItemProxy */;
-		};
-		EC43E5762B175A160007CD40 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EC43E5552B175A140007CD40 /* FoodSpec */;
-			targetProxy = EC43E5752B175A160007CD40 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -627,42 +555,6 @@
 			};
 			name = Release;
 		};
-		EC43E5852B175A160007CD40 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S587A4HQ4C;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.victorsocaciu.FoodSpecUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FoodSpec;
-			};
-			name = Debug;
-		};
-		EC43E5862B175A160007CD40 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S587A4HQ4C;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.victorsocaciu.FoodSpecUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FoodSpec;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -689,15 +581,6 @@
 			buildConfigurations = (
 				EC43E5822B175A160007CD40 /* Debug */,
 				EC43E5832B175A160007CD40 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		EC43E5842B175A160007CD40 /* Build configuration list for PBXNativeTarget "FoodSpecUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EC43E5852B175A160007CD40 /* Debug */,
-				EC43E5862B175A160007CD40 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

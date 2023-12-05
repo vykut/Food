@@ -67,6 +67,8 @@ extension DatabaseClient: DependencyKey {
             }
         )
     }()
+
+    static let testValue: DatabaseClient = .init()
 }
 
 extension DependencyValues {

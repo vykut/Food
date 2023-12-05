@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "F18FAE31-E4FC-40DE-AB14-69964FC9D15E",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:FoodSpec.xcodeproj",
+      "identifier" : "EC43E5552B175A140007CD40",
+      "name" : "FoodSpec"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:FoodSpec.xcodeproj",
+        "identifier" : "EC43E5692B175A160007CD40",
+        "name" : "FoodSpecTests"
+      }
+    }
+  ],
+  "version" : 1
+}

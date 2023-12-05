@@ -11,7 +11,7 @@ import ComposableArchitecture
 @Reducer
 struct FoodListReducer {
     @ObservableState
-    struct State {
+    struct State: Hashable {
         var recentFoods: [Food] = []
         var recentFoodsSortingStrategy: Food.SortingStrategy = .name
         var recentFoodsSortingOrder: SortOrder = .forward
@@ -115,7 +115,7 @@ struct FoodListReducer {
                             let foods = try await foodClient.getFoods(query: searchQuery)
                             await send(.didReceiveSearchFoods(foods))
                         } catch: { error, send in
-                            dump(error)
+                            await send(.didReceiveSearchFoods([]))
                         }
                         .debounce(id: CancelID.search, for: .milliseconds(300), scheduler: mainQueue)
                     }
