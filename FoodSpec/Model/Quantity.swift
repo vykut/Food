@@ -15,6 +15,13 @@ struct Quantity: Codable, Hashable {
         .init(value: value, unit: unit.unit)
     }
 
+    func converted(to otherUnit: Unit) -> Self {
+        .init(
+            value: measurement.converted(to: otherUnit.unit).value,
+            unit: otherUnit
+        )
+    }
+
     enum Unit: Codable {
         case kilograms
         case grams
@@ -35,22 +42,22 @@ struct Quantity: Codable, Hashable {
 
         var unit: UnitMass {
             switch self {
-                case .kilograms: return .kilograms
-                case .grams: return .grams
-                case .decigrams: return .decigrams
-                case .centigrams: return .centigrams
-                case .milligrams: return .milligrams
-                case .micrograms: return .micrograms
-                case .nanograms: return .nanograms
-                case .picograms: return .picograms
-                case .ounces: return .ounces
-                case .pounds: return .pounds
-                case .stones: return .stones
-                case .metricTons: return .metricTons
-                case .shortTons: return .shortTons
-                case .carats: return .carats
-                case .ouncesTroy: return .ouncesTroy
-                case .slugs: return .slugs
+                case .kilograms: .kilograms
+                case .grams: .grams
+                case .decigrams: .decigrams
+                case .centigrams: .centigrams
+                case .milligrams: .milligrams
+                case .micrograms: .micrograms
+                case .nanograms: .nanograms
+                case .picograms: .picograms
+                case .ounces: .ounces
+                case .pounds: .pounds
+                case .stones: .stones
+                case .metricTons: .metricTons
+                case .shortTons: .shortTons
+                case .carats: .carats
+                case .ouncesTroy: .ouncesTroy
+                case .slugs: .slugs
             }
         }
     }
