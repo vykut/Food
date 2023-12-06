@@ -87,7 +87,7 @@ extension FoodApiModel {
             sodiumMg: 0.0,
             potassiumMg: 15.0,
             cholesterolMg: 0.0,
-            carbohydratesTotalG: 0.7,
+            carbohydratesTotalG: 8.7,
             fiberG: 2.5,
             sugarG: 3.2
         )

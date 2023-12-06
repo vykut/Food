@@ -22,7 +22,7 @@ final class FoodListReducerTests: XCTestCase {
         )
 
         store.assert { state in
-            state.recentFoodsSortingColumn = Column("name")
+            state.recentFoodsSortingStrategy = .name
             state.recentFoodsSortingOrder = .forward
             state.searchQuery = ""
             state.isSearchFocused = false
@@ -49,7 +49,7 @@ final class FoodListReducerTests: XCTestCase {
 
         await store.send(.onAppear)
         await store.receive(\.updateFromUserDefaults) {
-            $0.recentFoodsSortingColumn = Column("energy")
+            $0.recentFoodsSortingStrategy = .energy
             $0.recentFoodsSortingOrder = .reverse
         }
         await store.receive(\.fetchRecentFoods)
@@ -63,8 +63,6 @@ final class FoodListReducerTests: XCTestCase {
     }
 
     func test_onAppear_hasRecentFoods() async throws {
-        // workaround for SwiftData crash
-        let modelContainer = try ModelContainer(for: Food.self)
         let food = Food.preview
         let store = TestStore(
             initialState: FoodListReducer.State(),
@@ -81,7 +79,7 @@ final class FoodListReducerTests: XCTestCase {
 
         await store.send(.onAppear)
         await store.receive(\.updateFromUserDefaults) {
-            $0.recentFoodsSortingColumn = Column("energy")
+            $0.recentFoodsSortingStrategy = .energy
             $0.recentFoodsSortingOrder = .reverse
         }
         await store.receive(\.fetchRecentFoods)
@@ -95,8 +93,6 @@ final class FoodListReducerTests: XCTestCase {
     }
 
     func testFullFlow_newInstallation() async throws {
-        // workaround for SwiftData crash
-        let modelContainer = try ModelContainer(for: Food.self)
         let store = TestStore(
             initialState: FoodListReducer.State(),
             reducer: {
@@ -115,7 +111,7 @@ final class FoodListReducerTests: XCTestCase {
 
         await store.send(.onAppear)
         await store.receive(\.updateFromUserDefaults) {
-            $0.recentFoodsSortingColumn = Column("energy")
+            $0.recentFoodsSortingStrategy = .energy
             $0.recentFoodsSortingOrder = .reverse
         }
         await store.receive(\.fetchRecentFoods)
@@ -132,6 +128,12 @@ final class FoodListReducerTests: XCTestCase {
         store.dependencies.foodClient.getFoods = { _ in [foodApi] }
         store.dependencies.databaseClient.insert = {
             XCTAssertNoDifference($0, .preview)
+            return $0
+        }
+        store.dependencies.databaseClient.getRecentFoods = {
+            XCTAssertEqual($0, .energy)
+            XCTAssertEqual($1, .reverse)
+            return [.preview]
         }
         await store.send(.updateSearchQuery("C")) {
             $0.searchQuery = "C"
@@ -148,11 +150,6 @@ final class FoodListReducerTests: XCTestCase {
             $0.isSearching = false
         }
         XCTAssertEqual(store.state.shouldShowSpinner, false)
-        store.dependencies.databaseClient.getRecentFoods = {
-            XCTAssertEqual($0, .name)
-            XCTAssertEqual($1, .forward)
-            return [.preview]
-        }
         await store.receive(\.fetchRecentFoods)
         await store.receive(\.didFetchRecentFoods) {
             $0.recentFoods = [.preview]
