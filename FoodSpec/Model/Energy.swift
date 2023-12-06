@@ -15,6 +15,13 @@ struct Energy: Codable, Hashable {
         .init(value: value, unit: unit.unit)
     }
 
+    func converted(to otherUnit: Unit) -> Self {
+        .init(
+            value: measurement.converted(to: otherUnit.unit).value,
+            unit: otherUnit
+        )
+    }
+
     enum Unit: Codable {
         case kilojoules
         case joules
@@ -24,11 +31,11 @@ struct Energy: Codable, Hashable {
 
         var unit: UnitEnergy {
             switch self {
-                case .kilojoules: return .kilojoules
-                case .joules: return .joules
-                case .kilocalories: return .kilocalories
-                case .calories: return .calories
-                case .kilowattHours: return .kilowattHours
+                case .kilojoules: .kilojoules
+                case .joules: .joules
+                case .kilocalories: .kilocalories
+                case .calories: .calories
+                case .kilowattHours: .kilowattHours
             }
         }
     }

@@ -27,6 +27,8 @@ extension ApiKeysClient: DependencyKey {
             return apiKeys
         }
     )
+
+    static let testValue: ApiKeysClient = .init()
 }
 
 extension DependencyValues {

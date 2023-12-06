@@ -14,70 +14,59 @@ struct FoodList: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                if let store = store.scope(state: \.inlineFood, action: \.inlineFood) {
+            list
+                .toolbar {
+                    toolbar
+                }
+                .searchable(
+                    text: self.$store.searchQuery.sending(\.updateSearchQuery),
+                    isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus),
+                    placement: .navigationBarDrawer
+                )
+                .navigationDestination(
+                    item: $store.scope(state: \.foodDetails, action: \.foodDetails)
+                ) { store in
                     FoodDetails(store: store)
-                } else {
-                    List {
-                        if self.store.shouldShowRecentSearches {
-                            recentSearches
-                        }
-                        if self.store.shouldShowPrompt {
-                            ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
-                        }
-                        if self.store.shouldShowSearchResults {
-                            searchResultsList
-                        }
-                        if self.store.shouldShowNoResults {
-                            ContentUnavailableView.search(text: self.store.searchQuery)
-                        }
-                    }
-                    .listStyle(.sidebar)
                 }
-            }
-            .searchable(
-                text: self.$store.searchQuery.sending(\.updateSearchQuery),
-                isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus)
-            )
-            .toolbar {
-                Menu("Menu", systemImage: "ellipsis.circle") {
-                    Picker(
-                        "Sort",
-                        selection: self.$store.recentFoodsSortingStrategy.sending(\.updateRecentFoodsSortingStrategy)
-                    ) {
-                        ForEach(Food.SortingStrategy.allCases) { strategy in
-                            let text = strategy.text.capitalized
-                            if strategy == self.store.recentFoodsSortingStrategy {
-                                Label(text, systemImage: self.store.recentFoodsSortingOrder == .forward ? "chevron.up" : "chevron.down")
-                            } else {
-                                Text(text)
-                                    .tag(strategy)
-                            }
-                        }
-                    }
-                }
-            }
-            .overlay {
-                if self.store.isSearching {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                }
-            }
-            .navigationDestination(
-                item: $store.scope(state: \.foodDetails, action: \.foodDetails)
-            ) { store in
-                FoodDetails(store: store)
-            }
-            .navigationTitle("Search")
+                .navigationTitle("Search")
         }
         .onAppear {
             self.store.send(.onAppear)
         }
     }
 
+    @ViewBuilder
+    private var list: some View {
+        if let store = store.scope(state: \.inlineFood, action: \.inlineFood) {
+            FoodDetails(store: store)
+        } else {
+            List {
+                if self.store.shouldShowRecentSearches {
+                    recentSearches
+                }
+                if self.store.shouldShowPrompt {
+                    ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
+                }
+                if self.store.shouldShowSearchResults {
+                    searchResultsList
+                }
+                if self.store.shouldShowNoResults {
+                    ContentUnavailableView.search(text: self.store.searchQuery)
+                }
+            }
+            .listStyle(.sidebar)
+            .overlay {
+                if self.store.isSearching {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                }
+            }
+        }
+    }
+
     private var recentSearches: some View {
         Section {
-            ForEach(self.store.recentFoods) { item in
+            ForEach(self.store.recentFoods, id: \.self) { item in
                 Button {
                     self.store.send(.didSelectRecentFood(item))
                 } label: {
@@ -101,6 +90,28 @@ struct FoodList: View {
             }
         } header: {
             Text("Results")
+        }
+    }
+
+    private var toolbar: some View {
+        Menu("Menu", systemImage: "ellipsis.circle") {
+            Picker(
+                "Sort",
+                selection: self.$store.recentFoodsSortingStrategy.sending(\.updateRecentFoodsSortingStrategy)
+            ) {
+                ForEach(Food.SortingStrategy.allCases) { strategy in
+                    let text = strategy.rawValue.capitalized
+                    ZStack {
+                        if strategy == self.store.recentFoodsSortingStrategy {
+                            let systemImageName = self.store.recentFoodsSortingOrder == .forward ? "chevron.up" : "chevron.down"
+                            Label(text, systemImage: systemImageName)
+                        } else {
+                            Text(text)
+                        }
+                    }
+                    .tag(strategy)
+                }
+            }
         }
     }
 

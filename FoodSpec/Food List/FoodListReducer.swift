@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import GRDB
 import ComposableArchitecture
 
 @Reducer
 struct FoodListReducer {
     @ObservableState
-    struct State {
+    struct State: Hashable {
         var recentFoods: [Food] = []
         var recentFoodsSortingStrategy: Food.SortingStrategy = .name
         var recentFoodsSortingOrder: SortOrder = .forward
@@ -21,7 +22,7 @@ struct FoodListReducer {
         var searchResults: [Food] = []
         var shouldShowNoResults: Bool = false
         var inlineFood: FoodDetailsReducer.State?
-        @PresentationState var foodDetails: FoodDetailsReducer.State?
+        @Presents var foodDetails: FoodDetailsReducer.State?
 
         var shouldShowRecentSearches: Bool {
             searchQuery.isEmpty && !recentFoods.isEmpty
@@ -115,7 +116,7 @@ struct FoodListReducer {
                             let foods = try await foodClient.getFoods(query: searchQuery)
                             await send(.didReceiveSearchFoods(foods))
                         } catch: { error, send in
-                            dump(error)
+                            await send(.didReceiveSearchFoods([]))
                         }
                         .debounce(id: CancelID.search, for: .milliseconds(300), scheduler: mainQueue)
                     }
@@ -154,13 +155,13 @@ struct FoodListReducer {
 
                 case .didSelectSearchResult(let food):
                     state.foodDetails = .init(food: food)
-                    return .run { [sortingStrategy = state.recentFoodsSortingStrategy] send in
-                        try await databaseClient.insert(food: food)
+                    return .run { send in
+                        _ = try await databaseClient.insert(food: food)
                         await send(.fetchRecentFoods)
                     }
 
                 case .didDeleteRecentFoods(let indices):
-                    return .run { [recentFoods = state.recentFoods, sortingStrategy = state.recentFoodsSortingStrategy] send in
+                    return .run { [recentFoods = state.recentFoods] send in
                         let foodsToDelete = indices.map { recentFoods[$0] }
                         for food in foodsToDelete {
                             try await databaseClient.delete(food: food)

@@ -28,8 +28,7 @@ struct FoodListRow: View {
 }
 
 #Preview {
-    let modelContainer = try! ModelContainer(for: Food.self)
-    return FoodListRow(
+    FoodListRow(
         food: .preview
     )
     .padding()

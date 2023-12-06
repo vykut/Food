@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "grdb.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/groue/GRDB.swift.git",
+      "state" : {
+        "revision" : "eacbdf23af4228dea3bd0e5feb17c0f953829c15",
+        "version" : "6.23.0"
+      }
+    },
+    {
       "identity" : "swift-case-paths",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-case-paths",
@@ -42,7 +51,7 @@
       "location" : "https://github.com/pointfreeco/swift-composable-architecture",
       "state" : {
         "branch" : "observation-beta",
-        "revision" : "2ff4f0a24cc398b12c5447d0e644262c57710332"
+        "revision" : "b2dc36241005a5c62c68db6550a5218253f8cea7"
       }
     },
     {

@@ -34,6 +34,8 @@ extension FoodClient: DependencyKey {
             return items
         }
     )
+
+    static let testValue: FoodClient = .init()
 }
 
 extension DependencyValues {
@@ -70,5 +72,24 @@ struct FoodApiModel: Hashable, Codable {
         case carbohydratesTotalG = "carbohydrates_total_g"
         case fiberG = "fiber_g"
         case sugarG = "sugar_g"
+    }
+}
+
+extension FoodApiModel {
+    static var preview: Self {
+        .init(
+            name: "eggplant",
+            calories: 34.7,
+            servingSizeG: 100,
+            fatTotalG: 0.2,
+            fatSaturatedG: 0.0,
+            proteinG: 0.8,
+            sodiumMg: 0.0,
+            potassiumMg: 15.0,
+            cholesterolMg: 0.0,
+            carbohydratesTotalG: 0.7,
+            fiberG: 2.5,
+            sugarG: 3.2
+        )
     }
 }
