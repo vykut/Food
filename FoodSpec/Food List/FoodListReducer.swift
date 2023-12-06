@@ -63,7 +63,7 @@ struct FoodListReducer {
         case search
     }
 
-    @Dependency(\.grdbDatabaseClient) private var databaseClient
+    @Dependency(\.databaseClient) private var databaseClient
     @Dependency(\.foodClient) private var foodClient
     @Dependency(\.mainQueue) private var mainQueue
     @Dependency(\.userDefaults) private var userDefaults

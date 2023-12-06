@@ -22,9 +22,8 @@
 		EC7DC2892B1DF22900BC8FD5 /* FoodListReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */; };
 		EC7DC28D2B1F32C400BC8FD5 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = EC7DC28C2B1F32C400BC8FD5 /* GRDB */; };
 		EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2912B1F375100BC8FD5 /* Food.swift */; };
-		EC7DC2952B1F397D00BC8FD5 /* AppDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2932B1F397D00BC8FD5 /* AppDatabase.swift */; };
-		EC7DC2962B1F397D00BC8FD5 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2942B1F397D00BC8FD5 /* Persistence.swift */; };
-		EC7DC2982B1F669D00BC8FD5 /* GRDBDatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2972B1F669D00BC8FD5 /* GRDBDatabaseClient.swift */; };
+		EC7DC2952B1F397D00BC8FD5 /* Database+Creation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */; };
+		EC7DC2982B1F669D00BC8FD5 /* DatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */; };
 		EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577AF2B1869760082A0D1 /* FoodDetails.swift */; };
 		EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */; };
 		ECA64C232B1DB18E0036EE4F /* Energy.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA64C222B1DB18E0036EE4F /* Energy.swift */; };
@@ -60,9 +59,8 @@
 		EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodListReducerTests.swift; sourceTree = "<group>"; };
 		EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = FoodSpec.xctestplan; sourceTree = "<group>"; };
 		EC7DC2912B1F375100BC8FD5 /* Food.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
-		EC7DC2932B1F397D00BC8FD5 /* AppDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDatabase.swift; sourceTree = "<group>"; };
-		EC7DC2942B1F397D00BC8FD5 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		EC7DC2972B1F669D00BC8FD5 /* GRDBDatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBDatabaseClient.swift; sourceTree = "<group>"; };
+		EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Database+Creation.swift"; sourceTree = "<group>"; };
+		EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseClient.swift; sourceTree = "<group>"; };
 		EC9577AF2B1869760082A0D1 /* FoodDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetails.swift; sourceTree = "<group>"; };
 		EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionalValueCard.swift; sourceTree = "<group>"; };
 		ECA64C222B1DB18E0036EE4F /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
@@ -179,13 +177,20 @@
 			path = Food;
 			sourceTree = "<group>";
 		};
+		EC864F852B207592004FE264 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */,
+				EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
 		ECA64C212B1C53380036EE4F /* Clients */ = {
 			isa = PBXGroup;
 			children = (
-				EC7DC2932B1F397D00BC8FD5 /* AppDatabase.swift */,
-				EC7DC2942B1F397D00BC8FD5 /* Persistence.swift */,
+				EC864F852B207592004FE264 /* Database */,
 				EC2799892B1B304900D9E4B0 /* ApiKeysClient.swift */,
-				EC7DC2972B1F669D00BC8FD5 /* GRDBDatabaseClient.swift */,
 				ECCA83F52B177A1400C9EF4D /* FoodClient.swift */,
 				EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */,
 			);
@@ -305,8 +310,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC43E55C2B175A140007CD40 /* FoodList.swift in Sources */,
-				EC7DC2962B1F397D00BC8FD5 /* Persistence.swift in Sources */,
-				EC7DC2952B1F397D00BC8FD5 /* AppDatabase.swift in Sources */,
+				EC7DC2952B1F397D00BC8FD5 /* Database+Creation.swift in Sources */,
 				EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */,
 				EC7DC2872B1DC38100BC8FD5 /* UserDefaultsClient.swift in Sources */,
 				EC2799902B1B390E00D9E4B0 /* FoodDetailsReducer.swift in Sources */,
@@ -314,7 +318,7 @@
 				EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */,
 				EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */,
 				EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */,
-				EC7DC2982B1F669D00BC8FD5 /* GRDBDatabaseClient.swift in Sources */,
+				EC7DC2982B1F669D00BC8FD5 /* DatabaseClient.swift in Sources */,
 				EC4717A62B1C4DD5007B491C /* FoodListRow.swift in Sources */,
 				EC4717A42B1B8474007B491C /* Quantity.swift in Sources */,
 				ECA64C232B1DB18E0036EE4F /* Energy.swift in Sources */,
