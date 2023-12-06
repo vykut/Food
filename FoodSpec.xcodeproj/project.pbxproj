@@ -14,7 +14,6 @@
 		EC2799902B1B390E00D9E4B0 /* FoodDetailsReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC27998F2B1B390E00D9E4B0 /* FoodDetailsReducer.swift */; };
 		EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E5592B175A140007CD40 /* FoodSpecApp.swift */; };
 		EC43E55C2B175A140007CD40 /* FoodList.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E55B2B175A140007CD40 /* FoodList.swift */; };
-		EC43E55E2B175A140007CD40 /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E55D2B175A140007CD40 /* Food.swift */; };
 		EC43E5602B175A160007CD40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E55F2B175A160007CD40 /* Assets.xcassets */; };
 		EC43E5632B175A160007CD40 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E5622B175A160007CD40 /* Preview Assets.xcassets */; };
 		EC4717A42B1B8474007B491C /* Quantity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4717A32B1B8474007B491C /* Quantity.swift */; };
@@ -22,13 +21,12 @@
 		EC7DC2872B1DC38100BC8FD5 /* UserDefaultsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */; };
 		EC7DC2892B1DF22900BC8FD5 /* FoodListReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */; };
 		EC7DC28D2B1F32C400BC8FD5 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = EC7DC28C2B1F32C400BC8FD5 /* GRDB */; };
-		EC7DC2922B1F375100BC8FD5 /* GRDBFood.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2912B1F375100BC8FD5 /* GRDBFood.swift */; };
+		EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2912B1F375100BC8FD5 /* Food.swift */; };
 		EC7DC2952B1F397D00BC8FD5 /* AppDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2932B1F397D00BC8FD5 /* AppDatabase.swift */; };
 		EC7DC2962B1F397D00BC8FD5 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2942B1F397D00BC8FD5 /* Persistence.swift */; };
 		EC7DC2982B1F669D00BC8FD5 /* GRDBDatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2972B1F669D00BC8FD5 /* GRDBDatabaseClient.swift */; };
 		EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577AF2B1869760082A0D1 /* FoodDetails.swift */; };
 		EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */; };
-		ECA64C202B1C52970036EE4F /* DatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA64C1F2B1C52970036EE4F /* DatabaseClient.swift */; };
 		ECA64C232B1DB18E0036EE4F /* Energy.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA64C222B1DB18E0036EE4F /* Energy.swift */; };
 		ECCA83F82B177A1400C9EF4D /* FoodClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCA83F52B177A1400C9EF4D /* FoodClient.swift */; };
 /* End PBXBuildFile section */
@@ -51,7 +49,6 @@
 		EC43E5562B175A140007CD40 /* FoodSpec.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FoodSpec.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC43E5592B175A140007CD40 /* FoodSpecApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSpecApp.swift; sourceTree = "<group>"; };
 		EC43E55B2B175A140007CD40 /* FoodList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodList.swift; sourceTree = "<group>"; };
-		EC43E55D2B175A140007CD40 /* Food.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
 		EC43E55F2B175A160007CD40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EC43E5622B175A160007CD40 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EC43E5642B175A160007CD40 /* FoodSpec.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FoodSpec.entitlements; sourceTree = "<group>"; };
@@ -62,13 +59,12 @@
 		EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsClient.swift; sourceTree = "<group>"; };
 		EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodListReducerTests.swift; sourceTree = "<group>"; };
 		EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = FoodSpec.xctestplan; sourceTree = "<group>"; };
-		EC7DC2912B1F375100BC8FD5 /* GRDBFood.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBFood.swift; sourceTree = "<group>"; };
+		EC7DC2912B1F375100BC8FD5 /* Food.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
 		EC7DC2932B1F397D00BC8FD5 /* AppDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDatabase.swift; sourceTree = "<group>"; };
 		EC7DC2942B1F397D00BC8FD5 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		EC7DC2972B1F669D00BC8FD5 /* GRDBDatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBDatabaseClient.swift; sourceTree = "<group>"; };
 		EC9577AF2B1869760082A0D1 /* FoodDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetails.swift; sourceTree = "<group>"; };
 		EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionalValueCard.swift; sourceTree = "<group>"; };
-		ECA64C1F2B1C52970036EE4F /* DatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseClient.swift; sourceTree = "<group>"; };
 		ECA64C222B1DB18E0036EE4F /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
 		ECCA83F52B177A1400C9EF4D /* FoodClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -178,8 +174,7 @@
 		EC4717A22B1B804B007B491C /* Food */ = {
 			isa = PBXGroup;
 			children = (
-				EC43E55D2B175A140007CD40 /* Food.swift */,
-				EC7DC2912B1F375100BC8FD5 /* GRDBFood.swift */,
+				EC7DC2912B1F375100BC8FD5 /* Food.swift */,
 			);
 			path = Food;
 			sourceTree = "<group>";
@@ -190,7 +185,6 @@
 				EC7DC2932B1F397D00BC8FD5 /* AppDatabase.swift */,
 				EC7DC2942B1F397D00BC8FD5 /* Persistence.swift */,
 				EC2799892B1B304900D9E4B0 /* ApiKeysClient.swift */,
-				ECA64C1F2B1C52970036EE4F /* DatabaseClient.swift */,
 				EC7DC2972B1F669D00BC8FD5 /* GRDBDatabaseClient.swift */,
 				ECCA83F52B177A1400C9EF4D /* FoodClient.swift */,
 				EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */,
@@ -310,18 +304,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ECA64C202B1C52970036EE4F /* DatabaseClient.swift in Sources */,
 				EC43E55C2B175A140007CD40 /* FoodList.swift in Sources */,
 				EC7DC2962B1F397D00BC8FD5 /* Persistence.swift in Sources */,
 				EC7DC2952B1F397D00BC8FD5 /* AppDatabase.swift in Sources */,
-				EC43E55E2B175A140007CD40 /* Food.swift in Sources */,
 				EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */,
 				EC7DC2872B1DC38100BC8FD5 /* UserDefaultsClient.swift in Sources */,
 				EC2799902B1B390E00D9E4B0 /* FoodDetailsReducer.swift in Sources */,
 				ECCA83F82B177A1400C9EF4D /* FoodClient.swift in Sources */,
 				EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */,
 				EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */,
-				EC7DC2922B1F375100BC8FD5 /* GRDBFood.swift in Sources */,
+				EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */,
 				EC7DC2982B1F669D00BC8FD5 /* GRDBDatabaseClient.swift in Sources */,
 				EC4717A62B1C4DD5007B491C /* FoodListRow.swift in Sources */,
 				EC4717A42B1B8474007B491C /* Quantity.swift in Sources */,

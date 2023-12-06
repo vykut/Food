@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GRDB
 import ComposableArchitecture
 
 @Reducer
@@ -21,7 +22,7 @@ struct FoodListReducer {
         var searchResults: [Food] = []
         var shouldShowNoResults: Bool = false
         var inlineFood: FoodDetailsReducer.State?
-        @PresentationState var foodDetails: FoodDetailsReducer.State?
+        @Presents var foodDetails: FoodDetailsReducer.State?
 
         var shouldShowRecentSearches: Bool {
             searchQuery.isEmpty && !recentFoods.isEmpty
@@ -62,7 +63,7 @@ struct FoodListReducer {
         case search
     }
 
-    @Dependency(\.databaseClient) private var databaseClient
+    @Dependency(\.grdbDatabaseClient) private var databaseClient
     @Dependency(\.foodClient) private var foodClient
     @Dependency(\.mainQueue) private var mainQueue
     @Dependency(\.userDefaults) private var userDefaults
@@ -154,13 +155,13 @@ struct FoodListReducer {
 
                 case .didSelectSearchResult(let food):
                     state.foodDetails = .init(food: food)
-                    return .run { [sortingStrategy = state.recentFoodsSortingStrategy] send in
-                        try await databaseClient.insert(food: food)
+                    return .run { send in
+                        _ = try await databaseClient.insert(food: food)
                         await send(.fetchRecentFoods)
                     }
 
                 case .didDeleteRecentFoods(let indices):
-                    return .run { [recentFoods = state.recentFoods, sortingStrategy = state.recentFoodsSortingStrategy] send in
+                    return .run { [recentFoods = state.recentFoods] send in
                         let foodsToDelete = indices.map { recentFoods[$0] }
                         for food in foodsToDelete {
                             try await databaseClient.delete(food: food)

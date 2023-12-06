@@ -128,7 +128,7 @@ extension AppDatabase {
 extension AppDatabase {
     /// Saves (inserts or updates) a player. When the method returns, the
     /// player is present in the database, and its id is not nil.
-    func saveFood(_ food: inout GRDBFood) async throws {
+    func saveFood(_ food: inout Food) async throws {
         food = try await dbWriter.write { [food] db in
             try food.saved(db)
         }
@@ -137,14 +137,24 @@ extension AppDatabase {
     /// Delete the specified players
     func deleteFoods(ids: [Int64]) async throws {
         try await dbWriter.write { db in
-            _ = try GRDBFood.deleteAll(db, keys: ids)
+            _ = try Food.deleteAll(db, keys: ids)
         }
     }
     
     /// Delete all players
     func deleteAllFoods() async throws {
         try await dbWriter.write { db in
-            _ = try GRDBFood.deleteAll(db)
+            _ = try Food.deleteAll(db)
         }
+    }
+}
+
+extension Column: Hashable {
+    public static func == (lhs: Column, rhs: Column) -> Bool {
+        lhs.name == rhs.name
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
     }
 }

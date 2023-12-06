@@ -8,6 +8,7 @@
 import XCTest
 import ComposableArchitecture
 import SwiftData
+import GRDB
 @testable import FoodSpec
 
 @MainActor
@@ -21,7 +22,7 @@ final class FoodListReducerTests: XCTestCase {
         )
 
         store.assert { state in
-            state.recentFoodsSortingStrategy = .name
+            state.recentFoodsSortingColumn = Column("name")
             state.recentFoodsSortingOrder = .forward
             state.searchQuery = ""
             state.isSearchFocused = false
@@ -48,7 +49,7 @@ final class FoodListReducerTests: XCTestCase {
 
         await store.send(.onAppear)
         await store.receive(\.updateFromUserDefaults) {
-            $0.recentFoodsSortingStrategy = .energy
+            $0.recentFoodsSortingColumn = Column("energy")
             $0.recentFoodsSortingOrder = .reverse
         }
         await store.receive(\.fetchRecentFoods)
@@ -80,12 +81,12 @@ final class FoodListReducerTests: XCTestCase {
 
         await store.send(.onAppear)
         await store.receive(\.updateFromUserDefaults) {
-            $0.recentFoodsSortingStrategy = .energy
+            $0.recentFoodsSortingColumn = Column("energy")
             $0.recentFoodsSortingOrder = .reverse
         }
         await store.receive(\.fetchRecentFoods)
         await store.receive(\.didFetchRecentFoods) {
-            $0.recentFoods = [food]
+            $0.recentFoods = [.preview]
         }
         XCTAssertNoDifference(store.state.shouldShowRecentSearches, true)
         XCTAssertNoDifference(store.state.shouldShowPrompt, false)
@@ -114,7 +115,7 @@ final class FoodListReducerTests: XCTestCase {
 
         await store.send(.onAppear)
         await store.receive(\.updateFromUserDefaults) {
-            $0.recentFoodsSortingStrategy = .energy
+            $0.recentFoodsSortingColumn = Column("energy")
             $0.recentFoodsSortingOrder = .reverse
         }
         await store.receive(\.fetchRecentFoods)
@@ -130,7 +131,7 @@ final class FoodListReducerTests: XCTestCase {
         let food = Food(foodApiModel: foodApi)
         store.dependencies.foodClient.getFoods = { _ in [foodApi] }
         store.dependencies.databaseClient.insert = {
-            XCTAssertNoDifference($0, food)
+            XCTAssertNoDifference($0, .preview)
         }
         await store.send(.updateSearchQuery("C")) {
             $0.searchQuery = "C"
@@ -143,7 +144,7 @@ final class FoodListReducerTests: XCTestCase {
         }
         XCTAssertEqual(store.state.shouldShowSpinner, true)
         await store.receive(\.didReceiveSearchFoods) {
-            $0.inlineFood = .init(food: food)
+            $0.inlineFood = .init(food: .preview)
             $0.isSearching = false
         }
         XCTAssertEqual(store.state.shouldShowSpinner, false)

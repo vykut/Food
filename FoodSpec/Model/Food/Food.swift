@@ -1,16 +1,16 @@
 //
-//  Item.swift
+//  Food.swift
 //  FoodSpec
 //
-//  Created by Victor Socaciu on 29/11/2023.
+//  Created by Victor Socaciu on 05/12/2023.
 //
 
 import Foundation
-import SwiftData
+import GRDB
 
-@Model 
-final class Food {
-    @Attribute(.unique) var name: String
+struct Food: Codable, Hashable {
+    var id: Int64?
+    var name: String
     var energy: Energy
     var fatTotal: Quantity
     var fatSaturated: Quantity
@@ -21,58 +21,60 @@ final class Food {
     var carbohydrates: Quantity
     var fiber: Quantity
     var sugar: Quantity
+}
 
-    init(
-        name: String,
-        energy: Energy,
-        fatTotal: Quantity,
-        fatSaturated: Quantity,
-        protein: Quantity,
-        sodium: Quantity,
-        potassium: Quantity,
-        cholesterol: Quantity,
-        carbohydrates: Quantity,
-        fiber: Quantity,
-        sugar: Quantity
-    ) {
-        self.name = name
-        self.energy = energy
-        self.fatTotal = fatTotal
-        self.fatSaturated = fatSaturated
-        self.protein = protein
-        self.sodium = sodium
-        self.potassium = potassium
-        self.cholesterol = cholesterol
-        self.carbohydrates = carbohydrates
-        self.fiber = fiber
-        self.sugar = sugar
+extension Food: FetchableRecord, MutablePersistableRecord {
+    mutating func didInsert(_ inserted: InsertionSuccess) {
+        id = inserted.rowID
+    }
+}
+
+extension Energy: DatabaseValueConvertible {
+    var databaseValue: DatabaseValue {
+        self.measurement.converted(to: .kilocalories).value.databaseValue
+    }
+
+    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Energy? {
+        guard let value = Double.fromDatabaseValue(dbValue) else { return nil }
+        return .init(value: value, unit: .kilocalories)
     }
 }
 
 extension Food {
-    enum SortingStrategy: Codable, Hashable, Identifiable, CaseIterable {
+    enum SortingStrategy: String, Codable, Identifiable, Hashable, CaseIterable {
         case name
         case energy
-        case protein
         case carbohydrates
+        case protein
         case fat
 
         var id: Self { self }
 
-        var text: String {
+        var column: Column {
             switch self {
-                case .name: "name"
-                case .energy: "energy"
-                case .protein: "protein"
-                case .carbohydrates: "carbohydrates"
-                case .fat: "fat"
+                case .name: Column(CodingKeys.name)
+                case .energy: Column(CodingKeys.energy)
+                case .carbohydrates: Column(CodingKeys.carbohydrates)
+                case .protein: Column(CodingKeys.protein)
+                case .fat: Column(CodingKeys.fatTotal)
             }
         }
     }
 }
 
+extension Quantity: DatabaseValueConvertible {
+    var databaseValue: DatabaseValue {
+        self.measurement.converted(to: .grams).value.databaseValue
+    }
+
+    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Quantity? {
+        guard let value = Double.fromDatabaseValue(dbValue) else { return nil }
+        return .init(value: value, unit: .grams)
+    }
+}
+
 extension Food {
-    convenience init(foodApiModel: FoodApiModel) {
+    init(foodApiModel: FoodApiModel) {
         self.init(
             name: foodApiModel.name,
             energy: .init(value: foodApiModel.calories, unit: .kilocalories),

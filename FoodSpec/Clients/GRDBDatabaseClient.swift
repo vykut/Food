@@ -11,9 +11,9 @@ import ComposableArchitecture
 
 @DependencyClient
 struct GRDBDatabaseClient {
-    var getRecentFoods: (_ sortedBy: Column, _ order: SortOrder) async throws -> [GRDBFood]
-    var insert: (_ food: GRDBFood) async throws -> GRDBFood
-    var delete: (_ food: GRDBFood) async throws -> Void
+    var getRecentFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) async throws -> [Food]
+    var insert: (_ food: Food) async throws -> Food
+    var delete: (_ food: Food) async throws -> Void
 }
 
 extension GRDBDatabaseClient: DependencyKey {
@@ -21,9 +21,10 @@ extension GRDBDatabaseClient: DependencyKey {
         let db = AppDatabase.shared.dbWriter
         return .init(
             getRecentFoods: { sortedBy, order in
+                let column = sortedBy.column
                 return try await db.read {
-                    try GRDBFood
-                        .order(order == .forward ? sortedBy : sortedBy.desc)
+                    try Food
+                        .order(order == .forward ? column : column.desc)
                         .fetchAll($0)
                 }
             },
