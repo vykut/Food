@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - run: xcode-select --switch /Applications/Xcode_$XCODE_VERSION.app
+      - run: sudo xcode-select --switch /Applications/Xcode_$XCODE_VERSION.app
       - name: Run tests
         run: xcodebuild test \
           -scheme $PROJECT_NAME \
