@@ -45,7 +45,7 @@ struct FoodListReducer {
     enum Action {
         case onAppear
         case updateFromUserDefaults(Food.SortingStrategy?, SortOrder?)
-        case fetchRecentFoods
+        case startObservingRecentFoods
         case didFetchRecentFoods([Food])
         case updateSearchQuery(String)
         case updateSearchFocus(Bool)
@@ -61,6 +61,7 @@ struct FoodListReducer {
 
     enum CancelID {
         case search
+        case recentFoodsObservation
     }
 
     @Dependency(\.databaseClient) private var databaseClient
@@ -76,7 +77,7 @@ struct FoodListReducer {
                         let strategy = userDefaults.recentSearchesSortingStrategy
                         let order = userDefaults.recentSearchesSortingOrder
                         await send(.updateFromUserDefaults(strategy, order))
-                        await send(.fetchRecentFoods)
+                        await send(.startObservingRecentFoods)
                     }
 
                 case .updateFromUserDefaults(let strategy, let order):
@@ -88,11 +89,14 @@ struct FoodListReducer {
                     }
                     return .none
 
-                case .fetchRecentFoods:
-                    return .run { [sortingStrategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
-                        let recentFoods = try await databaseClient.getRecentFoods(sortedBy: sortingStrategy, order: order)
-                        await send(.didFetchRecentFoods(recentFoods))
+                case .startObservingRecentFoods:
+                    return .run { [strategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
+                        let stream = databaseClient.observeFoods(sortedBy: strategy, order: order)
+                        for await foods in stream {
+                            await send(.didFetchRecentFoods(foods), animation: .default)
+                        }
                     }
+                    .cancellable(id: CancelID.recentFoodsObservation, cancelInFlight: true)
 
                 case .didFetchRecentFoods(let foods):
                     state.recentFoods = foods
@@ -133,8 +137,7 @@ struct FoodListReducer {
                         let food = Food(foodApiModel: foods[0])
                         state.inlineFood = .init(food: food)
                         return .run { send in
-                            try await databaseClient.insert(food: food)
-                            await send(.fetchRecentFoods)
+                            _ = try await databaseClient.insert(food: food)
                         }
                     } else {
                         state.searchResults = foods.map { .init(foodApiModel: $0) }
@@ -157,7 +160,6 @@ struct FoodListReducer {
                     state.foodDetails = .init(food: food)
                     return .run { send in
                         _ = try await databaseClient.insert(food: food)
-                        await send(.fetchRecentFoods)
                     }
 
                 case .didDeleteRecentFoods(let indices):
@@ -166,7 +168,6 @@ struct FoodListReducer {
                         for food in foodsToDelete {
                             try await databaseClient.delete(food: food)
                         }
-                        await send(.fetchRecentFoods)
                     }
 
                 case .foodDetails(let foodDetails):
@@ -185,7 +186,7 @@ struct FoodListReducer {
                     return .run { [strategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
                         userDefaults.recentSearchesSortingStrategy = strategy
                         userDefaults.recentSearchesSortingOrder = order
-                        await send(.fetchRecentFoods)
+                        await send(.startObservingRecentFoods)
                     }
             }
         }

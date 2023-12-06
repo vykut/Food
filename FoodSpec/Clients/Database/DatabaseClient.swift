@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 @DependencyClient
 struct DatabaseClient {
+    var observeFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
     var getRecentFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) async throws -> [Food]
     var insert: (_ food: Food) async throws -> Food
     var delete: (_ food: Food) async throws -> Void
@@ -19,13 +20,22 @@ struct DatabaseClient {
 extension DatabaseClient: DependencyKey {
     static var liveValue: DatabaseClient = {
         let db = createAppDatabase()
+        @Sendable func fetchFoods(db: Database, sortedBy column: Column, order: SortOrder) throws -> [Food] {
+            try Food
+                .order(order == .forward ? column : column.desc)
+                .fetchAll(db)
+        }
         return .init(
-            getRecentFoods: { sortedBy, order in
+            observeFoods: { sortedBy, order in
                 let column = sortedBy.column
+                let observation = ValueObservation.tracking {
+                    try fetchFoods(db: $0, sortedBy: sortedBy.column, order: order)
+                }
+                return AsyncStream(observation.values(in: db))
+            },
+            getRecentFoods: { sortedBy, order in
                 return try await db.read {
-                    try Food
-                        .order(order == .forward ? column : column.desc)
-                        .fetchAll($0)
+                    try fetchFoods(db: $0, sortedBy: sortedBy.column, order: order)
                 }
             },
             insert: { food in

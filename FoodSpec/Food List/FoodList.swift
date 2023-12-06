@@ -116,7 +116,7 @@ struct FoodList: View {
     }
 
     private func deleteItems(offsets: IndexSet) {
-        self.store.send(.didDeleteRecentFoods(offsets), animation: .default)
+        self.store.send(.didDeleteRecentFoods(offsets))
     }
 }
 
