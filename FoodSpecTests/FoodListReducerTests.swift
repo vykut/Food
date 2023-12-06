@@ -52,7 +52,6 @@ final class FoodListReducerTests: XCTestCase {
             $0.recentFoodsSortingStrategy = .energy
             $0.recentFoodsSortingOrder = .reverse
         }
-        await store.receive(\.fetchRecentFoods)
         await store.receive(\.didFetchRecentFoods) {
             $0.isSearchFocused = true
         }
@@ -82,7 +81,6 @@ final class FoodListReducerTests: XCTestCase {
             $0.recentFoodsSortingStrategy = .energy
             $0.recentFoodsSortingOrder = .reverse
         }
-        await store.receive(\.fetchRecentFoods)
         await store.receive(\.didFetchRecentFoods) {
             $0.recentFoods = [.preview]
         }
@@ -114,7 +112,6 @@ final class FoodListReducerTests: XCTestCase {
             $0.recentFoodsSortingStrategy = .energy
             $0.recentFoodsSortingOrder = .reverse
         }
-        await store.receive(\.fetchRecentFoods)
         await store.receive(\.didFetchRecentFoods) {
             $0.isSearchFocused = true
         }
@@ -150,9 +147,5 @@ final class FoodListReducerTests: XCTestCase {
             $0.isSearching = false
         }
         XCTAssertEqual(store.state.shouldShowSpinner, false)
-        await store.receive(\.fetchRecentFoods)
-        await store.receive(\.didFetchRecentFoods) {
-            $0.recentFoods = [.preview]
-        }
     }
 }
