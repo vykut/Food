@@ -8,22 +8,25 @@ on:
   workflow_dispatch:
 
 env:
+  RUNNER: macos-13-xl
+  XCODE_VERSION: 15.0.1
   PROJECT_NAME: FoodSpec
   SIMULATOR: iPhone 15 Pro
 
 jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
-    runs-on: macos-latest
+    runs-on: $RUNNER
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - run: xcode-select --switch /Applications/Xcode_$XCODE_VERSION.app
       - name: Run tests
         run: xcodebuild test \
           -scheme $PROJECT_NAME \
           -project $PROJECT_NAME.xcodeproj \
-          -destination 'platform=iOS Simulator,name=$SIMULATOR' \
+          -destination 'platform=iOS Simulator,name=${{ env.SIMULATOR }}' \
           -resultBundlePath TestResults
       - uses: kishikawakatsumi/xcresulttool@v1
         with:
