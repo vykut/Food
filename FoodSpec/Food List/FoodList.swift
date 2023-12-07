@@ -96,7 +96,7 @@ struct FoodList: View {
     private var toolbar: some View {
         Menu("Menu", systemImage: "ellipsis.circle") {
             Picker(
-                "Sort",
+                "Sort by",
                 selection: self.$store.recentFoodsSortingStrategy.sending(\.updateRecentFoodsSortingStrategy)
             ) {
                 ForEach(Food.SortingStrategy.allCases) { strategy in
@@ -113,6 +113,7 @@ struct FoodList: View {
                 }
             }
         }
+        .menuActionDismissBehavior(.disabled)
     }
 
     private func deleteItems(offsets: IndexSet) {
