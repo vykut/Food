@@ -37,6 +37,9 @@ struct FoodList: View {
         .onContinueUserActivity(CSSearchableItemActionType) { activity in
             store.send(.handleSpotlightSelectedFood(activity))
         }
+        .onContinueUserActivity(CSQueryContinuationActionType) { activity in
+            store.send(.handleSpotlightSearchInApp(activity))
+        }
     }
 
     @ViewBuilder

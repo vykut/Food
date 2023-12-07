@@ -3,4 +3,300 @@
    uuid = "3BED79DB-F838-437A-BAC9-6F9BA4C7157A"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "16EC26F9-E5CF-44E7-942F-CF323F2B5861"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FoodSpec/Food List/SpotlightReducer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "reduce(into:action:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "16EC26F9-E5CF-44E7-942F-CF323F2B5861 - 75959eeae2beab72"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "104">
+               </Location>
+               <Location
+                  uuid = "16EC26F9-E5CF-44E7-942F-CF323F2B5861 - b3ecb5b78e12d8c4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  uuid = "16EC26F9-E5CF-44E7-942F-CF323F2B5861 - b2adb02badfeb6c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "76">
+               </Location>
+               <Location
+                  uuid = "16EC26F9-E5CF-44E7-942F-CF323F2B5861 - b2adb02badfeb6c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "268">
+               </Location>
+               <Location
+                  uuid = "16EC26F9-E5CF-44E7-942F-CF323F2B5861 - 2248a7c7c7ad8b69"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  uuid = "16EC26F9-E5CF-44E7-942F-CF323F2B5861 - 2248a7c7c7ad8b69"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "100">
+               </Location>
+               <Location
+                  uuid = "16EC26F9-E5CF-44E7-942F-CF323F2B5861 - b2adb02badfeb6c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "92">
+               </Location>
+               <Location
+                  uuid = "16EC26F9-E5CF-44E7-942F-CF323F2B5861 - b2adb02badfeb6c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "452">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "05CC918F-45A5-4BB9-94D3-872B5B8EA38E"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FoodSpec/Food List/SpotlightReducer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "reduce(into:action:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "05CC918F-45A5-4BB9-94D3-872B5B8EA38E - 599e320cf592e54a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "37"
+                  endingLineNumber = "37"
+                  offsetFromSymbolStart = "1536">
+               </Location>
+               <Location
+                  uuid = "05CC918F-45A5-4BB9-94D3-872B5B8EA38E - b2adb02badfeb83"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "36"
+                  endingLineNumber = "36"
+                  offsetFromSymbolStart = "464">
+               </Location>
+               <Location
+                  uuid = "05CC918F-45A5-4BB9-94D3-872B5B8EA38E - 6c0a7aae6e0c4b80"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "36"
+                  endingLineNumber = "36"
+                  offsetFromSymbolStart = "52">
+               </Location>
+               <Location
+                  uuid = "05CC918F-45A5-4BB9-94D3-872B5B8EA38E - c16b183a127d2b81"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "36"
+                  endingLineNumber = "36"
+                  offsetFromSymbolStart = "68">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BBF03B67-1D2C-4C56-8245-4DDA37C42896"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FoodSpec/Food List/SpotlightReducer.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "reduce(into:action:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BBF03B67-1D2C-4C56-8245-4DDA37C42896 - b2adb02badfeb4d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "280">
+               </Location>
+               <Location
+                  uuid = "BBF03B67-1D2C-4C56-8245-4DDA37C42896 - 6c0a7aae6e0c4b4e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "52">
+               </Location>
+               <Location
+                  uuid = "BBF03B67-1D2C-4C56-8245-4DDA37C42896 - c16b183a127d2b4f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "68">
+               </Location>
+               <Location
+                  uuid = "BBF03B67-1D2C-4C56-8245-4DDA37C42896 - b2adb02badfeb4d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #2 @Sendable (ComposableArchitecture.Send&lt;FoodSpec.FoodListReducer.Action&gt;) async throws -&gt; () in FoodSpec.SpotlightReducer.reduce(into: inout FoodSpec.FoodListReducer.State, action: FoodSpec.FoodListReducer.Action) -&gt; ComposableArchitecture.Effect&lt;FoodSpec.FoodListReducer.Action&gt;"
+                  moduleName = "FoodSpec"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/victorsocaciu/Developer/FoodSpec/FoodSpec/Food%20List/SpotlightReducer.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "216">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

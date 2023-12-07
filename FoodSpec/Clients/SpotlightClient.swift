@@ -26,12 +26,13 @@ extension SpotlightClient: DependencyKey {
                 let attributeSet = CSSearchableItemAttributeSet(contentType: .content)
                 attributeSet.displayName = "\(food.name.capitalized) nutritional values"
                 let searchableItem = CSSearchableItem(
-                    uniqueIdentifier: food.id.map(String.init),
+                    uniqueIdentifier: food.name,
                     domainIdentifier: "foods",
                     attributeSet: attributeSet
                 )
                 searchableItems.append(searchableItem)
             }
+            try await CSSearchableIndex.default().deleteAllSearchableItems()
             try await CSSearchableIndex.default().indexSearchableItems(searchableItems)
         }
     )

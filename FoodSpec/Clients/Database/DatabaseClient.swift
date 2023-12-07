@@ -13,7 +13,7 @@ import ComposableArchitecture
 struct DatabaseClient {
     var observeFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
     var getRecentFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) async throws -> [Food]
-    var getFood: (_ id: Int64) async throws -> Food?
+    var getFood: (_ name: String) async throws -> Food?
     var insert: (_ food: Food) async throws -> Food
     var delete: (_ food: Food) async throws -> Void
 }
@@ -39,9 +39,11 @@ extension DatabaseClient: DependencyKey {
                     try fetchFoods(db: $0, sortedBy: sortedBy.column, order: order)
                 }
             },
-            getFood: { id in
+            getFood: { name in
                 return try await db.read {
-                    try Food.fetchOne($0, key: id)
+                    try Food
+                        .filter(Column("name") == name)
+                        .fetchOne($0)
                 }
             },
             insert: { food in
