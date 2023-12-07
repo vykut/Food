@@ -24,6 +24,8 @@
 		EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2912B1F375100BC8FD5 /* Food.swift */; };
 		EC7DC2952B1F397D00BC8FD5 /* Database+Creation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */; };
 		EC7DC2982B1F669D00BC8FD5 /* DatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */; };
+		EC7F56722B221519005C372B /* SpotlightReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56712B221519005C372B /* SpotlightReducer.swift */; };
+		EC7F56742B221572005C372B /* SpotlightClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56732B221572005C372B /* SpotlightClient.swift */; };
 		EC87FC4E2B21B4BA006B8B28 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = EC87FC4D2B21B4BA006B8B28 /* AsyncAlgorithms */; };
 		EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577AF2B1869760082A0D1 /* FoodDetails.swift */; };
 		EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */; };
@@ -62,6 +64,8 @@
 		EC7DC2912B1F375100BC8FD5 /* Food.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
 		EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Database+Creation.swift"; sourceTree = "<group>"; };
 		EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseClient.swift; sourceTree = "<group>"; };
+		EC7F56712B221519005C372B /* SpotlightReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightReducer.swift; sourceTree = "<group>"; };
+		EC7F56732B221572005C372B /* SpotlightClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightClient.swift; sourceTree = "<group>"; };
 		EC9577AF2B1869760082A0D1 /* FoodDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetails.swift; sourceTree = "<group>"; };
 		EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionalValueCard.swift; sourceTree = "<group>"; };
 		ECA64C222B1DB18E0036EE4F /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
@@ -94,6 +98,7 @@
 			children = (
 				EC43E55B2B175A140007CD40 /* FoodList.swift */,
 				EC27998C2B1B385200D9E4B0 /* FoodListReducer.swift */,
+				EC7F56712B221519005C372B /* SpotlightReducer.swift */,
 				EC4717A52B1C4DD5007B491C /* FoodListRow.swift */,
 			);
 			path = "Food List";
@@ -195,6 +200,7 @@
 				EC2799892B1B304900D9E4B0 /* ApiKeysClient.swift */,
 				ECCA83F52B177A1400C9EF4D /* FoodClient.swift */,
 				EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */,
+				EC7F56732B221572005C372B /* SpotlightClient.swift */,
 			);
 			path = Clients;
 			sourceTree = "<group>";
@@ -322,9 +328,11 @@
 				EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */,
 				EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */,
 				EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */,
+				EC7F56722B221519005C372B /* SpotlightReducer.swift in Sources */,
 				EC7DC2982B1F669D00BC8FD5 /* DatabaseClient.swift in Sources */,
 				EC4717A62B1C4DD5007B491C /* FoodListRow.swift in Sources */,
 				EC4717A42B1B8474007B491C /* Quantity.swift in Sources */,
+				EC7F56742B221572005C372B /* SpotlightClient.swift in Sources */,
 				ECA64C232B1DB18E0036EE4F /* Energy.swift in Sources */,
 				EC27998D2B1B385200D9E4B0 /* FoodListReducer.swift in Sources */,
 				EC27998A2B1B304900D9E4B0 /* ApiKeysClient.swift in Sources */,
