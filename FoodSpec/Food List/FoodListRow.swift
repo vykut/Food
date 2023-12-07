@@ -12,9 +12,8 @@ struct FoodListRow: View {
     let food: Food
 
     var body: some View {
-        HStack {
+        VStack(alignment: .leading, spacing: 8) {
             Text(food.name.capitalized)
-            Spacer()
             HStack {
                 Text(food.energy.formatted(width: .narrow))
                 Text("P: \(food.protein.formatted(width: .narrow))")
