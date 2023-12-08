@@ -24,6 +24,8 @@
 		EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2912B1F375100BC8FD5 /* Food.swift */; };
 		EC7DC2952B1F397D00BC8FD5 /* Database+Creation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */; };
 		EC7DC2982B1F669D00BC8FD5 /* DatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */; };
+		EC7F56782B230D9E005C372B /* EnergyCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56772B230D9E005C372B /* EnergyCalculator.swift */; };
+		EC7F567B2B23136D005C372B /* EnergyBreakdownChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F567A2B23136D005C372B /* EnergyBreakdownChart.swift */; };
 		EC87FC4E2B21B4BA006B8B28 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = EC87FC4D2B21B4BA006B8B28 /* AsyncAlgorithms */; };
 		EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577AF2B1869760082A0D1 /* FoodDetails.swift */; };
 		EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */; };
@@ -62,6 +64,8 @@
 		EC7DC2912B1F375100BC8FD5 /* Food.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
 		EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Database+Creation.swift"; sourceTree = "<group>"; };
 		EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseClient.swift; sourceTree = "<group>"; };
+		EC7F56772B230D9E005C372B /* EnergyCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyCalculator.swift; sourceTree = "<group>"; };
+		EC7F567A2B23136D005C372B /* EnergyBreakdownChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyBreakdownChart.swift; sourceTree = "<group>"; };
 		EC9577AF2B1869760082A0D1 /* FoodDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetails.swift; sourceTree = "<group>"; };
 		EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionalValueCard.swift; sourceTree = "<group>"; };
 		ECA64C222B1DB18E0036EE4F /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
@@ -103,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				EC9577AF2B1869760082A0D1 /* FoodDetails.swift */,
+				EC7F567A2B23136D005C372B /* EnergyBreakdownChart.swift */,
 				EC27998F2B1B390E00D9E4B0 /* FoodDetailsReducer.swift */,
 				EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */,
 			);
@@ -141,6 +146,7 @@
 				EC27998B2B1B382500D9E4B0 /* Food List */,
 				EC4717A12B1B8041007B491C /* Model */,
 				EC43E5612B175A160007CD40 /* Preview Content */,
+				EC7F56792B230DA3005C372B /* Utilities */,
 			);
 			path = FoodSpec;
 			sourceTree = "<group>";
@@ -177,6 +183,14 @@
 				EC7DC2912B1F375100BC8FD5 /* Food.swift */,
 			);
 			path = Food;
+			sourceTree = "<group>";
+		};
+		EC7F56792B230DA3005C372B /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				EC7F56772B230D9E005C372B /* EnergyCalculator.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		EC864F852B207592004FE264 /* Database */ = {
@@ -318,6 +332,7 @@
 				EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */,
 				EC7DC2872B1DC38100BC8FD5 /* UserDefaultsClient.swift in Sources */,
 				EC2799902B1B390E00D9E4B0 /* FoodDetailsReducer.swift in Sources */,
+				EC7F56782B230D9E005C372B /* EnergyCalculator.swift in Sources */,
 				ECCA83F82B177A1400C9EF4D /* FoodClient.swift in Sources */,
 				EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */,
 				EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */,
@@ -328,6 +343,7 @@
 				ECA64C232B1DB18E0036EE4F /* Energy.swift in Sources */,
 				EC27998D2B1B385200D9E4B0 /* FoodListReducer.swift in Sources */,
 				EC27998A2B1B304900D9E4B0 /* ApiKeysClient.swift in Sources */,
+				EC7F567B2B23136D005C372B /* EnergyBreakdownChart.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

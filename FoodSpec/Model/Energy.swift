@@ -90,3 +90,19 @@ extension FormatStyle where Self == EnergyFormat {
         .init(width: width, usage: usage, numberFormatStyle: numberFormatStyle)
     }
 }
+
+extension Energy {
+    public static func + (lhs: Self, rhs: Self) -> Self {
+        .init(
+            value: (lhs.measurement + rhs.measurement.converted(to: lhs.unit.unit)).value,
+            unit: lhs.unit
+        )
+    }
+
+    public static func - (lhs: Self, rhs: Self) -> Self {
+        .init(
+            value: (lhs.measurement - rhs.measurement.converted(to: lhs.unit.unit)).value,
+            unit: rhs.unit
+        )
+    }
+}

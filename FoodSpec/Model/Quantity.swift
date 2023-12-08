@@ -112,3 +112,19 @@ extension FormatStyle where Self == QuantityFormat {
         .init(width: width, usage: usage, numberFormatStyle: numberFormatStyle)
     }
 }
+
+extension Quantity {
+    public static func + (lhs: Self, rhs: Self) -> Self {
+        .init(
+            value: (lhs.measurement + rhs.measurement.converted(to: lhs.unit.unit)).value,
+            unit: lhs.unit
+        )
+    }
+
+    public static func - (lhs: Self, rhs: Self) -> Self {
+        .init(
+            value: (lhs.measurement - rhs.measurement.converted(to: lhs.unit.unit)).value,
+            unit: rhs.unit
+        )
+    }
+}
