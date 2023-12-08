@@ -63,6 +63,15 @@ struct Quantity: Codable, Hashable {
     }
 }
 
+extension Quantity {
+    static var zero: Self { .init(value: 0, unit: .grams) }
+
+    init(grams: Double) {
+        self.init(value: grams, unit: .grams)
+    }
+}
+
+
 extension Quantity: Comparable {
     static func < (lhs: Quantity, rhs: Quantity) -> Bool {
         lhs.measurement < rhs.measurement

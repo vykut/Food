@@ -8,7 +8,7 @@
 import Foundation
 
 struct EnergyCalculator {
-    struct EnergyBreakdown {
+    struct EnergyBreakdown: Hashable {
         let protein: Energy
         let carbohydrates: Energy
         let fat: Energy
