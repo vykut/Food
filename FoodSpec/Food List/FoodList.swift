@@ -83,6 +83,9 @@ struct FoodList: View {
             .onDelete(perform: deleteItems)
         } header: {
             Text("Recent Searches")
+        } footer: {
+            Text("Values per \(Quantity(grams: 100).formatted(width: .wide))")
+                .font(.footnote)
         }
     }
 
@@ -134,6 +137,13 @@ struct FoodList: View {
             initialState: FoodListReducer.State(),
             reducer: {
                 FoodListReducer()
+                    .transformDependency(\.databaseClient) {
+                        $0.observeFoods = { _, _ in
+                            .init {
+                                $0.yield([.preview, .preview, .preview])
+                            }
+                        }
+                    }
                     ._printChanges()
             }
         )

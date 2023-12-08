@@ -21,6 +21,15 @@ struct Food: Codable, Hashable {
     var carbohydrates: Quantity
     var fiber: Quantity
     var sugar: Quantity
+
+    var nutritionalSummary: String {
+        """
+\(energy.formatted(width: .narrow)) | \
+P: \(protein.formatted(width: .narrow)) | \
+C: \(carbohydrates.formatted(width: .narrow)) | \
+F: \(fatTotal.formatted(width: .narrow))
+"""
+    }
 }
 
 extension Food: FetchableRecord, MutablePersistableRecord {

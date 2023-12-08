@@ -14,12 +14,7 @@ struct FoodListRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(food.name.capitalized)
-            HStack {
-                Text(food.energy.formatted(width: .narrow))
-                Text("P: \(food.protein.formatted(width: .narrow))")
-                Text("C: \(food.carbohydrates.formatted(width: .narrow))")
-                Text("F: \(food.fatTotal.formatted(width: .narrow))")
-            }
+            Text(food.nutritionalSummary)
             .font(.footnote)
             .foregroundStyle(.secondary)
         }

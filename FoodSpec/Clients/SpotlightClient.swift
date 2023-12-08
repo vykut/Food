@@ -26,12 +26,7 @@ extension SpotlightClient: DependencyKey {
                 let attributeSet = CSSearchableItemAttributeSet(contentType: .content)
                 attributeSet.displayName = food.name.capitalized
                 attributeSet.title = "\(food.name.capitalized) nutritional values"
-                attributeSet.contentDescription = """
-E: \(food.energy.formatted(width: .narrow)) | \
-P: \(food.protein.formatted(width: .narrow)) | \
-C: \(food.carbohydrates.formatted(width: .narrow)) | \
-F: \(food.fatTotal.formatted(width: .narrow))
-"""
+                attributeSet.contentDescription = food.nutritionalSummary
                 let searchableItem = CSSearchableItem(
                     uniqueIdentifier: food.name,
                     domainIdentifier: "foods",
