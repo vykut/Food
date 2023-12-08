@@ -35,10 +35,10 @@ struct FoodList: View {
             self.store.send(.onAppear)
         }
         .onContinueUserActivity(CSSearchableItemActionType) { activity in
-            store.send(.handleSpotlightSelectedFood(activity))
+            store.send(.spotlight(.handleSelectedFood(activity)))
         }
         .onContinueUserActivity(CSQueryContinuationActionType) { activity in
-            store.send(.handleSpotlightSearchInApp(activity))
+            store.send(.spotlight(.handleSearchInApp(activity)))
         }
     }
 

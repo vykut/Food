@@ -27,20 +27,21 @@ struct SpotlightReducer {
                         dump(error)
                     }
                 }
-            case .handleSpotlightSelectedFood(let activity):
+            case .spotlight(.handleSelectedFood(let activity)):
                 guard let foodName = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return .none }
                 return .run { send in
-                    guard let food = try await databaseClient.getFood(name: foodName) else {
-                        return print("asd")
-                    }
+                    guard let food = try await databaseClient.getFood(name: foodName) else { return }
                     await send(.didSelectRecentFood(food))
                 }
 
-            case .handleSpotlightSearchInApp(let activity):
+            case .spotlight(.handleSearchInApp(let activity)):
                 guard let searchString = activity.userInfo?[CSSearchQueryString] as? String else { return .none }
-                return .run { [foodDetails = state.foodDetails] send in
+                return .run { [foodDetails = state.foodDetails, isSearchFocused = state.isSearchFocused] send in
                     if foodDetails != nil {
                         await send(.foodDetails(.dismiss))
+                    }
+                    if !isSearchFocused {
+                        await send(.updateSearchFocus(true))
                     }
                     await send(.updateSearchQuery(searchString))
                 }
