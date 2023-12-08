@@ -10,11 +10,12 @@ import ComposableArchitecture
 import SwiftData
 import GRDB
 import AsyncAlgorithms
+import CoreSpotlight
 @testable import FoodSpec
 
 @MainActor
 final class FoodListReducerTests: XCTestCase {
-    func testDefault() async throws {
+    func testStateDefaultInitializer() async throws {
         let store = TestStore(
             initialState: FoodListReducer.State(),
             reducer: {
@@ -42,6 +43,9 @@ final class FoodListReducerTests: XCTestCase {
             }
         )
         let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
+        store.dependencies.spotlightClient.indexFoods = {
+            XCTAssertNoDifference($0, [])
+        }
         store.dependencies.databaseClient.observeFoods = { sortedBy, order in
             XCTAssertEqual(sortedBy, .energy)
             XCTAssertEqual(order, .reverse)
@@ -77,6 +81,9 @@ final class FoodListReducerTests: XCTestCase {
                 FoodListReducer()
             }
         )
+        store.dependencies.spotlightClient.indexFoods = {
+            XCTAssertNoDifference($0, [food])
+        }
         let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.databaseClient.observeFoods = { sortedBy, order in
             XCTAssertEqual(sortedBy, .energy)
@@ -122,6 +129,9 @@ final class FoodListReducerTests: XCTestCase {
                 $0.mainQueue = .immediate
             }
         )
+        store.dependencies.spotlightClient.indexFoods = {
+            XCTAssertNoDifference($0, [])
+        }
         var (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.databaseClient.observeFoods = { sortedBy, order in
             XCTAssertEqual(sortedBy, .energy)
@@ -147,6 +157,9 @@ final class FoodListReducerTests: XCTestCase {
         XCTAssertNoDifference(store.state.shouldShowSpinner, false)
         XCTAssertNoDifference(store.state.shouldShowSearchResults, false)
 
+        store.dependencies.spotlightClient.indexFoods = {
+            XCTAssertNoDifference($0, [eggplant])
+        }
         store.dependencies.foodClient.getFoods = { _ in [eggplantApi] }
         store.dependencies.databaseClient.insert = {
             XCTAssertNoDifference($0, .preview)
@@ -186,6 +199,9 @@ final class FoodListReducerTests: XCTestCase {
         await store.send(.updateSearchQuery("Rib"))
         await store.send(.updateSearchQuery("Ribe"))
         await store.send(.updateSearchQuery("Ribey"))
+        store.dependencies.spotlightClient.indexFoods = {
+            XCTAssertNoDifference($0, [ribeye, eggplant])
+        }
         store.dependencies.foodClient.getFoods = { _ in [ribeyeApi] }
         store.dependencies.databaseClient.insert = {
             XCTAssertEqual($0, ribeye)
@@ -207,6 +223,9 @@ final class FoodListReducerTests: XCTestCase {
             $0.recentFoods = [ribeye, eggplant]
         }
 
+        store.dependencies.spotlightClient.indexFoods = {
+            XCTAssertNoDifference($0, [eggplant, ribeye])
+        }
         store.dependencies.userDefaults.set = { _, _ in }
         (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.databaseClient.observeFoods = { sortedBy, order in
@@ -224,6 +243,9 @@ final class FoodListReducerTests: XCTestCase {
             $0.recentFoods = [eggplant, ribeye]
         }
 
+        store.dependencies.spotlightClient.indexFoods = {
+            XCTAssertNoDifference($0, [ribeye, eggplant])
+        }
         (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.databaseClient.observeFoods = { sortedBy, order in
             XCTAssertEqual(sortedBy, .carbohydrates)
@@ -240,6 +262,9 @@ final class FoodListReducerTests: XCTestCase {
             $0.recentFoods = [ribeye, eggplant]
         }
 
+        store.dependencies.spotlightClient.indexFoods = {
+            XCTAssertNoDifference($0, [eggplant])
+        }
         store.dependencies.databaseClient.delete = {
             XCTAssertNoDifference($0, ribeye)
         }
@@ -333,9 +358,69 @@ final class FoodListReducerTests: XCTestCase {
             $0.inlineFood = nil
         }
     }
+
+    func testIntegrationWithSpotlight_foodSelection() async throws {
+        let eggplant = Food.eggplant
+        let store = TestStore(
+            initialState: FoodListReducer.State(),
+            reducer: {
+                FoodListReducer()
+            }
+        )
+        store.dependencies.databaseClient.getFood = {
+            XCTAssertNoDifference($0, eggplant.name)
+            return eggplant
+        }
+        let activity = NSUserActivity(activityType: "mock")
+        activity.userInfo?[CSSearchableItemActivityIdentifier] = eggplant.name
+        await store.send(.spotlight(.handleSelectedFood(activity)))
+        await store.receive(\.didSelectRecentFood) {
+            $0.foodDetails = .init(food: eggplant)
+        }
+    }
+
+    func testIntegrationWithSpotlight_search() async throws {
+        let eggplant = Food.eggplant
+        let store = TestStore(
+            initialState: FoodListReducer.State(
+                foodDetails: .init(food: eggplant)
+            ),
+            reducer: {
+                FoodListReducer()
+            }
+        )
+        store.dependencies.mainQueue = .immediate
+        store.dependencies.foodClient.getFoods = {
+            XCTAssertNoDifference($0, eggplant.name)
+            return [.eggplant]
+        }
+        store.dependencies.databaseClient.insert = {
+            XCTAssertNoDifference($0, eggplant)
+            return eggplant
+        }
+        let activity = NSUserActivity(activityType: "mock")
+        activity.userInfo?[CSSearchQueryString] = eggplant.name
+        await store.send(.spotlight(.handleSearchInApp(activity)))
+        await store.receive(\.foodDetails.dismiss) {
+            $0.foodDetails = nil
+        }
+        await store.receive(\.updateSearchFocus) {
+            $0.isSearchFocused = true
+        }
+        await store.receive(\.updateSearchQuery) {
+            $0.searchQuery = eggplant.name
+        }
+        await store.receive(\.startSearching) {
+            $0.isSearching = true
+        }
+        await store.receive(\.didReceiveSearchFoods) {
+            $0.inlineFood = .init(food: eggplant)
+            $0.isSearching = false
+        }
+    }
 }
 
-fileprivate extension FoodApiModel {
+extension FoodApiModel {
     static let eggplant = FoodApiModel(
         name: "eggplant",
         calories: 34.7,
@@ -367,7 +452,7 @@ fileprivate extension FoodApiModel {
     )
 }
 
-fileprivate extension Food {
+extension Food {
     static var eggplant: Self {
         .init(foodApiModel: .eggplant)
     }

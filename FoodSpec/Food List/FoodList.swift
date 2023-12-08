@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import ComposableArchitecture
+import CoreSpotlight
 
 struct FoodList: View {
     @Bindable var store: StoreOf<FoodListReducer>
@@ -32,6 +33,12 @@ struct FoodList: View {
         }
         .onAppear {
             self.store.send(.onAppear)
+        }
+        .onContinueUserActivity(CSSearchableItemActionType) { activity in
+            store.send(.spotlight(.handleSelectedFood(activity)))
+        }
+        .onContinueUserActivity(CSQueryContinuationActionType) { activity in
+            store.send(.spotlight(.handleSearchInApp(activity)))
         }
     }
 
