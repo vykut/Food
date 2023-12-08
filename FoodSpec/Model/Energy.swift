@@ -41,6 +41,14 @@ struct Energy: Codable, Hashable {
     }
 }
 
+extension Energy {
+    static var zero: Self { .init(value: 0, unit: .kilocalories) }
+
+    init(kcal: Double) {
+        self.init(value: kcal, unit: .kilocalories)
+    }
+}
+
 extension Energy: Comparable {
     static func < (lhs: Energy, rhs: Energy) -> Bool {
         lhs.measurement < rhs.measurement
@@ -88,5 +96,21 @@ extension FormatStyle where Self == EnergyFormat {
         numberFormatStyle: FloatingPointFormatStyle<Double>? = nil
     ) -> Self {
         .init(width: width, usage: usage, numberFormatStyle: numberFormatStyle)
+    }
+}
+
+extension Energy {
+    public static func + (lhs: Self, rhs: Self) -> Self {
+        .init(
+            value: (lhs.measurement + rhs.measurement.converted(to: lhs.unit.unit)).value,
+            unit: lhs.unit
+        )
+    }
+
+    public static func - (lhs: Self, rhs: Self) -> Self {
+        .init(
+            value: (lhs.measurement - rhs.measurement.converted(to: lhs.unit.unit)).value,
+            unit: rhs.unit
+        )
     }
 }

@@ -63,6 +63,15 @@ struct Quantity: Codable, Hashable {
     }
 }
 
+extension Quantity {
+    static var zero: Self { .init(value: 0, unit: .grams) }
+
+    init(grams: Double) {
+        self.init(value: grams, unit: .grams)
+    }
+}
+
+
 extension Quantity: Comparable {
     static func < (lhs: Quantity, rhs: Quantity) -> Bool {
         lhs.measurement < rhs.measurement
@@ -110,5 +119,21 @@ extension FormatStyle where Self == QuantityFormat {
         numberFormatStyle: FloatingPointFormatStyle<Double>? = nil
     ) -> Self {
         .init(width: width, usage: usage, numberFormatStyle: numberFormatStyle)
+    }
+}
+
+extension Quantity {
+    public static func + (lhs: Self, rhs: Self) -> Self {
+        .init(
+            value: (lhs.measurement + rhs.measurement.converted(to: lhs.unit.unit)).value,
+            unit: lhs.unit
+        )
+    }
+
+    public static func - (lhs: Self, rhs: Self) -> Self {
+        .init(
+            value: (lhs.measurement - rhs.measurement.converted(to: lhs.unit.unit)).value,
+            unit: rhs.unit
+        )
     }
 }
