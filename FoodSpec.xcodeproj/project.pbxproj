@@ -106,8 +106,8 @@
 			children = (
 				EC43E55B2B175A140007CD40 /* FoodList.swift */,
 				EC27998C2B1B385200D9E4B0 /* FoodListReducer.swift */,
-				EC7F56712B221519005C372B /* SpotlightReducer.swift */,
 				EC4717A52B1C4DD5007B491C /* FoodListRow.swift */,
+				EC7F56712B221519005C372B /* SpotlightReducer.swift */,
 			);
 			path = "Food List";
 			sourceTree = "<group>";
@@ -115,8 +115,8 @@
 		EC27998E2B1B38EC00D9E4B0 /* Food Details */ = {
 			isa = PBXGroup;
 			children = (
-				EC9577AF2B1869760082A0D1 /* FoodDetails.swift */,
 				EC7F567A2B23136D005C372B /* EnergyBreakdownChart.swift */,
+				EC9577AF2B1869760082A0D1 /* FoodDetails.swift */,
 				EC27998F2B1B390E00D9E4B0 /* FoodDetailsReducer.swift */,
 				EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */,
 			);
@@ -171,9 +171,9 @@
 		EC43E56D2B175A160007CD40 /* FoodSpecTests */ = {
 			isa = PBXGroup;
 			children = (
+				EC7F567C2B237036005C372B /* EnergyCalculatorTests.swift */,
 				EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */,
 				EC7F56752B2303DB005C372B /* SpotlightReducerTests.swift */,
-				EC7F567C2B237036005C372B /* EnergyCalculatorTests.swift */,
 			);
 			path = FoodSpecTests;
 			sourceTree = "<group>";
@@ -181,9 +181,9 @@
 		EC4717A12B1B8041007B491C /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				EC4717A22B1B804B007B491C /* Food */,
-				EC4717A32B1B8474007B491C /* Quantity.swift */,
 				ECA64C222B1DB18E0036EE4F /* Energy.swift */,
+				EC4717A32B1B8474007B491C /* Quantity.swift */,
+				EC4717A22B1B804B007B491C /* Food */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -216,11 +216,11 @@
 		ECA64C212B1C53380036EE4F /* Clients */ = {
 			isa = PBXGroup;
 			children = (
-				EC864F852B207592004FE264 /* Database */,
 				EC2799892B1B304900D9E4B0 /* ApiKeysClient.swift */,
 				ECCA83F52B177A1400C9EF4D /* FoodClient.swift */,
-				EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */,
 				EC7F56732B221572005C372B /* SpotlightClient.swift */,
+				EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */,
+				EC864F852B207592004FE264 /* Database */,
 			);
 			path = Clients;
 			sourceTree = "<group>";
