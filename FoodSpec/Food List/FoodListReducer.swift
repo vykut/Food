@@ -57,6 +57,13 @@ struct FoodListReducer {
         case foodDetails(PresentationAction<FoodDetailsReducer.Action>)
         case inlineFood(FoodDetailsReducer.Action)
         case updateRecentFoodsSortingStrategy(Food.SortingStrategy)
+        case spotlight(Spotlight)
+
+        @CasePathable
+        enum Spotlight {
+            case handleSelectedFood(NSUserActivity)
+            case handleSearchInApp(NSUserActivity)
+        }
     }
 
     enum CancelID {
@@ -188,11 +195,16 @@ struct FoodListReducer {
                         userDefaults.recentSearchesSortingOrder = order
                         await send(.startObservingRecentFoods)
                     }
+
+                case .spotlight:
+                    // handled in SpotlightReducer
+                    return .none
             }
         }
         .ifLet(\.$foodDetails, action: \.foodDetails) {
             FoodDetailsReducer()
         }
+        SpotlightReducer()
     }
 }
 
