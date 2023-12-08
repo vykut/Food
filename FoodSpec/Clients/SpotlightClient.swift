@@ -43,6 +43,8 @@ F: \(food.fatTotal.formatted(width: .narrow))
             try await CSSearchableIndex.default().indexSearchableItems(searchableItems)
         }
     )
+
+    static let testValue: SpotlightClient = .init()
 }
 
 extension DependencyValues {

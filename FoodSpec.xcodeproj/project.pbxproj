@@ -26,6 +26,7 @@
 		EC7DC2982B1F669D00BC8FD5 /* DatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */; };
 		EC7F56722B221519005C372B /* SpotlightReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56712B221519005C372B /* SpotlightReducer.swift */; };
 		EC7F56742B221572005C372B /* SpotlightClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56732B221572005C372B /* SpotlightClient.swift */; };
+		EC7F56762B2303DB005C372B /* SpotlightReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56752B2303DB005C372B /* SpotlightReducerTests.swift */; };
 		EC87FC4E2B21B4BA006B8B28 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = EC87FC4D2B21B4BA006B8B28 /* AsyncAlgorithms */; };
 		EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577AF2B1869760082A0D1 /* FoodDetails.swift */; };
 		EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */; };
@@ -66,6 +67,7 @@
 		EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseClient.swift; sourceTree = "<group>"; };
 		EC7F56712B221519005C372B /* SpotlightReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightReducer.swift; sourceTree = "<group>"; };
 		EC7F56732B221572005C372B /* SpotlightClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightClient.swift; sourceTree = "<group>"; };
+		EC7F56752B2303DB005C372B /* SpotlightReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightReducerTests.swift; sourceTree = "<group>"; };
 		EC9577AF2B1869760082A0D1 /* FoodDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetails.swift; sourceTree = "<group>"; };
 		EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionalValueCard.swift; sourceTree = "<group>"; };
 		ECA64C222B1DB18E0036EE4F /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */,
+				EC7F56752B2303DB005C372B /* SpotlightReducerTests.swift */,
 			);
 			path = FoodSpecTests;
 			sourceTree = "<group>";
@@ -344,6 +347,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC7DC2892B1DF22900BC8FD5 /* FoodListReducerTests.swift in Sources */,
+				EC7F56762B2303DB005C372B /* SpotlightReducerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
