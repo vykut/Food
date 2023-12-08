@@ -4,4 +4,4 @@ The foods are fetched from a remote API.
 
 | Food List | Food Details | Spotlight Indexing |
 | ------------- | ------------- | ------------- |
-| ![Food List](https://github.com/vykut/FoodDB/assets/29523833/a05185e2-5499-482a-a094-8fde3e561d1f) | ![Food Details](https://github.com/vykut/FoodDB/assets/29523833/4c7c75a4-63ff-4390-bc6e-d9686bfd8332) | ![Spotlight Indexing](https://github.com/vykut/FoodDB/assets/29523833/88c9dfb7-df11-4d75-802c-3831af5aeef3) |
+| ![Food List](https://github.com/vykut/FoodDB/assets/29523833/a05185e2-5499-482a-a094-8fde3e561d1f) | ![Food Details](https://github.com/vykut/FoodDB/assets/29523833/4962c848-0f8d-4087-b642-a46cafa1463b) | ![Spotlight Indexing](https://github.com/vykut/FoodDB/assets/29523833/88c9dfb7-df11-4d75-802c-3831af5aeef3) |
