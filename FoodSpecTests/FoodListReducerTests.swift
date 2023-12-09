@@ -348,6 +348,11 @@ final class FoodListReducerTests: XCTestCase {
             $0.shouldShowNoResults = true
             $0.isSearching = false
         }
+        await store.receive(\.showGenericAlert) {
+            $0.alert = .init {
+                TextState("Something went wrong. Please try again later.")
+            }
+        }
     }
 
     func testSearchBarFocus() async throws {
@@ -373,6 +378,29 @@ final class FoodListReducerTests: XCTestCase {
         await store.send(.updateSearchFocus(false)) {
             $0.isSearchFocused = false
             $0.inlineFood = nil
+        }
+    }
+
+    func testDeletion_error() async throws {
+        let store = TestStore(
+            initialState: FoodListReducer.State(
+                recentFoods: [.preview]
+            ),
+            reducer: {
+                FoodListReducer()
+            },
+            withDependencies: {
+                $0.databaseClient.delete = { _ in
+                    struct Failure: Error { }
+                    throw Failure()
+                }
+            }
+        )
+        await store.send(.didDeleteRecentFoods(.init(integer: 0)))
+        await store.receive(\.showGenericAlert) {
+            $0.alert = .init {
+                TextState("Something went wrong. Please try again later.")
+            }
         }
     }
 

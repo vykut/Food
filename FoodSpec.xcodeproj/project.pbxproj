@@ -112,11 +112,11 @@
 		EC27998B2B1B382500D9E4B0 /* Food List */ = {
 			isa = PBXGroup;
 			children = (
+				EC7F56832B24638B005C372B /* BillboardReducer.swift */,
 				EC43E55B2B175A140007CD40 /* FoodList.swift */,
 				EC27998C2B1B385200D9E4B0 /* FoodListReducer.swift */,
 				EC4717A52B1C4DD5007B491C /* FoodListRow.swift */,
 				EC7F56712B221519005C372B /* SpotlightReducer.swift */,
-				EC7F56832B24638B005C372B /* BillboardReducer.swift */,
 			);
 			path = "Food List";
 			sourceTree = "<group>";
@@ -227,10 +227,10 @@
 			isa = PBXGroup;
 			children = (
 				EC2799892B1B304900D9E4B0 /* ApiKeysClient.swift */,
+				EC7F56812B2397B3005C372B /* BillboardClient.swift */,
 				ECCA83F52B177A1400C9EF4D /* FoodClient.swift */,
 				EC7F56732B221572005C372B /* SpotlightClient.swift */,
 				EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */,
-				EC7F56812B2397B3005C372B /* BillboardClient.swift */,
 				EC864F852B207592004FE264 /* Database */,
 			);
 			path = Clients;
