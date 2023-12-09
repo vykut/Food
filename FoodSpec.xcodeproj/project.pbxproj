@@ -30,6 +30,10 @@
 		EC7F56782B230D9E005C372B /* EnergyCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56772B230D9E005C372B /* EnergyCalculator.swift */; };
 		EC7F567B2B23136D005C372B /* EnergyBreakdownChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F567A2B23136D005C372B /* EnergyBreakdownChart.swift */; };
 		EC7F567D2B237036005C372B /* EnergyCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F567C2B237036005C372B /* EnergyCalculatorTests.swift */; };
+		EC7F56802B2395E7005C372B /* Billboard in Frameworks */ = {isa = PBXBuildFile; productRef = EC7F567F2B2395E7005C372B /* Billboard */; };
+		EC7F56822B2397B3005C372B /* BillboardClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56812B2397B3005C372B /* BillboardClient.swift */; };
+		EC7F56842B24638B005C372B /* BillboardReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56832B24638B005C372B /* BillboardReducer.swift */; };
+		EC7F56862B2466F6005C372B /* BillboardReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56852B2466F6005C372B /* BillboardReducerTests.swift */; };
 		EC87FC4E2B21B4BA006B8B28 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = EC87FC4D2B21B4BA006B8B28 /* AsyncAlgorithms */; };
 		EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577AF2B1869760082A0D1 /* FoodDetails.swift */; };
 		EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */; };
@@ -74,6 +78,9 @@
 		EC7F56772B230D9E005C372B /* EnergyCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyCalculator.swift; sourceTree = "<group>"; };
 		EC7F567A2B23136D005C372B /* EnergyBreakdownChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyBreakdownChart.swift; sourceTree = "<group>"; };
 		EC7F567C2B237036005C372B /* EnergyCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyCalculatorTests.swift; sourceTree = "<group>"; };
+		EC7F56812B2397B3005C372B /* BillboardClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillboardClient.swift; sourceTree = "<group>"; };
+		EC7F56832B24638B005C372B /* BillboardReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillboardReducer.swift; sourceTree = "<group>"; };
+		EC7F56852B2466F6005C372B /* BillboardReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillboardReducerTests.swift; sourceTree = "<group>"; };
 		EC9577AF2B1869760082A0D1 /* FoodDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetails.swift; sourceTree = "<group>"; };
 		EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionalValueCard.swift; sourceTree = "<group>"; };
 		ECA64C222B1DB18E0036EE4F /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
@@ -85,6 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC7F56802B2395E7005C372B /* Billboard in Frameworks */,
 				EC2799862B19ECE900D9E4B0 /* ComposableArchitecture in Frameworks */,
 				EC7DC28D2B1F32C400BC8FD5 /* GRDB in Frameworks */,
 				EC87FC4E2B21B4BA006B8B28 /* AsyncAlgorithms in Frameworks */,
@@ -104,6 +112,7 @@
 		EC27998B2B1B382500D9E4B0 /* Food List */ = {
 			isa = PBXGroup;
 			children = (
+				EC7F56832B24638B005C372B /* BillboardReducer.swift */,
 				EC43E55B2B175A140007CD40 /* FoodList.swift */,
 				EC27998C2B1B385200D9E4B0 /* FoodListReducer.swift */,
 				EC4717A52B1C4DD5007B491C /* FoodListRow.swift */,
@@ -173,6 +182,7 @@
 			children = (
 				EC7F567C2B237036005C372B /* EnergyCalculatorTests.swift */,
 				EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */,
+				EC7F56852B2466F6005C372B /* BillboardReducerTests.swift */,
 				EC7F56752B2303DB005C372B /* SpotlightReducerTests.swift */,
 			);
 			path = FoodSpecTests;
@@ -217,6 +227,7 @@
 			isa = PBXGroup;
 			children = (
 				EC2799892B1B304900D9E4B0 /* ApiKeysClient.swift */,
+				EC7F56812B2397B3005C372B /* BillboardClient.swift */,
 				ECCA83F52B177A1400C9EF4D /* FoodClient.swift */,
 				EC7F56732B221572005C372B /* SpotlightClient.swift */,
 				EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */,
@@ -245,6 +256,7 @@
 				EC2799852B19ECE900D9E4B0 /* ComposableArchitecture */,
 				EC7DC28C2B1F32C400BC8FD5 /* GRDB */,
 				EC87FC4D2B21B4BA006B8B28 /* AsyncAlgorithms */,
+				EC7F567F2B2395E7005C372B /* Billboard */,
 			);
 			productName = FoodSpec;
 			productReference = EC43E5562B175A140007CD40 /* FoodSpec.app */;
@@ -303,6 +315,7 @@
 				EC2799842B19ECE900D9E4B0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				EC7DC28B2B1F32C400BC8FD5 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				EC87FC4C2B21B4BA006B8B28 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
+				EC7F567E2B2395E7005C372B /* XCRemoteSwiftPackageReference "Billboard" */,
 			);
 			productRefGroup = EC43E5572B175A140007CD40 /* Products */;
 			projectDirPath = "";
@@ -341,6 +354,7 @@
 			files = (
 				EC43E55C2B175A140007CD40 /* FoodList.swift in Sources */,
 				EC7DC2952B1F397D00BC8FD5 /* Database+Creation.swift in Sources */,
+				EC7F56822B2397B3005C372B /* BillboardClient.swift in Sources */,
 				EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */,
 				EC7DC2872B1DC38100BC8FD5 /* UserDefaultsClient.swift in Sources */,
 				EC2799902B1B390E00D9E4B0 /* FoodDetailsReducer.swift in Sources */,
@@ -350,6 +364,7 @@
 				EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */,
 				EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */,
 				EC7F56722B221519005C372B /* SpotlightReducer.swift in Sources */,
+				EC7F56842B24638B005C372B /* BillboardReducer.swift in Sources */,
 				EC7DC2982B1F669D00BC8FD5 /* DatabaseClient.swift in Sources */,
 				EC4717A62B1C4DD5007B491C /* FoodListRow.swift in Sources */,
 				EC4717A42B1B8474007B491C /* Quantity.swift in Sources */,
@@ -367,6 +382,7 @@
 			files = (
 				EC7DC2892B1DF22900BC8FD5 /* FoodListReducerTests.swift in Sources */,
 				EC7F56762B2303DB005C372B /* SpotlightReducerTests.swift in Sources */,
+				EC7F56862B2466F6005C372B /* BillboardReducerTests.swift in Sources */,
 				EC7F567D2B237036005C372B /* EnergyCalculatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -656,6 +672,14 @@
 				minimumVersion = 6.23.0;
 			};
 		};
+		EC7F567E2B2395E7005C372B /* XCRemoteSwiftPackageReference "Billboard" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hiddevdploeg/Billboard";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.2;
+			};
+		};
 		EC87FC4C2B21B4BA006B8B28 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
@@ -676,6 +700,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EC7DC28B2B1F32C400BC8FD5 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
+		};
+		EC7F567F2B2395E7005C372B /* Billboard */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC7F567E2B2395E7005C372B /* XCRemoteSwiftPackageReference "Billboard" */;
+			productName = Billboard;
 		};
 		EC87FC4D2B21B4BA006B8B28 /* AsyncAlgorithms */ = {
 			isa = XCSwiftPackageProductDependency;

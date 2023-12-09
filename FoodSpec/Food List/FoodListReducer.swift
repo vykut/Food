@@ -12,7 +12,7 @@ import ComposableArchitecture
 @Reducer
 struct FoodListReducer {
     @ObservableState
-    struct State: Hashable {
+    struct State: Equatable {
         var recentFoods: [Food] = []
         var recentFoodsSortingStrategy: Food.SortingStrategy = .name
         var recentFoodsSortingOrder: SortOrder = .forward
@@ -22,7 +22,9 @@ struct FoodListReducer {
         var searchResults: [Food] = []
         var shouldShowNoResults: Bool = false
         var inlineFood: FoodDetailsReducer.State?
+        var billboard: Billboard = .init()
         @Presents var foodDetails: FoodDetailsReducer.State?
+        @Presents var alert: AlertState<Action.Alert>?
 
         var shouldShowRecentSearches: Bool {
             searchQuery.isEmpty && !recentFoods.isEmpty
@@ -57,12 +59,14 @@ struct FoodListReducer {
         case foodDetails(PresentationAction<FoodDetailsReducer.Action>)
         case inlineFood(FoodDetailsReducer.Action)
         case updateRecentFoodsSortingStrategy(Food.SortingStrategy)
+        case billboard(Billboard)
         case spotlight(Spotlight)
+        case showGenericAlert
+        case alert(PresentationAction<Alert>)
 
         @CasePathable
-        enum Spotlight {
-            case handleSelectedFood(NSUserActivity)
-            case handleSearchInApp(NSUserActivity)
+        enum Alert: Equatable {
+            case showGenericAlert
         }
     }
 
@@ -128,6 +132,7 @@ struct FoodListReducer {
                             await send(.didReceiveSearchFoods(foods))
                         } catch: { error, send in
                             await send(.didReceiveSearchFoods([]))
+                            await send(.showGenericAlert)
                         }
                         .debounce(id: CancelID.search, for: .milliseconds(300), scheduler: mainQueue)
                     }
@@ -175,6 +180,8 @@ struct FoodListReducer {
                         for food in foodsToDelete {
                             try await databaseClient.delete(food: food)
                         }
+                    } catch: { error, send in
+                        await send(.showGenericAlert)
                     }
 
                 case .foodDetails(let foodDetails):
@@ -196,15 +203,30 @@ struct FoodListReducer {
                         await send(.startObservingRecentFoods)
                     }
 
+                case .showGenericAlert:
+                    state.alert =  .init {
+                        TextState("Something went wrong. Please try again later.")
+                    }
+                    return .none
+
+                case .billboard:
+                    // handled in BillboardReducer
+                    return .none
+
                 case .spotlight:
                     // handled in SpotlightReducer
+                    return .none
+
+                case .alert:
                     return .none
             }
         }
         .ifLet(\.$foodDetails, action: \.foodDetails) {
             FoodDetailsReducer()
         }
+        .ifLet(\.$alert, action: \.alert)
         SpotlightReducer()
+        BillboardReducer()
     }
 }
 

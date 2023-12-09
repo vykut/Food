@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "billboard",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hiddevdploeg/Billboard",
+      "state" : {
+        "revision" : "c6c74e4a351a78f014420d75698cb7a3eeb27ccf",
+        "version" : "1.0.2"
+      }
+    },
+    {
       "identity" : "combine-schedulers",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/combine-schedulers",
@@ -60,7 +69,7 @@
       "location" : "https://github.com/pointfreeco/swift-composable-architecture",
       "state" : {
         "branch" : "observation-beta",
-        "revision" : "b5d478ee262d9e5bd7d98fa8779b10a9588b7c5e"
+        "revision" : "a1f2ebbe973e35d4d476da4e0a297e0002af25a6"
       }
     },
     {

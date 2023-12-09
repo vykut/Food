@@ -27,14 +27,24 @@ struct SpotlightReducer {
                         dump(error)
                     }
                 }
-            case .spotlight(.handleSelectedFood(let activity)):
+            case .spotlight(let spotlight):
+                return reduce(into: &state, action: spotlight)
+
+            default:
+                return .none
+        }
+    }
+
+    private func reduce(into state: inout FoodListReducer.State, action: FoodListReducer.Action.Spotlight) -> Effect<FoodListReducer.Action> {
+        switch action {
+            case .handleSelectedFood(let activity):
                 guard let foodName = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return .none }
                 return .run { send in
                     guard let food = try await databaseClient.getFood(name: foodName) else { return }
                     await send(.didSelectRecentFood(food))
                 }
 
-            case .spotlight(.handleSearchInApp(let activity)):
+            case .handleSearchInApp(let activity):
                 guard let searchString = activity.userInfo?[CSSearchQueryString] as? String else { return .none }
                 return .run { [foodDetails = state.foodDetails, isSearchFocused = state.isSearchFocused] send in
                     if foodDetails != nil {
@@ -45,9 +55,14 @@ struct SpotlightReducer {
                     }
                     await send(.updateSearchQuery(searchString))
                 }
-
-            default:
-                return .none
         }
+    }
+}
+
+extension FoodListReducer.Action {
+    @CasePathable
+    enum Spotlight {
+        case handleSelectedFood(NSUserActivity)
+        case handleSearchInApp(NSUserActivity)
     }
 }
