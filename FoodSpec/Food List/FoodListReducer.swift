@@ -8,11 +8,12 @@
 import Foundation
 import GRDB
 import ComposableArchitecture
+import Billboard
 
 @Reducer
 struct FoodListReducer {
     @ObservableState
-    struct State: Hashable {
+    struct State: Equatable {
         var recentFoods: [Food] = []
         var recentFoodsSortingStrategy: Food.SortingStrategy = .name
         var recentFoodsSortingOrder: SortOrder = .forward
@@ -22,6 +23,7 @@ struct FoodListReducer {
         var searchResults: [Food] = []
         var shouldShowNoResults: Bool = false
         var inlineFood: FoodDetailsReducer.State?
+        var banner: BillboardAd?
         @Presents var foodDetails: FoodDetailsReducer.State?
 
         var shouldShowRecentSearches: Bool {
@@ -57,6 +59,7 @@ struct FoodListReducer {
         case foodDetails(PresentationAction<FoodDetailsReducer.Action>)
         case inlineFood(FoodDetailsReducer.Action)
         case updateRecentFoodsSortingStrategy(Food.SortingStrategy)
+        case showBanner(BillboardAd?)
         case spotlight(Spotlight)
 
         @CasePathable
@@ -75,6 +78,7 @@ struct FoodListReducer {
     @Dependency(\.foodClient) private var foodClient
     @Dependency(\.mainQueue) private var mainQueue
     @Dependency(\.userDefaults) private var userDefaults
+    @Dependency(\.billboardClient) private var billboardClient
 
     var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -85,7 +89,12 @@ struct FoodListReducer {
                         let order = userDefaults.recentSearchesSortingOrder
                         await send(.updateFromUserDefaults(strategy, order))
                         await send(.startObservingRecentFoods)
-                    }
+                    }.merge(with: .run { send in
+                        let stream = try await billboardClient.getRandomBanners()
+                        for try await ad in stream {
+                            await send(.showBanner(ad), animation: .default)
+                        }
+                    })
 
                 case .updateFromUserDefaults(let strategy, let order):
                     if let strategy {
@@ -195,6 +204,10 @@ struct FoodListReducer {
                         userDefaults.recentSearchesSortingOrder = order
                         await send(.startObservingRecentFoods)
                     }
+
+                case .showBanner(let ad):
+                    state.banner = ad
+                    return .none
 
                 case .spotlight:
                     // handled in SpotlightReducer

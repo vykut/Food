@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import ComposableArchitecture
 import CoreSpotlight
+import Billboard
 
 struct FoodList: View {
     @Bindable var store: StoreOf<FoodListReducer>
@@ -24,6 +25,12 @@ struct FoodList: View {
                     isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus),
                     placement: .navigationBarDrawer
                 )
+                .safeAreaInset(edge: .bottom) {
+                    if let ad = store.banner {
+                        BillboardBannerView(advert: ad, hideDismissButtonAndTimer: true)
+                            .padding([.horizontal, .bottom])
+                    }
+                }
                 .navigationDestination(
                     item: $store.scope(state: \.foodDetails, action: \.foodDetails)
                 ) { store in

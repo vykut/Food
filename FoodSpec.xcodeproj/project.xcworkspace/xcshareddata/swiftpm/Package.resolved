@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "billboard",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hiddevdploeg/Billboard",
+      "state" : {
+        "revision" : "c6c74e4a351a78f014420d75698cb7a3eeb27ccf",
+        "version" : "1.0.2"
+      }
+    },
+    {
       "identity" : "combine-schedulers",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/combine-schedulers",
