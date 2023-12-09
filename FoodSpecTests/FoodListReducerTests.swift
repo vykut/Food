@@ -11,6 +11,7 @@ import SwiftData
 import GRDB
 import AsyncAlgorithms
 import CoreSpotlight
+@testable import Billboard
 @testable import FoodSpec
 
 @MainActor
@@ -32,6 +33,7 @@ final class FoodListReducerTests: XCTestCase {
             state.searchResults = []
             state.shouldShowNoResults = false
             state.foodDetails = nil
+            state.billboard = .init(banner: nil)
         }
     }
 
@@ -45,6 +47,9 @@ final class FoodListReducerTests: XCTestCase {
         let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [])
+        }
+        store.dependencies.billboardClient.getRandomBanners = {
+            .finished()
         }
         store.dependencies.databaseClient.observeFoods = { sortedBy, order in
             XCTAssertEqual(sortedBy, .energy)
@@ -83,6 +88,9 @@ final class FoodListReducerTests: XCTestCase {
         )
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [food])
+        }
+        store.dependencies.billboardClient.getRandomBanners = {
+            .finished()
         }
         let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.databaseClient.observeFoods = { sortedBy, order in
@@ -132,6 +140,12 @@ final class FoodListReducerTests: XCTestCase {
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [])
         }
+        store.dependencies.billboardClient.getRandomBanners = {
+            .init {
+                $0.yield(.preview)
+                $0.finish()
+            }
+        }
         var (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.databaseClient.observeFoods = { sortedBy, order in
             XCTAssertEqual(sortedBy, .energy)
@@ -148,6 +162,9 @@ final class FoodListReducerTests: XCTestCase {
             $0.recentFoodsSortingOrder = .reverse
         }
         await store.receive(\.startObservingRecentFoods)
+        await store.receive(\.billboard.showBanner) {
+            $0.billboard.banner = .preview
+        }
         continuation.yield([])
         await store.receive(\.didFetchRecentFoods) {
             $0.isSearchFocused = true
@@ -416,6 +433,48 @@ final class FoodListReducerTests: XCTestCase {
         await store.receive(\.didReceiveSearchFoods) {
             $0.inlineFood = .init(food: eggplant)
             $0.isSearching = false
+        }
+    }
+
+    func testIntegrationWithBillboard_multipleAds() async throws {
+        let firstAd = BillboardAd.preview
+        let secondAd = BillboardAd(
+            appStoreID: "id",
+            name: "secondAd",
+            title: "secondTitle",
+            description: "secondDescription",
+            media: .cachesDirectory,
+            backgroundColor: "red",
+            textColor: "black",
+            tintColor: "blue",
+            fullscreen: true,
+            transparent: true
+        )
+        let store = TestStore(
+            initialState: FoodListReducer.State(),
+            reducer: {
+                FoodListReducer()
+            }
+        )
+        store.exhaustivity = .off
+        store.dependencies.userDefaults.data = { _ in nil }
+        store.dependencies.billboardClient.getRandomBanners = {
+            .init {
+                $0.yield(firstAd)
+                $0.yield(nil)
+                $0.yield(secondAd)
+                $0.finish()
+            }
+        }
+        await store.send(.onAppear)
+        await store.receive(\.billboard.showBanner) {
+            $0.billboard.banner = firstAd
+        }
+        await store.receive(\.billboard.showBanner) {
+            $0.billboard.banner = nil
+        }
+        await store.receive(\.billboard.showBanner) {
+            $0.billboard.banner = secondAd
         }
     }
 }

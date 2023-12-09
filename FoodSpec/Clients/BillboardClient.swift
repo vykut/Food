@@ -29,6 +29,8 @@ extension BillboardClient: DependencyKey {
             }
         }
     )
+
+    static var testValue: BillboardClient = .init()
 }
 
 extension DependencyValues {
