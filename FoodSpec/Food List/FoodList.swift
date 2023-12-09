@@ -26,7 +26,7 @@ struct FoodList: View {
                     placement: .navigationBarDrawer
                 )
                 .safeAreaInset(edge: .bottom) {
-                    if let ad = store.banner {
+                    if let ad = store.billboard.banner {
                         BillboardBannerView(advert: ad, hideDismissButtonAndTimer: true)
                             .padding([.horizontal, .bottom])
                     }

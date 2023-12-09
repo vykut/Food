@@ -51,3 +51,11 @@ struct SpotlightReducer {
         }
     }
 }
+
+extension FoodListReducer.Action {
+    @CasePathable
+    enum Spotlight {
+        case handleSelectedFood(NSUserActivity)
+        case handleSearchInApp(NSUserActivity)
+    }
+}
