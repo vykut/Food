@@ -13,13 +13,7 @@ struct FoodSelection: View {
 
     var body: some View {
         List(selection: $store.selectedFoodIds.sending(\.didChangeSelection)) {
-            Section {
-                ForEach(store.filteredFoods, id: \.id) { item in
-                    Text(item.name.capitalized)
-                }
-            } header: {
-                Text("Recent searches")
-            }
+            recentSearchesSection
         }
         .listStyle(.sidebar)
         .searchable(
@@ -30,27 +24,43 @@ struct FoodSelection: View {
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    store.send(.didTapCancel)
-                } label: {
-                    Image(systemName: "xmark")
-                        .imageScale(.medium)
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Compare") {
-                    store.send(.didTapCompare)
-                }
-                .disabled(store.isCompareButtonDisabled)
-            }
+            toolbar
         }
         .navigationDestination(
             isPresented: $store.isShowingComparison.sending(\.didNavigateToComparison),
             destination: {
-                FoodComparison()
+                FoodComparison(store: store)
             }
         )
+    }
+
+    private var recentSearchesSection: some View {
+        Section {
+            ForEach(store.filteredFoods, id: \.id) { item in
+                Text(item.name.capitalized)
+                    .selectionDisabled(store.state.isSelectionDisabled(for: item))
+            }
+        } header: {
+            Text("Recent searches")
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                store.send(.didTapCancel)
+            } label: {
+                Image(systemName: "xmark")
+                    .imageScale(.medium)
+            }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Compare") {
+                store.send(.didTapCompare)
+            }
+            .disabled(store.isCompareButtonDisabled)
+        }
     }
 
     private var navigationTitle: String {

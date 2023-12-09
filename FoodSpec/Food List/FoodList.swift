@@ -132,7 +132,7 @@ struct FoodList: View {
     }
 
     private var sortRecentFoodsMenu: some View {
-        Menu("Menu", systemImage: "arrow.up.arrow.down") {
+        Menu {
             Picker(
                 "Sort by",
                 selection: self.$store.recentFoodsSortingStrategy.sending(\.updateRecentFoodsSortingStrategy)
@@ -151,6 +151,9 @@ struct FoodList: View {
                     .tag(strategy)
                 }
             }
+        } label: {
+            Image(systemName: "arrow.up.arrow.down")
+                .imageScale(.medium)
         }
         .menuActionDismissBehavior(.disabled)
     }
