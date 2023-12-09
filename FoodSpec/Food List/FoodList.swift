@@ -38,10 +38,17 @@ struct FoodList: View {
                 }
                 .navigationTitle("Search")
         }
+        .sheet(
+            item: $store.scope(state: \.foodComparison, action: \.foodComparison)
+        ) { store in
+            NavigationStack {
+                FoodSelection(store: store)
+            }
+        }
+        .alert($store.scope(state: \.alert, action: \.alert))
         .onAppear {
             self.store.send(.onAppear)
         }
-        .alert($store.scope(state: \.alert, action: \.alert))
         .onContinueUserActivity(CSSearchableItemActionType) { activity in
             store.send(.spotlight(.handleSelectedFood(activity)))
         }
@@ -111,8 +118,21 @@ struct FoodList: View {
         }
     }
 
-    private var toolbar: some View {
-        Menu("Menu", systemImage: "ellipsis.circle") {
+    private var toolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            compareButton
+            sortRecentFoodsMenu
+        }
+    }
+
+    private var compareButton: some View {
+        Button("Compare") {
+            store.send(.didTapCompare)
+        }
+    }
+
+    private var sortRecentFoodsMenu: some View {
+        Menu("Menu", systemImage: "arrow.up.arrow.down") {
             Picker(
                 "Sort by",
                 selection: self.$store.recentFoodsSortingStrategy.sending(\.updateRecentFoodsSortingStrategy)
@@ -123,6 +143,7 @@ struct FoodList: View {
                         if strategy == self.store.recentFoodsSortingStrategy {
                             let systemImageName = self.store.recentFoodsSortingOrder == .forward ? "chevron.up" : "chevron.down"
                             Label(text, systemImage: systemImageName)
+                                .imageScale(.small)
                         } else {
                             Text(text)
                         }

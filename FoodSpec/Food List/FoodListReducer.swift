@@ -24,6 +24,7 @@ struct FoodListReducer {
         var inlineFood: FoodDetailsReducer.State?
         var billboard: Billboard = .init()
         @Presents var foodDetails: FoodDetailsReducer.State?
+        @Presents var foodComparison: FoodComparisonReducer.State?
         @Presents var alert: AlertState<Action.Alert>?
 
         var shouldShowRecentSearches: Bool {
@@ -58,6 +59,8 @@ struct FoodListReducer {
         case didReceiveSearchFoods([FoodApiModel])
         case foodDetails(PresentationAction<FoodDetailsReducer.Action>)
         case inlineFood(FoodDetailsReducer.Action)
+        case didTapCompare
+        case foodComparison(PresentationAction<FoodComparisonReducer.Action>)
         case updateRecentFoodsSortingStrategy(Food.SortingStrategy)
         case billboard(Billboard)
         case spotlight(Spotlight)
@@ -184,10 +187,19 @@ struct FoodListReducer {
                         await send(.showGenericAlert)
                     }
 
-                case .foodDetails(let foodDetails):
+                case .foodDetails:
                     return .none
 
-                case .inlineFood(let foodDetails):
+                case .inlineFood:
+                    return .none
+
+                case .didTapCompare:
+                    state.foodComparison = .init(
+                        foods: state.recentFoods
+                    )
+                    return .none
+
+                case .foodComparison:
                     return .none
 
                 case .updateRecentFoodsSortingStrategy(let newStrategy):
@@ -223,6 +235,9 @@ struct FoodListReducer {
         }
         .ifLet(\.$foodDetails, action: \.foodDetails) {
             FoodDetailsReducer()
+        }
+        .ifLet(\.$foodComparison, action: \.foodComparison) {
+            FoodComparisonReducer()
         }
         .ifLet(\.$alert, action: \.alert)
         SpotlightReducer()

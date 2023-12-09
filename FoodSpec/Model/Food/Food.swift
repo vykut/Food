@@ -103,6 +103,7 @@ extension Food {
 extension Food {
     static var preview: Self {
         .init(
+            id: 1,
             name: "eggplant",
             energy: .init(value: 34.7, unit: .kilocalories),
             fatTotal: .init(value: 0.2, unit: .grams),
