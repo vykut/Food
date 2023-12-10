@@ -45,7 +45,7 @@ struct QuantityComparisonChart: View {
         .chartForegroundStyleScale(
             range: [barColor]
         )
-        .chartLegend(spacing: 16)
+        .chartLegend(.hidden)
     }
 
     private var barColor: some ShapeStyle {

@@ -38,7 +38,7 @@ struct FoodComparison: View {
     private var chart: some View {
         switch store.comparison {
             case .energy:
-                EnergyComparisonChart(
+                EnergyComparisonChartV2(
                     foods: store.comparedFoods
                 )
             case .protein:
@@ -67,7 +67,30 @@ struct FoodComparison: View {
                     keyPath: \.sodium
                 )
             case .macronutrients:
-                fatalError()
+                QuantityComparisonChartV2(
+                    comparisons: store.comparedFoods.map {
+                        QuantityComparison(
+                            name: $0.name,
+                            quantities: [
+                                .init(
+                                    name: "Protein",
+                                    quantity: $0.protein,
+                                    color: .red
+                                ),
+                                .init(
+                                    name: "Carbohydrates",
+                                    quantity: $0.carbohydrates,
+                                    color: .yellow
+                                ),
+                                .init(
+                                    name: "Fat",
+                                    quantity: $0.fatTotal,
+                                    color: .brown
+                                ),
+                            ]
+                        )
+                    }
+                )
         }
     }
 

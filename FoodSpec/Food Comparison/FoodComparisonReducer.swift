@@ -165,7 +165,8 @@ fileprivate extension Array<Food> {
                 case .fat: \.fatTotal
                 case .potassium: \.potassium
                 case .sodium: \.sodium
-                case .energy, .macronutrients: \.macronutrients
+                case .macronutrients: \.macronutrients
+                case .energy: fatalError()
                 }
                 let descriptor = SortDescriptor(keyPath, order: order)
                 self.sort(using: descriptor)
