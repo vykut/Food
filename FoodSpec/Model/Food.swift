@@ -18,7 +18,7 @@ struct Food: Codable, Hashable {
     var sodium: Quantity
     var potassium: Quantity
     var cholesterol: Quantity
-    var carbohydrates: Quantity
+    var carbohydrate: Quantity
     var fiber: Quantity
     var sugar: Quantity
 
@@ -26,7 +26,7 @@ struct Food: Codable, Hashable {
         """
 \(energy.formatted(width: .narrow)) | \
 P: \(protein.formatted(width: .narrow)) | \
-C: \(carbohydrates.formatted(width: .narrow)) | \
+C: \(carbohydrate.formatted(width: .narrow)) | \
 F: \(fatTotal.formatted(width: .narrow))
 """
     }
@@ -63,7 +63,7 @@ extension Food {
             switch self {
                 case .name: Column(CodingKeys.name)
                 case .energy: Column(CodingKeys.energy)
-                case .carbohydrates: Column(CodingKeys.carbohydrates)
+                case .carbohydrates: Column(CodingKeys.carbohydrate)
                 case .protein: Column(CodingKeys.protein)
                 case .fat: Column(CodingKeys.fatTotal)
             }
@@ -85,6 +85,7 @@ extension Quantity: DatabaseValueConvertible {
 extension Food {
     init(foodApiModel: FoodApiModel) {
         self.init(
+            id: nil,
             name: foodApiModel.name,
             energy: .init(value: foodApiModel.calories, unit: .kilocalories),
             fatTotal: .init(value: foodApiModel.fatTotalG, unit: .grams),
@@ -93,7 +94,7 @@ extension Food {
             sodium: .init(value: foodApiModel.sodiumMg, unit: .milligrams),
             potassium: .init(value: foodApiModel.potassiumMg, unit: .milligrams),
             cholesterol: .init(value: foodApiModel.cholesterolMg, unit: .milligrams),
-            carbohydrates:  .init(value: foodApiModel.carbohydratesTotalG, unit: .grams),
+            carbohydrate:  .init(value: foodApiModel.carbohydratesTotalG, unit: .grams),
             fiber: .init(value: foodApiModel.fiberG, unit: .grams),
             sugar: .init(value: foodApiModel.sugarG, unit: .grams)
         )
@@ -102,7 +103,16 @@ extension Food {
 
 extension Food {
     static var preview: Self {
+        preview(id: nil)
+    }
+
+    static func preview(id: Int64) -> Self {
+        preview(id: Optional<Int64>.some(id))
+    }
+
+    private static func preview(id: Int64?) -> Self {
         .init(
+            id: id,
             name: "eggplant",
             energy: .init(value: 34.7, unit: .kilocalories),
             fatTotal: .init(value: 0.2, unit: .grams),
@@ -111,7 +121,7 @@ extension Food {
             sodium: .init(value: 0.0, unit: .milligrams),
             potassium: .init(value: 15.0, unit: .milligrams),
             cholesterol: .init(value: 0.0, unit: .milligrams),
-            carbohydrates: .init(value: 8.7, unit: .grams),
+            carbohydrate: .init(value: 8.7, unit: .grams),
             fiber: .init(value: 2.5, unit: .grams),
             sugar: .init(value: 3.2, unit: .grams)
         )

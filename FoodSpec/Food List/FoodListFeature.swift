@@ -1,5 +1,5 @@
 //
-//  FoodListReducer.swift
+//  FoodListFeature.swift
 //  FoodSpec
 //
 //  Created by Victor Socaciu on 02/12/2023.
@@ -10,7 +10,7 @@ import GRDB
 import ComposableArchitecture
 
 @Reducer
-struct FoodListReducer {
+struct FoodListFeature {
     @ObservableState
     struct State: Equatable {
         var recentFoods: [Food] = []
@@ -21,9 +21,10 @@ struct FoodListReducer {
         var isSearching = false
         var searchResults: [Food] = []
         var shouldShowNoResults: Bool = false
-        var inlineFood: FoodDetailsReducer.State?
+        var inlineFood: FoodDetailsFeature.State?
         var billboard: Billboard = .init()
-        @Presents var foodDetails: FoodDetailsReducer.State?
+        @Presents var foodDetails: FoodDetailsFeature.State?
+        @Presents var foodComparison: FoodComparisonFeature.State?
         @Presents var alert: AlertState<Action.Alert>?
 
         var shouldShowRecentSearches: Bool {
@@ -41,6 +42,14 @@ struct FoodListReducer {
         var shouldShowSearchResults: Bool {
             isSearchFocused && !searchResults.isEmpty && inlineFood == nil
         }
+
+        var isCompareButtonDisabled: Bool {
+            recentFoods.count < 2
+        }
+
+        var isSortMenuDisabled: Bool {
+            recentFoods.count < 2
+        }
     }
 
     @CasePathable
@@ -56,8 +65,10 @@ struct FoodListReducer {
         case didDeleteRecentFoods(IndexSet)
         case startSearching
         case didReceiveSearchFoods([FoodApiModel])
-        case foodDetails(PresentationAction<FoodDetailsReducer.Action>)
-        case inlineFood(FoodDetailsReducer.Action)
+        case foodDetails(PresentationAction<FoodDetailsFeature.Action>)
+        case inlineFood(FoodDetailsFeature.Action)
+        case didTapCompare
+        case foodComparison(PresentationAction<FoodComparisonFeature.Action>)
         case updateRecentFoodsSortingStrategy(Food.SortingStrategy)
         case billboard(Billboard)
         case spotlight(Spotlight)
@@ -184,10 +195,19 @@ struct FoodListReducer {
                         await send(.showGenericAlert)
                     }
 
-                case .foodDetails(let foodDetails):
+                case .foodDetails:
                     return .none
 
-                case .inlineFood(let foodDetails):
+                case .inlineFood:
+                    return .none
+
+                case .didTapCompare:
+                    state.foodComparison = .init(
+                        foods: state.recentFoods
+                    )
+                    return .none
+
+                case .foodComparison:
                     return .none
 
                 case .updateRecentFoodsSortingStrategy(let newStrategy):
@@ -222,7 +242,10 @@ struct FoodListReducer {
             }
         }
         .ifLet(\.$foodDetails, action: \.foodDetails) {
-            FoodDetailsReducer()
+            FoodDetailsFeature()
+        }
+        .ifLet(\.$foodComparison, action: \.foodComparison) {
+            FoodComparisonFeature()
         }
         .ifLet(\.$alert, action: \.alert)
         SpotlightReducer()

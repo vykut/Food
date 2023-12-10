@@ -11,13 +11,13 @@ import CoreSpotlight
 
 @Reducer
 struct SpotlightReducer {
-    typealias State = FoodListReducer.State
-    typealias Action = FoodListReducer.Action
+    typealias State = FoodListFeature.State
+    typealias Action = FoodListFeature.Action
 
     @Dependency(\.spotlightClient) var spotlightClient
     @Dependency(\.databaseClient) var databaseClient
 
-    func reduce(into state: inout FoodListReducer.State, action: FoodListReducer.Action) -> Effect<FoodListReducer.Action> {
+    func reduce(into state: inout FoodListFeature.State, action: FoodListFeature.Action) -> Effect<FoodListFeature.Action> {
         switch action {
             case .didFetchRecentFoods(let recentFoods):
                 return .run { send in
@@ -35,7 +35,7 @@ struct SpotlightReducer {
         }
     }
 
-    private func reduce(into state: inout FoodListReducer.State, action: FoodListReducer.Action.Spotlight) -> Effect<FoodListReducer.Action> {
+    private func reduce(into state: inout FoodListFeature.State, action: FoodListFeature.Action.Spotlight) -> Effect<FoodListFeature.Action> {
         switch action {
             case .handleSelectedFood(let activity):
                 guard let foodName = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return .none }
@@ -59,7 +59,7 @@ struct SpotlightReducer {
     }
 }
 
-extension FoodListReducer.Action {
+extension FoodListFeature.Action {
     @CasePathable
     enum Spotlight {
         case handleSelectedFood(NSUserActivity)

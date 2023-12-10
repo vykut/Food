@@ -17,7 +17,7 @@ final class SpotlightReducerTests: XCTestCase {
         let ribeye = Food.ribeye
         let foods = [eggplant, ribeye]
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
                 SpotlightReducer()
             }
@@ -31,7 +31,7 @@ final class SpotlightReducerTests: XCTestCase {
     func testSpotlightSelection() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
                 SpotlightReducer()
             }
@@ -49,7 +49,7 @@ final class SpotlightReducerTests: XCTestCase {
     func testSpotlightSearchInApp() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
                 SpotlightReducer()
             }
@@ -64,7 +64,7 @@ final class SpotlightReducerTests: XCTestCase {
     func testSpotlightSearchInApp_foodDetailsAlreadyPresented() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListReducer.State(
+            initialState: FoodListFeature.State(
                 foodDetails: .init(food: eggplant)
             ),
             reducer: {

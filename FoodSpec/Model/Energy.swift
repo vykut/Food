@@ -44,8 +44,8 @@ struct Energy: Codable, Hashable {
 extension Energy {
     static var zero: Self { .init(value: 0, unit: .kilocalories) }
 
-    init(kcal: Double) {
-        self.init(value: kcal, unit: .kilocalories)
+    static func kcal(_ value: Double) -> Self {
+        .init(value: value, unit: .kilocalories)
     }
 }
 
@@ -110,7 +110,14 @@ extension Energy {
     public static func - (lhs: Self, rhs: Self) -> Self {
         .init(
             value: (lhs.measurement - rhs.measurement.converted(to: lhs.unit.unit)).value,
-            unit: rhs.unit
+            unit: lhs.unit
+        )
+    }
+
+    public static func * (lhs: Self, rhs: Double) -> Self {
+        .init(
+            value: lhs.value * rhs,
+            unit: lhs.unit
         )
     }
 }

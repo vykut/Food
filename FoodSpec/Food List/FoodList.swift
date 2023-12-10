@@ -12,7 +12,7 @@ import CoreSpotlight
 import Billboard
 
 struct FoodList: View {
-    @Bindable var store: StoreOf<FoodListReducer>
+    @Bindable var store: StoreOf<FoodListFeature>
 
     var body: some View {
         NavigationStack {
@@ -38,10 +38,17 @@ struct FoodList: View {
                 }
                 .navigationTitle("Search")
         }
+        .sheet(
+            item: $store.scope(state: \.foodComparison, action: \.foodComparison)
+        ) { store in
+            NavigationStack {
+                FoodSelection(store: store)
+            }
+        }
+        .alert($store.scope(state: \.alert, action: \.alert))
         .onAppear {
             self.store.send(.onAppear)
         }
-        .alert($store.scope(state: \.alert, action: \.alert))
         .onContinueUserActivity(CSSearchableItemActionType) { activity in
             store.send(.spotlight(.handleSelectedFood(activity)))
         }
@@ -81,7 +88,7 @@ struct FoodList: View {
 
     private var recentSearches: some View {
         Section {
-            ForEach(self.store.recentFoods, id: \.self) { item in
+            ForEach(self.store.recentFoods, id: \.id) { item in
                 Button {
                     self.store.send(.didSelectRecentFood(item))
                 } label: {
@@ -92,7 +99,7 @@ struct FoodList: View {
         } header: {
             Text("Recent Searches")
         } footer: {
-            Text("Values per \(Quantity(grams: 100).formatted(width: .wide))")
+            Text("Values per \(Quantity.grams( 100).formatted(width: .wide))")
                 .font(.footnote)
         }
     }
@@ -111,8 +118,22 @@ struct FoodList: View {
         }
     }
 
-    private var toolbar: some View {
-        Menu("Menu", systemImage: "ellipsis.circle") {
+    private var toolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            compareButton
+            sortRecentFoodsMenu
+        }
+    }
+
+    private var compareButton: some View {
+        Button("Compare") {
+            store.send(.didTapCompare)
+        }
+        .disabled(store.isCompareButtonDisabled)
+    }
+
+    private var sortRecentFoodsMenu: some View {
+        Menu {
             Picker(
                 "Sort by",
                 selection: self.$store.recentFoodsSortingStrategy.sending(\.updateRecentFoodsSortingStrategy)
@@ -123,6 +144,7 @@ struct FoodList: View {
                         if strategy == self.store.recentFoodsSortingStrategy {
                             let systemImageName = self.store.recentFoodsSortingOrder == .forward ? "chevron.up" : "chevron.down"
                             Label(text, systemImage: systemImageName)
+                                .imageScale(.small)
                         } else {
                             Text(text)
                         }
@@ -130,8 +152,12 @@ struct FoodList: View {
                     .tag(strategy)
                 }
             }
+        } label: {
+            Image(systemName: "arrow.up.arrow.down")
+                .imageScale(.medium)
         }
         .menuActionDismissBehavior(.disabled)
+        .disabled(store.isSortMenuDisabled)
     }
 
     private func deleteItems(offsets: IndexSet) {
@@ -142,13 +168,13 @@ struct FoodList: View {
 #Preview {
     FoodList(
         store: .init(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
                     .transformDependency(\.databaseClient) {
                         $0.observeFoods = { _, _ in
                             .init {
-                                $0.yield([.preview, .preview, .preview])
+                                $0.yield([.preview(id: 1), .preview(id: 2), .preview(id: 3)])
                             }
                         }
                     }

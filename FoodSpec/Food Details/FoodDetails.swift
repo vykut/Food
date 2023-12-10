@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct FoodDetails: View {
-    @Bindable var store: StoreOf<FoodDetailsReducer>
+    @Bindable var store: StoreOf<FoodDetailsFeature>
 
     var body: some View {
         ScrollView {
@@ -18,6 +18,7 @@ struct FoodDetails: View {
                 protein
                 carbohydrates
                 fat
+                cholesterol
                 potassium
                 sodium
                 energyBreakdown
@@ -52,8 +53,8 @@ struct FoodDetails: View {
     var carbohydrates: some View {
         NutritionalValueCard(
             model: .init(
-                title: "Carbohydrates",
-                value: store.food.carbohydrates.measurement,
+                title: "Carbohydrate",
+                value: store.food.carbohydrate.measurement,
                 breakdown: [
                     .init(
                         title: "Fiber",
@@ -83,11 +84,21 @@ struct FoodDetails: View {
         )
     }
 
+    var cholesterol: some View {
+        NutritionalValueCard(
+            model: .init(
+                title: "Cholesterol",
+                value: store.food.cholesterol.measurement.converted(to: .milligrams),
+                breakdown: []
+            )
+        )
+    }
+
     var potassium: some View {
         NutritionalValueCard(
             model: .init(
                 title: "Potassium",
-                value: store.food.potassium.measurement,
+                value: store.food.potassium.measurement.converted(to: .milligrams),
                 breakdown: []
             )
         )
@@ -97,7 +108,7 @@ struct FoodDetails: View {
         NutritionalValueCard(
             model: .init(
                 title: "Sodium",
-                value: store.food.sodium.measurement,
+                value: store.food.sodium.measurement.converted(to: .milligrams),
                 breakdown: []
             )
         )
@@ -134,7 +145,7 @@ struct FoodDetails: View {
                 food: .preview
             ),
             reducer: {
-                FoodDetailsReducer()
+                FoodDetailsFeature()
             }
         )
     )

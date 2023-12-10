@@ -18,9 +18,9 @@ import CoreSpotlight
 final class FoodListReducerTests: XCTestCase {
     func testStateDefaultInitializer() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
 
@@ -34,14 +34,16 @@ final class FoodListReducerTests: XCTestCase {
             state.shouldShowNoResults = false
             state.foodDetails = nil
             state.billboard = .init(banner: nil)
+            state.foodComparison = nil
+            state.alert = nil
         }
     }
 
     func test_onAppear() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
@@ -81,9 +83,9 @@ final class FoodListReducerTests: XCTestCase {
     func test_onAppear_hasRecentFoods() async throws {
         let food = Food.preview
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         store.dependencies.spotlightClient.indexFoods = {
@@ -129,9 +131,9 @@ final class FoodListReducerTests: XCTestCase {
         let ribeyeApi = FoodApiModel.ribeye
         let ribeye = Food(foodApiModel: ribeyeApi)
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -169,6 +171,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.receive(\.didFetchRecentFoods) {
             $0.isSearchFocused = true
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
         XCTAssertNoDifference(store.state.shouldShowRecentSearches, false)
         XCTAssertNoDifference(store.state.shouldShowPrompt, true)
         XCTAssertNoDifference(store.state.shouldShowSpinner, false)
@@ -201,6 +205,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.receive(\.didFetchRecentFoods) {
             $0.recentFoods = [eggplant]
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
 
         await store.send(.updateSearchQuery("")) {
             $0.searchQuery = ""
@@ -239,6 +245,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.send(.didFetchRecentFoods([ribeye, eggplant])) {
             $0.recentFoods = [ribeye, eggplant]
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, false)
 
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [eggplant, ribeye])
@@ -259,6 +267,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.receive(\.didFetchRecentFoods) {
             $0.recentFoods = [eggplant, ribeye]
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, false)
 
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [ribeye, eggplant])
@@ -289,6 +299,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.send(.didFetchRecentFoods([eggplant])) {
             $0.recentFoods = [eggplant]
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
 
         await store.send(.didSelectRecentFood(eggplant)) {
             $0.foodDetails = .init(food: eggplant)
@@ -304,9 +316,9 @@ final class FoodListReducerTests: XCTestCase {
         let ribeyeApi = FoodApiModel.ribeye
         let ribeye = Food(foodApiModel: ribeyeApi)
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -326,9 +338,9 @@ final class FoodListReducerTests: XCTestCase {
 
     func testSearchError() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -357,9 +369,9 @@ final class FoodListReducerTests: XCTestCase {
 
     func testSearchBarFocus() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -383,11 +395,11 @@ final class FoodListReducerTests: XCTestCase {
 
     func testDeletion_error() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(
+            initialState: FoodListFeature.State(
                 recentFoods: [.preview]
             ),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.databaseClient.delete = { _ in
@@ -407,9 +419,9 @@ final class FoodListReducerTests: XCTestCase {
     func testIntegrationWithSpotlight_foodSelection() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         store.dependencies.databaseClient.getFood = {
@@ -427,11 +439,11 @@ final class FoodListReducerTests: XCTestCase {
     func testIntegrationWithSpotlight_search() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListReducer.State(
+            initialState: FoodListFeature.State(
                 foodDetails: .init(food: eggplant)
             ),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         store.dependencies.mainQueue = .immediate
@@ -479,9 +491,9 @@ final class FoodListReducerTests: XCTestCase {
             transparent: true
         )
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         store.exhaustivity = .off
@@ -503,6 +515,20 @@ final class FoodListReducerTests: XCTestCase {
         }
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = secondAd
+        }
+    }
+
+    func testIntegrationWithComparisonFeature() async throws {
+        let store = TestStore(
+            initialState: FoodListFeature.State(
+                recentFoods: [.eggplant, .ribeye]
+            ),
+            reducer: {
+                FoodListFeature()
+            }
+        )
+        await store.send(.didTapCompare) {
+            $0.foodComparison = .init(foods: [.eggplant, .ribeye])
         }
     }
 }

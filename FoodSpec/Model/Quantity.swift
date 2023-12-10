@@ -64,10 +64,18 @@ struct Quantity: Codable, Hashable {
 }
 
 extension Quantity {
-    static var zero: Self { .init(value: 0, unit: .grams) }
+    static var zero: Self { .zero(unit: .grams) }
 
-    init(grams: Double) {
-        self.init(value: grams, unit: .grams)
+    static func zero(unit: Unit) -> Self {
+        .init(value: .zero, unit: unit)
+    }
+
+    static func grams(_ value: Double) -> Self {
+        .init(value: value, unit: .grams)
+    }
+
+    static func milligrams(_ value: Double) -> Self {
+        .init(value: value, unit: .milligrams)
     }
 }
 
@@ -133,7 +141,14 @@ extension Quantity {
     public static func - (lhs: Self, rhs: Self) -> Self {
         .init(
             value: (lhs.measurement - rhs.measurement.converted(to: lhs.unit.unit)).value,
-            unit: rhs.unit
+            unit: lhs.unit
+        )
+    }
+
+    public static func * (lhs: Self, rhs: Double) -> Self {
+        .init(
+            value: lhs.value * rhs,
+            unit: lhs.unit
         )
     }
 }
