@@ -15,9 +15,7 @@ struct FoodComparison: View {
 
     var body: some View {
         Section {
-            ComparisonChart(
-                foods: store.comparedFoods
-            )
+            chart
         } header: {
             Text(
                 "Nutritional values per \(Quantity(value: 100, unit: .grams).formatted(width: .wide))"
@@ -31,32 +29,64 @@ struct FoodComparison: View {
         }
         .navigationTitle("\(store.comparison.rawValue.capitalized) comparison")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitleMenu {
+            comparisonMenu
+        }
+    }
+
+    @ViewBuilder
+    private var chart: some View {
+        switch store.comparison {
+            case .energy:
+                EnergyComparisonChart(
+                    foods: store.comparedFoods
+                )
+            case .protein:
+                QuantityComparisonChart(
+                    foods: store.comparedFoods,
+                    keyPath: \.protein
+                )
+            case .carbohydrates:
+                QuantityComparisonChart(
+                    foods: store.comparedFoods,
+                    keyPath: \.carbohydrates
+                )
+            case .fat:
+                QuantityComparisonChart(
+                    foods: store.comparedFoods,
+                    keyPath: \.fatTotal
+                )
+            case .potassium:
+                QuantityComparisonChart(
+                    foods: store.comparedFoods,
+                    keyPath: \.potassium
+                )
+            case .sodium:
+                QuantityComparisonChart(
+                    foods: store.comparedFoods,
+                    keyPath: \.sodium
+                )
+            case .macronutrients:
+                fatalError()
+        }
     }
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            comparisonMenu
-        }
         ToolbarItem(placement: .topBarTrailing) {
             sortMenu
         }
     }
 
     private var comparisonMenu: some View {
-        Menu {
-            Picker(
-                "Comparison Type",
-                selection: self.$store.comparison.sending(\.updateComparisonType)
-            ) {
-                ForEach(Comparison.allCases) { comparison in
-                    Text(comparison.rawValue.capitalized)
-                        .tag(comparison)
-                }
+        Picker(
+            "Comparison Type",
+            selection: self.$store.comparison.sending(\.updateComparisonType)
+        ) {
+            ForEach(Comparison.allCases) { comparison in
+                Text(comparison.rawValue.capitalized)
+                    .tag(comparison)
             }
-        } label: {
-            Image(systemName: "list.bullet")
-                .imageScale(.medium)
         }
     }
 

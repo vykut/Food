@@ -125,9 +125,12 @@ struct FoodList: View {
         }
     }
 
+    @ViewBuilder
     private var compareButton: some View {
-        Button("Compare") {
-            store.send(.didTapCompare)
+        if store.shouldShowCompareButton {
+            Button("Compare") {
+                store.send(.didTapCompare)
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 //
-//  ComparisonChart.swift
+//  EnergyComparisonChart.swift
 //  FoodSpec
 //
 //  Created by Victor Socaciu on 10/12/2023.
@@ -8,30 +8,23 @@
 import SwiftUI
 import Charts
 
-struct ComparisonChart: View {
+struct EnergyComparisonChart: View {
     let foods: [Food]
 
     var body: some View {
-        Chart {
-            ForEach(foods, id: \.id) { food in
-                BarMark(
-                    x: .value("Energy", food.energy),
-                    y: .value("Name", "\(food.name.capitalized)\n\(food.energy.formatted(width: .abbreviated))")
-                )
-                .foregroundStyle(by: .value("Type", "Energy"))
-//                .annotation(position: .trailing, alignment: .trailing, spacing: 8) {
-//                    Text(food.energy.formatted(width: .abbreviated))
-//                        .font(.footnote)
-//                        .foregroundStyle(.secondary)
-//                }
-                .alignsMarkStylesWithPlotArea()
-            }
+        Chart(foods, id: \.id) { food in
+            BarMark(
+                x: .value("Energy", food.energy),
+                y: .value("Name", "\(food.name.capitalized)\n\(food.energy.formatted(width: .abbreviated))")
+            )
+            .foregroundStyle(by: .value("Type", "Energy"))
+            .alignsMarkStylesWithPlotArea()
         }
         .chartXAxis {
             AxisMarks(preset: .inset) {
                 AxisGridLine()
                 AxisValueLabel(
-                    format: .measurement(width: .abbreviated, usage: .asProvided),
+                    format: EnergyFormat.measurement(width: .abbreviated, usage: .asProvided),
                     anchor: .top
                 )
             }
@@ -54,15 +47,14 @@ struct ComparisonChart: View {
                     startPoint: .leading,
                     endPoint: .trailing
                 )
-            ],
-            type: .category
+            ]
         )
         .chartLegend(spacing: 16)
     }
 }
 
 #Preview {
-    ComparisonChart(
+    EnergyComparisonChart(
         foods: [
             .init(id: 1, name: "lettuce", energy: 17),
             .init(id: 2, name: "asparagus", energy: 21.4),

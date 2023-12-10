@@ -42,6 +42,10 @@ struct FoodListReducer {
         var shouldShowSearchResults: Bool {
             isSearchFocused && !searchResults.isEmpty && inlineFood == nil
         }
+
+        var shouldShowCompareButton: Bool {
+            recentFoods.count > 1
+        }
     }
 
     @CasePathable

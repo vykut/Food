@@ -101,10 +101,12 @@ struct FoodComparisonReducer {
                         state.foodSortingStrategy = strategy
                         state.foodSortingOrder = .forward
                     }
+                    sortFoods(state: &state)
                     return .none
 
                 case .updateComparisonType(let comparison):
                     state.comparison = comparison
+                    sortFoods(state: &state)
                     return .none
 
                 case .didTapCancel:
@@ -118,5 +120,61 @@ struct FoodComparisonReducer {
                     return .none
             }
         }
+    }
+
+    private func sortFoods(state: inout State) {
+        state.comparedFoods.sort(
+            by: state.foodSortingStrategy,
+            comparison: state.comparison,
+            order: state.foodSortingOrder
+        )
+    }
+}
+
+fileprivate extension Array<Food> {
+    mutating func sort(
+        by strategy: FoodComparisonReducer.State.SortingStrategy,
+        comparison: FoodComparisonReducer.State.Comparison,
+        order: SortOrder
+    ) {
+        switch strategy {
+            case .name:
+                sort(using: SortDescriptor(\.name, order: order))
+            case .value:
+                sort(by: comparison, order: order)
+            case .protein:
+                sort(using: SortDescriptor(\.protein, order: order))
+            case .carbohydrates:
+                sort(using: SortDescriptor(\.carbohydrates, order: order))
+            case .fat:
+                sort(using: SortDescriptor(\.fatTotal, order: order))
+        }
+    }
+}
+
+fileprivate extension Array<Food> {
+    mutating func sort(by comparison: FoodComparisonReducer.State.Comparison, order: SortOrder) {
+        switch comparison {
+            case .energy:
+                let descriptor = SortDescriptor(\Food.energy, order: order)
+                self.sort(using: descriptor)
+            case .protein, .carbohydrates, .fat, .potassium, .sodium, .macronutrients:
+                let keyPath: KeyPath<Food, Quantity> = switch comparison {
+                case .protein: \.protein
+                case .carbohydrates: \.carbohydrates
+                case .fat: \.fatTotal
+                case .potassium: \.potassium
+                case .sodium: \.sodium
+                case .energy, .macronutrients: \.macronutrients
+                }
+                let descriptor = SortDescriptor(keyPath, order: order)
+                self.sort(using: descriptor)
+        }
+    }
+}
+
+fileprivate extension Food {
+    var macronutrients: Quantity {
+        protein + carbohydrates + fatTotal
     }
 }
