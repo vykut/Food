@@ -48,8 +48,11 @@ struct FoodComparisonReducer {
         enum Comparison: String, Identifiable, Hashable, CaseIterable {
             case energy
             case protein
-            case carbohydrates
+            case carbohydrate
+            case fiber
+            case sugar
             case fat
+            case saturatedFat = "saturated fat"
             case cholesterol
             case potassium
             case sodium
@@ -116,6 +119,10 @@ struct FoodComparisonReducer {
 
                 case .updateComparisonType(let comparison):
                     state.comparison = comparison
+                    if ![State.Comparison.energy, .macronutrients].contains(comparison) {
+                        state.foodSortingStrategy = .value
+                        state.foodSortingOrder = .forward
+                    }
                     sortFoods(state: &state)
                     return .none
 
@@ -178,10 +185,13 @@ fileprivate extension Array<Food> {
             case .energy:
                 let descriptor = SortDescriptor(\Food.energy, order: order)
                 self.sort(using: descriptor)
-            case .protein, .carbohydrates, .fat, .cholesterol, .potassium, .sodium, .macronutrients:
+            case .protein, .carbohydrate, .fat, .cholesterol, .potassium, .sodium, .macronutrients, .sugar, .fiber, .saturatedFat:
                 let keyPath: KeyPath<Food, Quantity> = switch comparison {
                 case .protein: \.protein
-                case .carbohydrates: \.carbohydrate
+                case .carbohydrate: \.carbohydrate
+                case .sugar: \.sugar
+                case .fiber: \.fiber
+                case .saturatedFat: \.fatSaturated
                 case .fat: \.fatTotal
                 case .cholesterol: \.cholesterol
                 case .potassium: \.potassium

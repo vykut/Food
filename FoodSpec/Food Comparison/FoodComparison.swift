@@ -44,32 +44,65 @@ struct FoodComparison: View {
             case .protein:
                 QuantityComparisonChart(
                     foods: store.comparedFoods,
-                    keyPath: \.protein
+                    keyPath: \.protein,
+                    name: "Protein",
+                    color: .red
                 )
-            case .carbohydrates:
+            case .carbohydrate:
                 QuantityComparisonChart(
                     foods: store.comparedFoods,
-                    keyPath: \.carbohydrate
+                    keyPath: \.carbohydrate,
+                    name: "Carbohydrate",
+                    color: .yellow
+                )
+            case .sugar:
+                QuantityComparisonChart(
+                    foods: store.comparedFoods,
+                    keyPath: \.sugar,
+                    name: "Sugar",
+                    color: .teal
+                )
+            case .fiber:
+                QuantityComparisonChart(
+                    foods: store.comparedFoods,
+                    keyPath: \.fiber,
+                    name: "Fiber",
+                    color: .green
                 )
             case .fat:
                 QuantityComparisonChart(
                     foods: store.comparedFoods,
-                    keyPath: \.fatTotal
+                    keyPath: \.fatTotal,
+                    name: "Fat",
+                    color: .brown
+                )
+            case .saturatedFat:
+                QuantityComparisonChart(
+                    foods: store.comparedFoods,
+                    keyPath: \.fatSaturated,
+                    name: "Saturated Fat",
+                    color: .gray
                 )
             case .cholesterol:
                 QuantityComparisonChart(
                     foods: store.comparedFoods,
-                    keyPath: \.cholesterol
+                    keyPath: \.cholesterol.convertedToMilligrams,
+                    name: "Cholesterol",
+                    color: .orange
                 )
             case .potassium:
                 QuantityComparisonChart(
                     foods: store.comparedFoods,
-                    keyPath: \.potassium
+                    keyPath: \.potassium.convertedToMilligrams,
+                    name: "Potassium",
+                    color: .purple
                 )
             case .sodium:
                 QuantityComparisonChart(
                     foods: store.comparedFoods,
-                    keyPath: \.sodium
+                    keyPath: \.sodium.convertedToMilligrams,
+                    name: "Sodium",
+                    color: .mint
                 )
             case .macronutrients:
                 MacronutrientsComparisonChart(
@@ -78,7 +111,6 @@ struct FoodComparison: View {
         }
     }
 
-    @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             sortMenu
@@ -134,4 +166,10 @@ struct FoodComparison: View {
             }
         )
     )
+}
+
+fileprivate extension Quantity {
+    var convertedToMilligrams: Self {
+        converted(to: .milligrams)
+    }
 }

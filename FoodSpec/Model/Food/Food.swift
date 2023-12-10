@@ -32,41 +32,7 @@ F: \(fatTotal.formatted(width: .narrow))
     }
 }
 
-extension Food: FetchableRecord {
-    init(row: Row) throws {
-        struct DecodingError: Error { }
-        guard
-            let id = row["id"].flatMap({ Int64.fromDatabaseValue($0.databaseValue) }),
-            let name = row["name"].flatMap({ String.fromDatabaseValue($0.databaseValue) }),
-            let energy = row["energy"].flatMap({ Energy.fromDatabaseValue($0.databaseValue) }),
-            let fatTotal = row["fatTotal"].flatMap({ Quantity.fromDatabaseValue($0.databaseValue) }),
-            let fatSaturated = row["fatSaturated"].flatMap({ Quantity.fromDatabaseValue($0.databaseValue) }),
-            let protein = row["protein"].flatMap({ Quantity.fromDatabaseValue($0.databaseValue) }),
-            let sodium = row["sodium"].flatMap({ Quantity.fromDatabaseValue($0.databaseValue) }),
-            let potassium = row["potassium"].flatMap({ Quantity.fromDatabaseValue($0.databaseValue) }),
-            let cholesterol = row["cholesterol"].flatMap({ Quantity.fromDatabaseValue($0.databaseValue) }),
-            let carbohydrate = row["carbohydrate"].flatMap({ Quantity.fromDatabaseValue($0.databaseValue) }),
-            let fiber = row["fiber"].flatMap({ Quantity.fromDatabaseValue($0.databaseValue) }),
-            let sugar = row["sugar"].flatMap({ Quantity.fromDatabaseValue($0.databaseValue) })
-        else { throw DecodingError() }
-        self.init(
-            id: id,
-            name: name,
-            energy: energy,
-            fatTotal: fatTotal,
-            fatSaturated: fatSaturated,
-            protein: protein,
-            sodium: sodium.converted(to: .milligrams),
-            potassium: potassium.converted(to: .milligrams),
-            cholesterol: cholesterol.converted(to: .milligrams),
-            carbohydrate: carbohydrate,
-            fiber: fiber,
-            sugar: sugar
-        )
-    }
-}
-
-extension Food: MutablePersistableRecord {
+extension Food: FetchableRecord, MutablePersistableRecord {
     mutating func didInsert(_ inserted: InsertionSuccess) {
         id = inserted.rowID
     }

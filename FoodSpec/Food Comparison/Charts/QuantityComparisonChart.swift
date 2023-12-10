@@ -11,15 +11,17 @@ import Charts
 struct QuantityComparisonChart: View {
     let foods: [Food]
     let keyPath: KeyPath<Food, Quantity>
+    let name: String
+    let color: Color
 
     var body: some View {
         Chart(foods, id: \.id) { food in
             let quantity = food[keyPath: keyPath]
             BarMark(
-                x: .value(quantityName, quantity),
+                x: .value(name, quantity),
                 y: .value("Name", "\(food.name.capitalized)\n\(quantity.formatted(width: .abbreviated, usage: .asProvided))")
             )
-            .foregroundStyle(by: .value("Type", quantityName))
+            .foregroundStyle(by: .value("Type", name))
             .alignsMarkStylesWithPlotArea()
         }
         .chartXAxis {
@@ -42,33 +44,9 @@ struct QuantityComparisonChart: View {
             ]
         )
         .chartForegroundStyleScale(
-            range: [barColor]
+            range: [color.quinary]
         )
         .chartLegend(.hidden)
-    }
-
-    private var barColor: some ShapeStyle {
-        switch keyPath {
-            case \.protein: Color.red
-            case \.carbohydrate: Color.yellow
-            case \.fatTotal: Color.brown
-            case \.potassium: Color.purple
-            case \.sodium: Color.mint
-            case \.cholesterol: Color.orange
-            default: fatalError("Unhandled keyPath")
-        }
-    }
-
-    private var quantityName: String {
-        switch keyPath {
-            case \.protein: "Protein"
-            case \.carbohydrate: "Carbohydrate"
-            case \.fatTotal: "Fat"
-            case \.potassium: "Potassium"
-            case \.sodium: "Sodium"
-            case \.cholesterol: "Cholesterol"
-            default: fatalError("Unhandled keyPath")
-        }
     }
 }
 
@@ -83,7 +61,9 @@ struct QuantityComparisonChart: View {
             .init(id: 2, name: "banana", quantity: 89.4),
             .init(id: 2, name: "olive oil", quantity: 869.2),
         ],
-        keyPath: \.potassium
+        keyPath: \.potassium,
+        name: "Potassium",
+        color: .purple
     )
     .padding()
 }
@@ -108,9 +88,9 @@ fileprivate extension Food {
             fatTotal: quantity,
             fatSaturated: quantity,
             protein: quantity,
-            sodium: quantity,
-            potassium: quantity,
-            cholesterol: quantity,
+            sodium: quantity.converted(to: .milligrams),
+            potassium: quantity.converted(to: .milligrams),
+            cholesterol: quantity.converted(to: .milligrams),
             carbohydrate: quantity,
             fiber: quantity,
             sugar: quantity

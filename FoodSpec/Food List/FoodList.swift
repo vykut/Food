@@ -88,7 +88,7 @@ struct FoodList: View {
 
     private var recentSearches: some View {
         Section {
-            ForEach(self.store.recentFoods, id: \.self) { item in
+            ForEach(self.store.recentFoods, id: \.id) { item in
                 Button {
                     self.store.send(.didSelectRecentFood(item))
                 } label: {

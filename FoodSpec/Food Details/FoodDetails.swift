@@ -18,6 +18,7 @@ struct FoodDetails: View {
                 protein
                 carbohydrates
                 fat
+                cholesterol
                 potassium
                 sodium
                 energyBreakdown
@@ -87,7 +88,7 @@ struct FoodDetails: View {
         NutritionalValueCard(
             model: .init(
                 title: "Cholesterol",
-                value: store.food.cholesterol.measurement,
+                value: store.food.cholesterol.measurement.converted(to: .milligrams),
                 breakdown: []
             )
         )
@@ -97,7 +98,7 @@ struct FoodDetails: View {
         NutritionalValueCard(
             model: .init(
                 title: "Potassium",
-                value: store.food.potassium.measurement,
+                value: store.food.potassium.measurement.converted(to: .milligrams),
                 breakdown: []
             )
         )
@@ -107,7 +108,7 @@ struct FoodDetails: View {
         NutritionalValueCard(
             model: .init(
                 title: "Sodium",
-                value: store.food.sodium.measurement,
+                value: store.food.sodium.measurement.converted(to: .milligrams),
                 breakdown: []
             )
         )
