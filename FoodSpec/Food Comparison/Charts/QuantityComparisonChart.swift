@@ -44,7 +44,7 @@ struct QuantityComparisonChart: View {
             ]
         )
         .chartForegroundStyleScale(
-            range: [color.quinary]
+            range: [color]
         )
         .chartLegend(.hidden)
     }
