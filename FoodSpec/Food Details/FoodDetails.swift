@@ -52,8 +52,8 @@ struct FoodDetails: View {
     var carbohydrates: some View {
         NutritionalValueCard(
             model: .init(
-                title: "Carbohydrates",
-                value: store.food.carbohydrates.measurement,
+                title: "Carbohydrate",
+                value: store.food.carbohydrate.measurement,
                 breakdown: [
                     .init(
                         title: "Fiber",
@@ -79,6 +79,16 @@ struct FoodDetails: View {
                         value: store.food.fatSaturated.measurement
                     )
                 ]
+            )
+        )
+    }
+
+    var cholesterol: some View {
+        NutritionalValueCard(
+            model: .init(
+                title: "Cholesterol",
+                value: store.food.cholesterol.measurement,
+                breakdown: []
             )
         )
     }

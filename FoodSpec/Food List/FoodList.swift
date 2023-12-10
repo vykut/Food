@@ -125,13 +125,11 @@ struct FoodList: View {
         }
     }
 
-    @ViewBuilder
     private var compareButton: some View {
-        if store.shouldShowCompareButton {
-            Button("Compare") {
-                store.send(.didTapCompare)
-            }
+        Button("Compare") {
+            store.send(.didTapCompare)
         }
+        .disabled(store.isCompareButtonDisabled)
     }
 
     private var sortRecentFoodsMenu: some View {
@@ -159,6 +157,7 @@ struct FoodList: View {
                 .imageScale(.medium)
         }
         .menuActionDismissBehavior(.disabled)
+        .disabled(store.isSortMenuDisabled)
     }
 
     private func deleteItems(offsets: IndexSet) {

@@ -43,8 +43,12 @@ struct FoodListReducer {
             isSearchFocused && !searchResults.isEmpty && inlineFood == nil
         }
 
-        var shouldShowCompareButton: Bool {
-            recentFoods.count > 1
+        var isCompareButtonDisabled: Bool {
+            recentFoods.count < 2
+        }
+
+        var isSortMenuDisabled: Bool {
+            recentFoods.count < 2
         }
     }
 

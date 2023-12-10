@@ -111,7 +111,7 @@ fileprivate extension Food {
             sodium: .zero,
             potassium: .zero,
             cholesterol: .zero,
-            carbohydrates: .zero,
+            carbohydrate: .zero,
             fiber: .zero,
             sugar: .zero
         )

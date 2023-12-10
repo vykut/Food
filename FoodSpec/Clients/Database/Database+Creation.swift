@@ -71,7 +71,7 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
             t.column("sodium", .double)
             t.column("potassium", .double)
             t.column("cholesterol", .double)
-            t.column("carbohydrates", .double)
+            t.column("carbohydrate", .double)
             t.column("fiber", .double)
             t.column("sugar", .double)
         }

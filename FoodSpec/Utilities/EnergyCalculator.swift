@@ -33,7 +33,7 @@ struct EnergyCalculator {
     func calculateEnergy(for food: Food) -> EnergyBreakdown {
         .init(
             protein: calculateEnergy(protein: food.protein),
-            carbohydrates: calculateEnergy(carbohydrates: food.carbohydrates),
+            carbohydrates: calculateEnergy(carbohydrates: food.carbohydrate),
             fat: calculateEnergy(fat: food.fatTotal)
         )
     }

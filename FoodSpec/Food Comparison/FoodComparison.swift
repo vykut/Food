@@ -38,7 +38,7 @@ struct FoodComparison: View {
     private var chart: some View {
         switch store.comparison {
             case .energy:
-                EnergyComparisonChartV2(
+                EnergyBreakdownComparisonChart(
                     foods: store.comparedFoods
                 )
             case .protein:
@@ -49,12 +49,17 @@ struct FoodComparison: View {
             case .carbohydrates:
                 QuantityComparisonChart(
                     foods: store.comparedFoods,
-                    keyPath: \.carbohydrates
+                    keyPath: \.carbohydrate
                 )
             case .fat:
                 QuantityComparisonChart(
                     foods: store.comparedFoods,
                     keyPath: \.fatTotal
+                )
+            case .cholesterol:
+                QuantityComparisonChart(
+                    foods: store.comparedFoods,
+                    keyPath: \.cholesterol
                 )
             case .potassium:
                 QuantityComparisonChart(
@@ -67,29 +72,8 @@ struct FoodComparison: View {
                     keyPath: \.sodium
                 )
             case .macronutrients:
-                QuantityComparisonChartV2(
-                    comparisons: store.comparedFoods.map {
-                        QuantityComparison(
-                            name: $0.name,
-                            quantities: [
-                                .init(
-                                    name: "Protein",
-                                    quantity: $0.protein,
-                                    color: .red
-                                ),
-                                .init(
-                                    name: "Carbohydrates",
-                                    quantity: $0.carbohydrates,
-                                    color: .yellow
-                                ),
-                                .init(
-                                    name: "Fat",
-                                    quantity: $0.fatTotal,
-                                    color: .brown
-                                ),
-                            ]
-                        )
-                    }
+                MacronutrientsComparisonChart(
+                    foods: store.comparedFoods
                 )
         }
     }

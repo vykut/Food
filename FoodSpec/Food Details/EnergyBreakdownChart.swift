@@ -16,7 +16,7 @@ struct EnergyBreakdownChart: View {
         let breakdown = calculator.calculateEnergy(for: food)
         let categories = [
             (name: "Protein", energy: breakdown.protein, ratio: breakdown.proteinRatio, color: Color.red),
-            (name: "Carbohydrates", energy: breakdown.carbohydrates, ratio: breakdown.carbohydratesRatio, color: .yellow),
+            (name: "Carbohydrate", energy: breakdown.carbohydrates, ratio: breakdown.carbohydratesRatio, color: .yellow),
             (name: "Fat", energy: breakdown.fat, ratio: breakdown.fatRatio, color: .brown),
         ]
         Chart {
@@ -57,7 +57,7 @@ extension CGRect {
             sodium: .init(value: 4, unit: .grams),
             potassium: .init(value: 4, unit: .grams),
             cholesterol: .init(value: 4, unit: .grams),
-            carbohydrates: .init(value: 9, unit: .grams),
+            carbohydrate: .init(value: 9, unit: .grams),
             fiber: .init(value: 4, unit: .grams),
             sugar: .init(value: 4, unit: .grams)
         )

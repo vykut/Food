@@ -23,12 +23,11 @@ struct QuantityComparisonChart: View {
             .alignsMarkStylesWithPlotArea()
         }
         .chartXAxis {
-            AxisMarks(preset: .inset) {
+            AxisMarks(preset: .inset) { value in
+                let quantity = value.as(Quantity.self)!
+                let plottableQuantity = Quantity(value: quantity.value, unit: foods.first![keyPath: keyPath].unit)
                 AxisGridLine()
-                AxisValueLabel(
-                    format: QuantityFormat.measurement(width: .abbreviated, usage: .asProvided),
-                    anchor: .top
-                )
+                AxisValueLabel(plottableQuantity.formatted(width: .abbreviated, usage: .asProvided), anchor: .top)
             }
         }
         .chartYAxis {
@@ -38,7 +37,7 @@ struct QuantityComparisonChart: View {
         }
         .chartXScale(
             domain: [
-                Quantity.zero,
+                .init(value: 0, unit: foods.first![keyPath: keyPath].unit),
                 foods.max(by: { $0[keyPath: keyPath] < $1[keyPath: keyPath] })![keyPath: keyPath]
             ]
         )
@@ -51,10 +50,11 @@ struct QuantityComparisonChart: View {
     private var barColor: some ShapeStyle {
         switch keyPath {
             case \.protein: Color.red
-            case \.carbohydrates: Color.yellow
+            case \.carbohydrate: Color.yellow
             case \.fatTotal: Color.brown
             case \.potassium: Color.purple
             case \.sodium: Color.mint
+            case \.cholesterol: Color.orange
             default: fatalError("Unhandled keyPath")
         }
     }
@@ -62,10 +62,11 @@ struct QuantityComparisonChart: View {
     private var quantityName: String {
         switch keyPath {
             case \.protein: "Protein"
-            case \.carbohydrates: "Carbohydrates"
+            case \.carbohydrate: "Carbohydrate"
             case \.fatTotal: "Fat"
             case \.potassium: "Potassium"
             case \.sodium: "Sodium"
+            case \.cholesterol: "Cholesterol"
             default: fatalError("Unhandled keyPath")
         }
     }
@@ -110,7 +111,7 @@ fileprivate extension Food {
             sodium: quantity,
             potassium: quantity,
             cholesterol: quantity,
-            carbohydrates: quantity,
+            carbohydrate: quantity,
             fiber: quantity,
             sugar: quantity
         )

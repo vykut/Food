@@ -50,6 +50,7 @@ struct FoodComparisonReducer {
             case protein
             case carbohydrates
             case fat
+            case cholesterol
             case potassium
             case sodium
             case macronutrients
@@ -154,7 +155,7 @@ fileprivate extension Array<Food> {
             case .protein:
                 sort(using: SortDescriptor(\.protein, order: order))
             case .carbohydrates:
-                sort(using: SortDescriptor(\.carbohydrates, order: order))
+                sort(using: SortDescriptor(\.carbohydrate, order: order))
             case .fat:
                 sort(using: SortDescriptor(\.fatTotal, order: order))
         }
@@ -177,11 +178,12 @@ fileprivate extension Array<Food> {
             case .energy:
                 let descriptor = SortDescriptor(\Food.energy, order: order)
                 self.sort(using: descriptor)
-            case .protein, .carbohydrates, .fat, .potassium, .sodium, .macronutrients:
+            case .protein, .carbohydrates, .fat, .cholesterol, .potassium, .sodium, .macronutrients:
                 let keyPath: KeyPath<Food, Quantity> = switch comparison {
                 case .protein: \.protein
-                case .carbohydrates: \.carbohydrates
+                case .carbohydrates: \.carbohydrate
                 case .fat: \.fatTotal
+                case .cholesterol: \.cholesterol
                 case .potassium: \.potassium
                 case .sodium: \.sodium
                 case .macronutrients: \.macronutrients
@@ -199,8 +201,8 @@ fileprivate extension Array<Food> {
     }
 }
 
-fileprivate extension Food {
+extension Food {
     var macronutrients: Quantity {
-        protein + carbohydrates + fatTotal
+        protein + carbohydrate + fatTotal
     }
 }

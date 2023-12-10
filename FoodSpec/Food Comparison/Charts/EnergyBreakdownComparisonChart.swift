@@ -1,5 +1,5 @@
 //
-//  EnergyComparisonChartV2.swift
+//  EnergyBreakdownComparisonChart.swift
 //  FoodSpec
 //
 //  Created by Victor Socaciu on 10/12/2023.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-struct EnergyComparisonChartV2: View {
+struct EnergyBreakdownComparisonChart: View {
     let foods: [Food]
     let calculator = EnergyCalculator()
 
@@ -29,7 +29,7 @@ struct EnergyComparisonChartV2: View {
         ForEach(
             [
                 (name: "Protein", energy: energy.protein),
-                (name: "Carbohydrates", energy: energy.carbohydrates),
+                (name: "Carbohydrate", energy: energy.carbohydrates),
                 (name: "Fat", energy: energy.fat)
             ],
             id: \.name
@@ -78,7 +78,7 @@ Fat: \(breakdown.fatRatio.formatted(.percent.precision(.fractionLength(0...1))))
 }
 
 #Preview {
-    EnergyComparisonChartV2(
+    EnergyBreakdownComparisonChart(
         foods: [
             .init(id: 1, name: "banana", energy: 89.4, protein: 1.1, carbs: 23.2, fat: 0.3),
             .init(id: 2, name: "blueberry", energy: 56.2, protein: 0.7, carbs: 14.8, fat: 0),
@@ -114,7 +114,7 @@ fileprivate extension Food {
             sodium: .zero,
             potassium: .zero,
             cholesterol: .zero,
-            carbohydrates: .init(grams: carbs),
+            carbohydrate: .init(grams: carbs),
             fiber: .zero,
             sugar: .zero
         )
