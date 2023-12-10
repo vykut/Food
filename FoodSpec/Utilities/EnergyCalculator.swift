@@ -10,19 +10,19 @@ import Foundation
 struct EnergyCalculator {
     struct EnergyBreakdown: Hashable {
         let protein: Energy
-        let carbohydrates: Energy
+        let carbohydrate: Energy
         let fat: Energy
 
         var total: Energy {
-            protein + carbohydrates + fat
+            protein + carbohydrate + fat
         }
 
         var proteinRatio: Double {
             protein.value / total.value
         }
 
-        var carbohydratesRatio: Double {
-            carbohydrates.value / total.value
+        var carbohydrateRatio: Double {
+            carbohydrate.value / total.value
         }
 
         var fatRatio: Double {
@@ -33,7 +33,7 @@ struct EnergyCalculator {
     func calculateEnergy(for food: Food) -> EnergyBreakdown {
         .init(
             protein: calculateEnergy(protein: food.protein),
-            carbohydrates: calculateEnergy(carbohydrates: food.carbohydrate),
+            carbohydrate: calculateEnergy(carbohydrate: food.carbohydrate),
             fat: calculateEnergy(fat: food.fatTotal)
         )
     }
@@ -42,7 +42,7 @@ struct EnergyCalculator {
         calculateEnergy(quantity: quantity, energyPerGram: 4)
     }
 
-    func calculateEnergy(carbohydrates quantity: Quantity) -> Energy {
+    func calculateEnergy(carbohydrate quantity: Quantity) -> Energy {
         calculateEnergy(quantity: quantity, energyPerGram: 4)
     }
 

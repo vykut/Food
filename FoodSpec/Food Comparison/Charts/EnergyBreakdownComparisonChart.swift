@@ -29,7 +29,7 @@ struct EnergyBreakdownComparisonChart: View {
         ForEach(
             [
                 (name: "Protein", energy: energy.protein),
-                (name: "Carbohydrate", energy: energy.carbohydrates),
+                (name: "Carbohydrate", energy: energy.carbohydrate),
                 (name: "Fat", energy: energy.fat)
             ],
             id: \.name
@@ -71,7 +71,7 @@ struct EnergyBreakdownComparisonChart: View {
 \(food.name.capitalized)
 \(food.energy.formatted(width: .abbreviated)) | \
 Protein: \(breakdown.proteinRatio.formatted(.percent.precision(.fractionLength(0...1)))) | \
-Carbohydrates: \(breakdown.carbohydratesRatio.formatted(.percent.precision(.fractionLength(0...1)))) | \
+Carbohydrates: \(breakdown.carbohydrateRatio.formatted(.percent.precision(.fractionLength(0...1)))) | \
 Fat: \(breakdown.fatRatio.formatted(.percent.precision(.fractionLength(0...1))))
 """
     }

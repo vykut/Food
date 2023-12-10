@@ -16,7 +16,7 @@ struct EnergyBreakdownChart: View {
         let breakdown = calculator.calculateEnergy(for: food)
         let categories = [
             (name: "Protein", energy: breakdown.protein, ratio: breakdown.proteinRatio, color: Color.red),
-            (name: "Carbohydrate", energy: breakdown.carbohydrates, ratio: breakdown.carbohydratesRatio, color: .yellow),
+            (name: "Carbohydrate", energy: breakdown.carbohydrate, ratio: breakdown.carbohydrateRatio, color: .yellow),
             (name: "Fat", energy: breakdown.fat, ratio: breakdown.fatRatio, color: .brown),
         ]
         Chart {

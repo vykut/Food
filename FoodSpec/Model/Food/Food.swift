@@ -83,8 +83,9 @@ extension Quantity: DatabaseValueConvertible {
 }
 
 extension Food {
-    init(foodApiModel: FoodApiModel) {
+    init(foodApiModel: FoodApiModel, id: Int64? = nil) {
         self.init(
+            id: id,
             name: foodApiModel.name,
             energy: .init(value: foodApiModel.calories, unit: .kilocalories),
             fatTotal: .init(value: foodApiModel.fatTotalG, unit: .grams),
@@ -102,8 +103,16 @@ extension Food {
 
 extension Food {
     static var preview: Self {
+        preview(id: nil)
+    }
+
+    static func preview(id: Int64) -> Self {
+        preview(id: Optional<Int64>.some(id))
+    }
+
+    private static func preview(id: Int64?) -> Self {
         .init(
-            id: 1,
+            id: id,
             name: "eggplant",
             energy: .init(value: 34.7, unit: .kilocalories),
             fatTotal: .init(value: 0.2, unit: .grams),

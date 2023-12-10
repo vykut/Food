@@ -174,7 +174,7 @@ struct FoodList: View {
                     .transformDependency(\.databaseClient) {
                         $0.observeFoods = { _, _ in
                             .init {
-                                $0.yield([.preview, .preview, .preview])
+                                $0.yield([.preview(id: 1), .preview(id: 2), .preview(id: 3)])
                             }
                         }
                     }

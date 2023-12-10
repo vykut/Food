@@ -125,7 +125,7 @@ final class FoodListReducerTests: XCTestCase {
 
     func testFullFlow_newInstallation() async throws {
         let eggplantApi = FoodApiModel.eggplant
-        let eggplant = Food(foodApiModel: eggplantApi)
+        let eggplant = Food(foodApiModel: eggplantApi, id: 1)
         let ribeyeApi = FoodApiModel.ribeye
         let ribeye = Food(foodApiModel: ribeyeApi)
         let store = TestStore(

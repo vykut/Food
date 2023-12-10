@@ -20,7 +20,7 @@ final class EnergyCalculatorTests: XCTestCase {
             sodium: .zero,
             potassium: .zero,
             cholesterol: .zero,
-            carbohydrates: .init(value: 8.7, unit: .grams),
+            carbohydrate: .init(value: 8.7, unit: .grams),
             fiber: .zero,
             sugar: .zero
         )
@@ -30,7 +30,7 @@ final class EnergyCalculatorTests: XCTestCase {
             breakdown,
             .init(
                 protein: .init(kcal: 3.2),
-                carbohydrates: .init(kcal: 34.8),
+                carbohydrate: .init(kcal: 34.8),
                 fat: .init(kcal: 1.8)
             )
         )
@@ -46,14 +46,14 @@ final class EnergyCalculatorTests: XCTestCase {
             sodium: .zero,
             potassium: .zero,
             cholesterol: .zero,
-            carbohydrates: .init(value: 1, unit: .ounces),
+            carbohydrate: .init(value: 1, unit: .ounces),
             fiber: .zero,
             sugar: .zero
         )
         let energyCalculator = EnergyCalculator()
         let breakdown = energyCalculator.calculateEnergy(for: food)
         XCTAssertEqual(breakdown.protein.value, 400, accuracy: 0.01)
-        XCTAssertEqual(breakdown.carbohydrates.value, 114, accuracy: 1)
+        XCTAssertEqual(breakdown.carbohydrate.value, 114, accuracy: 1)
         XCTAssertEqual(breakdown.fat.value, 0.9, accuracy: 0.01)
     }
 
@@ -67,7 +67,7 @@ final class EnergyCalculatorTests: XCTestCase {
             sodium: .zero,
             potassium: .zero,
             cholesterol: .zero,
-            carbohydrates: .init(value: 8.7, unit: .grams),
+            carbohydrate: .init(value: 8.7, unit: .grams),
             fiber: .zero,
             sugar: .zero
         )
@@ -75,7 +75,7 @@ final class EnergyCalculatorTests: XCTestCase {
         let breakdown = energyCalculator.calculateEnergy(for: food)
         XCTAssertEqual(breakdown.total, .init(kcal: 39.8))
         XCTAssertEqual(breakdown.proteinRatio, 3.2 / 39.8)
-        XCTAssertEqual(breakdown.carbohydratesRatio, 34.8 / 39.8)
+        XCTAssertEqual(breakdown.carbohydrateRatio, 34.8 / 39.8)
         XCTAssertEqual(breakdown.fatRatio, 1.8 / 39.8)
     }
 }
