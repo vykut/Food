@@ -98,7 +98,7 @@ extension Energy: Plottable {
     }
 
     init?(primitivePlottable: Double) {
-        self.init(kcal: primitivePlottable)
+        self = .kcal(primitivePlottable)
     }
 }
 
@@ -107,14 +107,14 @@ fileprivate extension Food {
         self.init(
             id: id,
             name: name,
-            energy: .init(kcal: energy),
-            fatTotal: .init(grams: fat),
+            energy: .kcal(energy),
+            fatTotal: .grams(fat),
             fatSaturated: .zero,
-            protein: .init(grams: protein),
+            protein: .grams(protein),
             sodium: .zero,
             potassium: .zero,
             cholesterol: .zero,
-            carbohydrate: .init(grams: carbs),
+            carbohydrate: .grams(carbs),
             fiber: .zero,
             sugar: .zero
         )

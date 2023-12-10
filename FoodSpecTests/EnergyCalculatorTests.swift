@@ -29,9 +29,9 @@ final class EnergyCalculatorTests: XCTestCase {
         XCTAssertNoDifference(
             breakdown,
             .init(
-                protein: .init(kcal: 3.2),
-                carbohydrate: .init(kcal: 34.8),
-                fat: .init(kcal: 1.8)
+                protein: .kcal(3.2),
+                carbohydrate: .kcal(34.8),
+                fat: .kcal(1.8)
             )
         )
     }
@@ -73,7 +73,7 @@ final class EnergyCalculatorTests: XCTestCase {
         )
         let energyCalculator = EnergyCalculator()
         let breakdown = energyCalculator.calculateEnergy(for: food)
-        XCTAssertEqual(breakdown.total, .init(kcal: 39.8))
+        XCTAssertEqual(breakdown.total, .kcal(39.8))
         XCTAssertEqual(breakdown.proteinRatio, 3.2 / 39.8)
         XCTAssertEqual(breakdown.carbohydrateRatio, 34.8 / 39.8)
         XCTAssertEqual(breakdown.fatRatio, 1.8 / 39.8)

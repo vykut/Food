@@ -44,8 +44,8 @@ struct Energy: Codable, Hashable {
 extension Energy {
     static var zero: Self { .init(value: 0, unit: .kilocalories) }
 
-    init(kcal: Double) {
-        self.init(value: kcal, unit: .kilocalories)
+    static func kcal(_ value: Double) -> Self {
+        .init(value: value, unit: .kilocalories)
     }
 }
 

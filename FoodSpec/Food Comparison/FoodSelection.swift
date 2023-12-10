@@ -9,8 +9,6 @@ import SwiftUI
 import ComposableArchitecture
 
 struct FoodSelection: View {
-    typealias Comparison = FoodComparisonReducer.State.Comparison
-
     @Bindable var store: StoreOf<FoodComparisonReducer>
 
     var body: some View {
@@ -19,7 +17,7 @@ struct FoodSelection: View {
         }
         .listStyle(.sidebar)
         .searchable(
-            text: $store.searchQuery.sending(\.updateSearchQuery),
+            text: $store.filterQuery.sending(\.updateFilterQuery),
             prompt: "Filter"
         )
         .environment(\.editMode, .constant(.active))

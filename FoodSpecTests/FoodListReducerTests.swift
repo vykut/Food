@@ -34,6 +34,8 @@ final class FoodListReducerTests: XCTestCase {
             state.shouldShowNoResults = false
             state.foodDetails = nil
             state.billboard = .init(banner: nil)
+            state.foodComparison = nil
+            state.alert = nil
         }
     }
 
@@ -125,7 +127,7 @@ final class FoodListReducerTests: XCTestCase {
 
     func testFullFlow_newInstallation() async throws {
         let eggplantApi = FoodApiModel.eggplant
-        let eggplant = Food(foodApiModel: eggplantApi, id: 1)
+        let eggplant = Food(foodApiModel: eggplantApi)
         let ribeyeApi = FoodApiModel.ribeye
         let ribeye = Food(foodApiModel: ribeyeApi)
         let store = TestStore(
@@ -169,6 +171,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.receive(\.didFetchRecentFoods) {
             $0.isSearchFocused = true
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
         XCTAssertNoDifference(store.state.shouldShowRecentSearches, false)
         XCTAssertNoDifference(store.state.shouldShowPrompt, true)
         XCTAssertNoDifference(store.state.shouldShowSpinner, false)
@@ -201,6 +205,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.receive(\.didFetchRecentFoods) {
             $0.recentFoods = [eggplant]
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
 
         await store.send(.updateSearchQuery("")) {
             $0.searchQuery = ""
@@ -239,6 +245,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.send(.didFetchRecentFoods([ribeye, eggplant])) {
             $0.recentFoods = [ribeye, eggplant]
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, false)
 
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [eggplant, ribeye])
@@ -259,6 +267,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.receive(\.didFetchRecentFoods) {
             $0.recentFoods = [eggplant, ribeye]
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, false)
 
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [ribeye, eggplant])
@@ -289,6 +299,8 @@ final class FoodListReducerTests: XCTestCase {
         await store.send(.didFetchRecentFoods([eggplant])) {
             $0.recentFoods = [eggplant]
         }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
+        XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
 
         await store.send(.didSelectRecentFood(eggplant)) {
             $0.foodDetails = .init(food: eggplant)
@@ -503,6 +515,20 @@ final class FoodListReducerTests: XCTestCase {
         }
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = secondAd
+        }
+    }
+
+    func testIntegrationWithComparisonFeature() async throws {
+        let store = TestStore(
+            initialState: FoodListReducer.State(
+                recentFoods: [.eggplant, .ribeye]
+            ),
+            reducer: {
+                FoodListReducer()
+            }
+        )
+        await store.send(.didTapCompare) {
+            $0.foodComparison = .init(foods: [.eggplant, .ribeye])
         }
     }
 }

@@ -70,8 +70,12 @@ extension Quantity {
         .init(value: .zero, unit: unit)
     }
 
-    init(grams: Double) {
-        self.init(value: grams, unit: .grams)
+    static func grams(_ value: Double) -> Self {
+        .init(value: value, unit: .grams)
+    }
+
+    static func milligrams(_ value: Double) -> Self {
+        .init(value: value, unit: .milligrams)
     }
 }
 

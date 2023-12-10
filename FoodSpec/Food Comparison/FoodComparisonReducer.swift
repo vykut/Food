@@ -15,16 +15,16 @@ struct FoodComparisonReducer {
         var foods: [Food] = []
         var selectedFoodIds: Set<Int64?> = []
         var comparedFoods: [Food] = []
-        var searchQuery: String = ""
+        var filterQuery: String = ""
         var isShowingComparison: Bool = false
         var comparison: Comparison = .energy
         var foodSortingStrategy: SortingStrategy = .value
         var foodSortingOrder: SortOrder = .forward
 
         var filteredFoods: [Food] {
-            guard !searchQuery.isEmpty else { return foods }
+            guard !filterQuery.isEmpty else { return foods }
             return foods.filter {
-                $0.name.range(of: searchQuery, options: .caseInsensitive) != nil
+                $0.name.range(of: filterQuery, options: .caseInsensitive) != nil
             }
         }
 
@@ -45,22 +45,6 @@ struct FoodComparisonReducer {
             }
         }
 
-        enum Comparison: String, Identifiable, Hashable, CaseIterable {
-            case energy
-            case protein
-            case carbohydrate
-            case fiber
-            case sugar
-            case fat
-            case saturatedFat = "saturated fat"
-            case cholesterol
-            case potassium
-            case sodium
-            case macronutrients
-
-            var id: Self { self }
-        }
-
         enum SortingStrategy: String, Identifiable, Hashable, CaseIterable {
             case name
             case value
@@ -75,12 +59,12 @@ struct FoodComparisonReducer {
     @CasePathable
     enum Action {
         case didTapCancel
-        case didTapCompare(State.Comparison)
+        case didTapCompare(Comparison)
         case didChangeSelection(Set<Int64?>)
         case didNavigateToComparison(Bool)
-        case updateSearchQuery(String)
+        case updateFilterQuery(String)
         case updateSortingStrategy(State.SortingStrategy)
-        case updateComparisonType(State.Comparison)
+        case updateComparisonType(Comparison)
     }
 
     @Dependency(\.dismiss) private var dismiss
@@ -103,8 +87,8 @@ struct FoodComparisonReducer {
 
                     return .none
 
-                case .updateSearchQuery(let query):
-                    state.searchQuery = query
+                case .updateFilterQuery(let query):
+                    state.filterQuery = query
                     return .none
 
                 case .updateSortingStrategy(let strategy):
@@ -149,10 +133,10 @@ struct FoodComparisonReducer {
     }
 }
 
-fileprivate extension Array<Food> {
+extension Array<Food> {
     mutating func sort(
         by strategy: FoodComparisonReducer.State.SortingStrategy,
-        comparison: FoodComparisonReducer.State.Comparison,
+        comparison: Comparison,
         order: SortOrder
     ) {
         switch strategy {
@@ -171,7 +155,7 @@ fileprivate extension Array<Food> {
 
     func sorted(
         by strategy: FoodComparisonReducer.State.SortingStrategy,
-        comparison: FoodComparisonReducer.State.Comparison,
+        comparison: Comparison,
         order: SortOrder
     ) -> [Food] {
         var copy = self
@@ -180,8 +164,8 @@ fileprivate extension Array<Food> {
     }
 }
 
-fileprivate extension Array<Food> {
-    mutating func sort(by comparison: FoodComparisonReducer.State.Comparison, order: SortOrder) {
+extension Array<Food> {
+    mutating func sort(by comparison: Comparison, order: SortOrder) {
         switch comparison {
             case .energy:
                 let descriptor = SortDescriptor(\Food.energy, order: order)
@@ -205,7 +189,7 @@ fileprivate extension Array<Food> {
         }
     }
 
-    func sorted(by comparison: FoodComparisonReducer.State.Comparison, order: SortOrder) -> [Food] {
+    func sorted(by comparison: Comparison, order: SortOrder) -> [Food] {
         var copy = self
         copy.sort(by: comparison, order: order)
         return copy

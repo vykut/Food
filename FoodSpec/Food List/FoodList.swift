@@ -99,7 +99,7 @@ struct FoodList: View {
         } header: {
             Text("Recent Searches")
         } footer: {
-            Text("Values per \(Quantity(grams: 100).formatted(width: .wide))")
+            Text("Values per \(Quantity.grams( 100).formatted(width: .wide))")
                 .font(.footnote)
         }
     }

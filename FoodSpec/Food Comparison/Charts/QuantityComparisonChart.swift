@@ -74,13 +74,13 @@ extension Quantity: Plottable {
     }
 
     init?(primitivePlottable: Double) {
-        self.init(grams: primitivePlottable)
+        self = .grams(primitivePlottable)
     }
 }
 
 fileprivate extension Food {
     init(id: Int64, name: String, quantity: Double) {
-        let quantity = Quantity(grams: quantity)
+        let quantity = Quantity.grams(quantity)
         self.init(
             id: id,
             name: name,
