@@ -1,5 +1,5 @@
 //
-//  FoodListReducer.swift
+//  FoodListFeature.swift
 //  FoodSpec
 //
 //  Created by Victor Socaciu on 02/12/2023.
@@ -10,7 +10,7 @@ import GRDB
 import ComposableArchitecture
 
 @Reducer
-struct FoodListReducer {
+struct FoodListFeature {
     @ObservableState
     struct State: Equatable {
         var recentFoods: [Food] = []
@@ -21,10 +21,10 @@ struct FoodListReducer {
         var isSearching = false
         var searchResults: [Food] = []
         var shouldShowNoResults: Bool = false
-        var inlineFood: FoodDetailsReducer.State?
+        var inlineFood: FoodDetailsFeature.State?
         var billboard: Billboard = .init()
-        @Presents var foodDetails: FoodDetailsReducer.State?
-        @Presents var foodComparison: FoodComparisonReducer.State?
+        @Presents var foodDetails: FoodDetailsFeature.State?
+        @Presents var foodComparison: FoodComparisonFeature.State?
         @Presents var alert: AlertState<Action.Alert>?
 
         var shouldShowRecentSearches: Bool {
@@ -65,10 +65,10 @@ struct FoodListReducer {
         case didDeleteRecentFoods(IndexSet)
         case startSearching
         case didReceiveSearchFoods([FoodApiModel])
-        case foodDetails(PresentationAction<FoodDetailsReducer.Action>)
-        case inlineFood(FoodDetailsReducer.Action)
+        case foodDetails(PresentationAction<FoodDetailsFeature.Action>)
+        case inlineFood(FoodDetailsFeature.Action)
         case didTapCompare
-        case foodComparison(PresentationAction<FoodComparisonReducer.Action>)
+        case foodComparison(PresentationAction<FoodComparisonFeature.Action>)
         case updateRecentFoodsSortingStrategy(Food.SortingStrategy)
         case billboard(Billboard)
         case spotlight(Spotlight)
@@ -242,10 +242,10 @@ struct FoodListReducer {
             }
         }
         .ifLet(\.$foodDetails, action: \.foodDetails) {
-            FoodDetailsReducer()
+            FoodDetailsFeature()
         }
         .ifLet(\.$foodComparison, action: \.foodComparison) {
-            FoodComparisonReducer()
+            FoodComparisonFeature()
         }
         .ifLet(\.$alert, action: \.alert)
         SpotlightReducer()

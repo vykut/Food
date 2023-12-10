@@ -14,7 +14,7 @@ import ComposableArchitecture
 final class BillboardReducerTests: XCTestCase {
     func testOnAppear() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
                 BillboardReducer()
             }
@@ -41,7 +41,7 @@ final class BillboardReducerTests: XCTestCase {
 
     func testOnAppear_billboardClientError() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
                 BillboardReducer()
             }
@@ -57,7 +57,7 @@ final class BillboardReducerTests: XCTestCase {
 
     func testShowBanner() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
                 BillboardReducer()
             }

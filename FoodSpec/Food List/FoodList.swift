@@ -12,7 +12,7 @@ import CoreSpotlight
 import Billboard
 
 struct FoodList: View {
-    @Bindable var store: StoreOf<FoodListReducer>
+    @Bindable var store: StoreOf<FoodListFeature>
 
     var body: some View {
         NavigationStack {
@@ -168,9 +168,9 @@ struct FoodList: View {
 #Preview {
     FoodList(
         store: .init(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
                     .transformDependency(\.databaseClient) {
                         $0.observeFoods = { _, _ in
                             .init {

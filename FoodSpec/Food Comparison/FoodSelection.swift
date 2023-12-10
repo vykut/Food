@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct FoodSelection: View {
-    @Bindable var store: StoreOf<FoodComparisonReducer>
+    @Bindable var store: StoreOf<FoodComparisonFeature>
 
     var body: some View {
         List(selection: $store.selectedFoodIds.sending(\.didChangeSelection)) {
@@ -80,7 +80,7 @@ struct FoodSelection: View {
     NavigationStack {
         FoodSelection(
             store: .init(
-                initialState: FoodComparisonReducer.State(
+                initialState: FoodComparisonFeature.State(
                     foods: [
                         .init(id: 1, name: "eggplant"),
                         .init(id: 2, name: "ribeye"),
@@ -89,7 +89,7 @@ struct FoodSelection: View {
                     selectedFoodIds: [1]
                 ),
                 reducer: {
-                    FoodComparisonReducer()
+                    FoodComparisonFeature()
                         ._printChanges()
                 }
             )

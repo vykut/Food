@@ -1,5 +1,5 @@
 //
-//  FoodComparisonReducer.swift
+//  FoodComparisonFeature.swift
 //  FoodSpec
 //
 //  Created by Victor Socaciu on 09/12/2023.
@@ -9,7 +9,7 @@ import Foundation
 import ComposableArchitecture
 
 @Reducer
-struct FoodComparisonReducer {
+struct FoodComparisonFeature {
     @ObservableState
     struct State: Hashable {
         var foods: [Food] = []
@@ -135,7 +135,7 @@ struct FoodComparisonReducer {
 
 extension Array<Food> {
     mutating func sort(
-        by strategy: FoodComparisonReducer.State.SortingStrategy,
+        by strategy: FoodComparisonFeature.State.SortingStrategy,
         comparison: Comparison,
         order: SortOrder
     ) {
@@ -154,7 +154,7 @@ extension Array<Food> {
     }
 
     func sorted(
-        by strategy: FoodComparisonReducer.State.SortingStrategy,
+        by strategy: FoodComparisonFeature.State.SortingStrategy,
         comparison: Comparison,
         order: SortOrder
     ) -> [Food] {

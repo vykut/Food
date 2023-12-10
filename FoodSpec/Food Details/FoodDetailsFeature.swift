@@ -1,5 +1,5 @@
 //
-//  FoodDetailsReducer.swift
+//  FoodDetailsFeature.swift
 //  FoodSpec
 //
 //  Created by Victor Socaciu on 02/12/2023.
@@ -9,7 +9,7 @@ import Foundation
 import ComposableArchitecture
 
 @Reducer
-struct FoodDetailsReducer {
+struct FoodDetailsFeature {
     @ObservableState
     struct State: Hashable {
         let food: Food

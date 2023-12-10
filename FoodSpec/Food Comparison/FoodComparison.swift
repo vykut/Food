@@ -9,9 +9,9 @@ import SwiftUI
 import ComposableArchitecture
 
 struct FoodComparison: View {
-    typealias SortingStrategy = FoodComparisonReducer.State.SortingStrategy
+    typealias SortingStrategy = FoodComparisonFeature.State.SortingStrategy
 
-    @Bindable var store: StoreOf<FoodComparisonReducer>
+    @Bindable var store: StoreOf<FoodComparisonFeature>
 
     var body: some View {
         Section {
@@ -160,9 +160,9 @@ struct FoodComparison: View {
 #Preview {
     FoodComparison(
         store: Store(
-            initialState: FoodComparisonReducer.State(),
+            initialState: FoodComparisonFeature.State(),
             reducer: {
-                FoodComparisonReducer()
+                FoodComparisonFeature()
             }
         )
     )

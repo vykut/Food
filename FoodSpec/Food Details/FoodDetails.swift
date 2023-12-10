@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct FoodDetails: View {
-    @Bindable var store: StoreOf<FoodDetailsReducer>
+    @Bindable var store: StoreOf<FoodDetailsFeature>
 
     var body: some View {
         ScrollView {
@@ -145,7 +145,7 @@ struct FoodDetails: View {
                 food: .preview
             ),
             reducer: {
-                FoodDetailsReducer()
+                FoodDetailsFeature()
             }
         )
     )

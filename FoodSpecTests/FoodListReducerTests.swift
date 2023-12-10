@@ -18,9 +18,9 @@ import CoreSpotlight
 final class FoodListReducerTests: XCTestCase {
     func testStateDefaultInitializer() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
 
@@ -41,9 +41,9 @@ final class FoodListReducerTests: XCTestCase {
 
     func test_onAppear() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
@@ -83,9 +83,9 @@ final class FoodListReducerTests: XCTestCase {
     func test_onAppear_hasRecentFoods() async throws {
         let food = Food.preview
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         store.dependencies.spotlightClient.indexFoods = {
@@ -131,9 +131,9 @@ final class FoodListReducerTests: XCTestCase {
         let ribeyeApi = FoodApiModel.ribeye
         let ribeye = Food(foodApiModel: ribeyeApi)
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -316,9 +316,9 @@ final class FoodListReducerTests: XCTestCase {
         let ribeyeApi = FoodApiModel.ribeye
         let ribeye = Food(foodApiModel: ribeyeApi)
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -338,9 +338,9 @@ final class FoodListReducerTests: XCTestCase {
 
     func testSearchError() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -369,9 +369,9 @@ final class FoodListReducerTests: XCTestCase {
 
     func testSearchBarFocus() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -395,11 +395,11 @@ final class FoodListReducerTests: XCTestCase {
 
     func testDeletion_error() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(
+            initialState: FoodListFeature.State(
                 recentFoods: [.preview]
             ),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             },
             withDependencies: {
                 $0.databaseClient.delete = { _ in
@@ -419,9 +419,9 @@ final class FoodListReducerTests: XCTestCase {
     func testIntegrationWithSpotlight_foodSelection() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         store.dependencies.databaseClient.getFood = {
@@ -439,11 +439,11 @@ final class FoodListReducerTests: XCTestCase {
     func testIntegrationWithSpotlight_search() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListReducer.State(
+            initialState: FoodListFeature.State(
                 foodDetails: .init(food: eggplant)
             ),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         store.dependencies.mainQueue = .immediate
@@ -491,9 +491,9 @@ final class FoodListReducerTests: XCTestCase {
             transparent: true
         )
         let store = TestStore(
-            initialState: FoodListReducer.State(),
+            initialState: FoodListFeature.State(),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         store.exhaustivity = .off
@@ -520,11 +520,11 @@ final class FoodListReducerTests: XCTestCase {
 
     func testIntegrationWithComparisonFeature() async throws {
         let store = TestStore(
-            initialState: FoodListReducer.State(
+            initialState: FoodListFeature.State(
                 recentFoods: [.eggplant, .ribeye]
             ),
             reducer: {
-                FoodListReducer()
+                FoodListFeature()
             }
         )
         await store.send(.didTapCompare) {

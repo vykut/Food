@@ -12,9 +12,9 @@ import ComposableArchitecture
 @main
 struct FoodSpecApp: App {
     let store = Store(
-        initialState: FoodListReducer.State(),
+        initialState: FoodListFeature.State(),
         reducer: {
-            FoodListReducer()
+            FoodListFeature()
                 ._printChanges()
         }
     )

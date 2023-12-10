@@ -12,13 +12,13 @@ import PowerAssert
 
 @MainActor
 final class FoodComparisonReducerTests: XCTestCase {
-    typealias State = FoodComparisonReducer.State
+    typealias State = FoodComparisonFeature.State
 
     func testStateDefaultInitializer() async throws {
         let store = TestStore(
-            initialState: FoodComparisonReducer.State(),
+            initialState: FoodComparisonFeature.State(),
             reducer: {
-                FoodComparisonReducer()
+                FoodComparisonFeature()
             }
         )
 
@@ -35,19 +35,19 @@ final class FoodComparisonReducerTests: XCTestCase {
     }
 
     func testComputedProperty_filteredFoods() async throws {
-        var state = FoodComparisonReducer.State(
+        var state = FoodComparisonFeature.State(
             foods: [.ribeye, .eggplant],
             filterQuery: "e"
         )
         XCTAssertNoDifference(state.filteredFoods, [.ribeye, .eggplant])
 
-        state = FoodComparisonReducer.State(
+        state = FoodComparisonFeature.State(
             foods: [.ribeye, .eggplant],
             filterQuery: "eg"
         )
         XCTAssertNoDifference(state.filteredFoods, [.eggplant])
 
-        state = FoodComparisonReducer.State(
+        state = FoodComparisonFeature.State(
             foods: [.ribeye, .eggplant],
             filterQuery: ""
         )
@@ -195,11 +195,11 @@ final class FoodComparisonReducerTests: XCTestCase {
         var ribeye = Food.ribeye
         ribeye.id = 3
         let store = TestStore(
-            initialState: FoodComparisonReducer.State(
+            initialState: FoodComparisonFeature.State(
                 foods: [eggplant, oliveOil, ribeye] + (4...10).map { .init(id: Int64($0), name: String($0)) }
             ),
             reducer: {
-                FoodComparisonReducer()
+                FoodComparisonFeature()
             }
         )
         await store.send(.didChangeSelection([1])) {
