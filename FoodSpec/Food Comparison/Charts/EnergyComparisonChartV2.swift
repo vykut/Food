@@ -13,52 +13,57 @@ struct EnergyComparisonChartV2: View {
     let calculator = EnergyCalculator()
 
     var body: some View {
-        Chart(foods, id: \.id) { food in
-            let energy = calculator.calculateEnergy(for: food)
-            ForEach(
-                [
-                    (name: "Protein", energy: energy.protein),
-                    (name: "Carbohydrates", energy: energy.carbohydrates),
-                    (name: "Fat", energy: energy.fat)
-                ],
-                id: \.name
-            ) { breakdown in
-                let _ = print(breakdown)
-                BarMark(
-                    x: .value(breakdown.name.capitalized, breakdown.energy),
-                    y: .value("Name", summary(for: food, breakdown: energy))
-                )
-                .foregroundStyle(by: .value("Type", breakdown.name.capitalized))
-                .alignsMarkStylesWithPlotArea()
-            }
+        Chart(foods, id: \.id, content: chartContent)
+            .chartXAxis { xAxis }
+            .chartYAxis { yAxis }
+            .chartXScale(domain: [Energy.zero, maxXScale])
+            .chartForegroundStyleScale(
+                range: [Color.red, .yellow, .brown]
+            )
+            .chartLegend(spacing: 32)
+    }
+
+    @ChartContentBuilder
+    private func chartContent(food: Food) -> some ChartContent {
+        let energy = calculator.calculateEnergy(for: food)
+        ForEach(
+            [
+                (name: "Protein", energy: energy.protein),
+                (name: "Carbohydrates", energy: energy.carbohydrates),
+                (name: "Fat", energy: energy.fat)
+            ],
+            id: \.name
+        ) { breakdown in
+            BarMark(
+                x: .value(breakdown.name.capitalized, breakdown.energy),
+                y: .value("Name", summary(for: food, breakdown: energy))
+            )
+            .foregroundStyle(by: .value("Type", breakdown.name.capitalized))
+            .alignsMarkStylesWithPlotArea()
         }
-        .chartXAxis {
-            AxisMarks(preset: .inset) {
-                AxisGridLine()
-                AxisValueLabel(
-                    format: EnergyFormat.measurement(width: .abbreviated, usage: .asProvided),
-                    anchor: .top
-                )
-            }
+    }
+
+    private var xAxis: some AxisContent {
+        AxisMarks(preset: .inset) {
+            AxisGridLine()
+            AxisValueLabel(
+                format: EnergyFormat.measurement(width: .abbreviated, usage: .asProvided),
+                anchor: .top
+            )
         }
-        .chartYAxis {
-            AxisMarks(preset: .inset) {
-                AxisValueLabel()
-            }
+    }
+
+    private var yAxis: some AxisContent {
+        AxisMarks(preset: .inset) {
+            AxisValueLabel()
         }
-        .chartXScale(
-            domain: [
-                Energy.zero,
-                max(
-                    foods.max(by: { $0.energy < $1.energy })!.energy,
-                    foods.map(calculator.calculateEnergy).max(by: { $0.total < $1.total })!.total
-                )
-            ]
+    }
+
+    private var maxXScale: Energy {
+        max(
+            foods.max(by: { $0.energy < $1.energy })!.energy,
+            foods.map(calculator.calculateEnergy).max(by: { $0.total < $1.total })!.total
         )
-        .chartForegroundStyleScale(
-            range: [Color.red, .yellow, .brown]
-        )
-        .chartLegend(spacing: 32)
     }
 
     private func summary(for food: Food, breakdown: EnergyCalculator.EnergyBreakdown) -> String {
@@ -85,6 +90,16 @@ Fat: \(breakdown.fatRatio.formatted(.percent.precision(.fractionLength(0...1))))
         ]
     )
     .padding()
+}
+
+extension Energy: Plottable {
+    var primitivePlottable: Double {
+        value
+    }
+
+    init?(primitivePlottable: Double) {
+        self.init(kcal: primitivePlottable)
+    }
 }
 
 fileprivate extension Food {

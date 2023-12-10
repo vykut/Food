@@ -37,6 +37,14 @@ struct FoodComparisonReducer {
             !selectedFoodIds.contains(food.id)
         }
 
+        var availableSortingStrategies: [SortingStrategy] {
+            if [Comparison.energy, .macronutrients].contains(comparison) {
+                SortingStrategy.allCases
+            } else {
+                [.name, .value]
+            }
+        }
+
         enum Comparison: String, Identifiable, Hashable, CaseIterable {
             case energy
             case protein
@@ -49,7 +57,7 @@ struct FoodComparisonReducer {
             var id: Self { self }
         }
 
-        enum SortingStrategy: String, Identifiable, Hashable {
+        enum SortingStrategy: String, Identifiable, Hashable, CaseIterable {
             case name
             case value
             case protein
@@ -63,7 +71,7 @@ struct FoodComparisonReducer {
     @CasePathable
     enum Action {
         case didTapCancel
-        case didTapCompare
+        case didTapCompare(State.Comparison)
         case didChangeSelection(Set<Int64?>)
         case didNavigateToComparison(Bool)
         case updateSearchQuery(String)
@@ -80,14 +88,15 @@ struct FoodComparisonReducer {
                     state.selectedFoodIds = selection
                     return .none
 
-                case .didTapCompare:
+                case .didTapCompare(let comparison):
+                    state.comparison = comparison
                     state.comparedFoods = state.filteredFoods
-                        .lazy
                         .filter { [selectedIds = state.selectedFoodIds] food in
                             selectedIds.contains(food.id)
                         }
-                        .sorted(using: SortDescriptor(\.energy, order: .forward))
+                    sortFoods(state: &state)
                     state.isShowingComparison = true
+
                     return .none
 
                 case .updateSearchQuery(let query):
@@ -150,6 +159,16 @@ fileprivate extension Array<Food> {
                 sort(using: SortDescriptor(\.fatTotal, order: order))
         }
     }
+
+    func sorted(
+        by strategy: FoodComparisonReducer.State.SortingStrategy,
+        comparison: FoodComparisonReducer.State.Comparison,
+        order: SortOrder
+    ) -> [Food] {
+        var copy = self
+        copy.sort(by: strategy, comparison: comparison, order: order)
+        return copy
+    }
 }
 
 fileprivate extension Array<Food> {
@@ -171,6 +190,12 @@ fileprivate extension Array<Food> {
                 let descriptor = SortDescriptor(keyPath, order: order)
                 self.sort(using: descriptor)
         }
+    }
+
+    func sorted(by comparison: FoodComparisonReducer.State.Comparison, order: SortOrder) -> [Food] {
+        var copy = self
+        copy.sort(by: comparison, order: order)
+        return copy
     }
 }
 

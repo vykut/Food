@@ -119,7 +119,7 @@ struct FoodComparison: View {
                 "Sort by",
                 selection: self.$store.foodSortingStrategy.sending(\.updateSortingStrategy)
             ) {
-                ForEach([SortingStrategy.name, .value]) { strategy in
+                ForEach(self.store.availableSortingStrategies) { strategy in
                     let text = strategy.rawValue.capitalized
                     ZStack {
                         if strategy == self.store.foodSortingStrategy {

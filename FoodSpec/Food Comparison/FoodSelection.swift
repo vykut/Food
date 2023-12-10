@@ -9,6 +9,8 @@ import SwiftUI
 import ComposableArchitecture
 
 struct FoodSelection: View {
+    typealias Comparison = FoodComparisonReducer.State.Comparison
+
     @Bindable var store: StoreOf<FoodComparisonReducer>
 
     var body: some View {
@@ -56,8 +58,12 @@ struct FoodSelection: View {
             }
         }
         ToolbarItem(placement: .topBarTrailing) {
-            Button("Compare") {
-                store.send(.didTapCompare)
+            Menu("Compare") {
+                ForEach(Comparison.allCases) { comparison in
+                    Button(comparison.rawValue.capitalized) {
+                        store.send(.didTapCompare(comparison))
+                    }
+                }
             }
             .disabled(store.isCompareButtonDisabled)
         }
