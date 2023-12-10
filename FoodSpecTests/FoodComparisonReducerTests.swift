@@ -7,7 +7,6 @@
 
 import XCTest
 import ComposableArchitecture
-import PowerAssert
 @testable import FoodSpec
 
 @MainActor
