@@ -65,7 +65,7 @@ struct FoodComparisonReducer {
             case name
             case value
             case protein
-            case carbohydrates
+            case carbohydrate
             case fat
 
             var id: Self { self }
@@ -119,7 +119,8 @@ struct FoodComparisonReducer {
 
                 case .updateComparisonType(let comparison):
                     state.comparison = comparison
-                    if ![State.Comparison.energy, .macronutrients].contains(comparison) {
+                    let isSortingByInvalidCriteria = ![.energy, .macronutrients].contains(comparison) && [.protein, .carbohydrate, .fat].contains(state.foodSortingStrategy)
+                    if isSortingByInvalidCriteria {
                         state.foodSortingStrategy = .value
                         state.foodSortingOrder = .forward
                     }
@@ -161,7 +162,7 @@ fileprivate extension Array<Food> {
                 sort(by: comparison, order: order)
             case .protein:
                 sort(using: SortDescriptor(\.protein, order: order))
-            case .carbohydrates:
+            case .carbohydrate:
                 sort(using: SortDescriptor(\.carbohydrate, order: order))
             case .fat:
                 sort(using: SortDescriptor(\.fatTotal, order: order))
