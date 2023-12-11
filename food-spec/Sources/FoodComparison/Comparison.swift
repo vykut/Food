@@ -1,13 +1,6 @@
-//
-//  Comparison.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 10/12/2023.
-//
-
 import Foundation
 
-enum Comparison: String, Identifiable, Hashable, CaseIterable {
+public enum Comparison: String, Identifiable, Hashable, CaseIterable {
     case energy
     case protein
     case carbohydrate
@@ -20,5 +13,5 @@ enum Comparison: String, Identifiable, Hashable, CaseIterable {
     case sodium
     case macronutrients
 
-    var id: Self { self }
+    public var id: Self { self }
 }

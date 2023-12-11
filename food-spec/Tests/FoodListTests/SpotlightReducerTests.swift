@@ -1,14 +1,8 @@
-//
-//  SpotlightReducerTests.swift
-//  FoodSpecTests
-//
-//  Created by Victor Socaciu on 08/12/2023.
-//
-
 import XCTest
 import ComposableArchitecture
-import CoreSpotlight
-@testable import FoodSpec
+import Spotlight
+import Shared
+@testable import FoodList
 
 @MainActor
 final class SpotlightReducerTests: XCTestCase {
@@ -64,9 +58,11 @@ final class SpotlightReducerTests: XCTestCase {
     func testSpotlightSearchInApp_foodDetailsAlreadyPresented() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListFeature.State(
-                foodDetails: .init(food: eggplant)
-            ),
+            initialState: {
+                var state = FoodListFeature.State()
+                state.foodDetails = .init(food: eggplant)
+                return state
+            }(),
             reducer: {
                 SpotlightReducer()
             }

@@ -1,28 +1,26 @@
-//
-//  Energy.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 04/12/2023.
-//
-
 import Foundation
 
-struct Energy: Codable, Hashable {
-    let value: Double
-    let unit: Unit
+public struct Energy: Codable, Hashable {
+    public let value: Double
+    public let unit: Unit
 
-    var measurement: Measurement<UnitEnergy> {
+    public init(value: Double, unit: Unit) {
+        self.value = value
+        self.unit = unit
+    }
+
+    public var measurement: Measurement<UnitEnergy> {
         .init(value: value, unit: unit.unit)
     }
 
-    func converted(to otherUnit: Unit) -> Self {
+    public func converted(to otherUnit: Unit) -> Self {
         .init(
             value: measurement.converted(to: otherUnit.unit).value,
             unit: otherUnit
         )
     }
 
-    enum Unit: Codable {
+    public enum Unit: Codable {
         case kilojoules
         case joules
         case kilocalories
@@ -41,7 +39,7 @@ struct Energy: Codable, Hashable {
     }
 }
 
-extension Energy {
+public extension Energy {
     static var zero: Self { .init(value: 0, unit: .kilocalories) }
 
     static func kcal(_ value: Double) -> Self {
@@ -50,12 +48,12 @@ extension Energy {
 }
 
 extension Energy: Comparable {
-    static func < (lhs: Energy, rhs: Energy) -> Bool {
+    public static func < (lhs: Energy, rhs: Energy) -> Bool {
         lhs.measurement < rhs.measurement
     }
 }
 
-extension Energy {
+public extension Energy {
     func formatted<Style: FormatStyle>(
         _ style: Style
     ) -> Style.FormatOutput where Style.FormatInput == Self {
@@ -75,12 +73,12 @@ extension Energy {
     }
 }
 
-struct EnergyFormat: FormatStyle {
+public struct EnergyFormat: FormatStyle {
     let width: Measurement<UnitEnergy>.FormatStyle.UnitWidth
     let usage: MeasurementFormatUnitUsage<UnitEnergy>
     let numberFormatStyle: FloatingPointFormatStyle<Double>?
 
-    func format(_ value: Energy) -> String {
+    public func format(_ value: Energy) -> String {
         value.measurement.formatted(.measurement(
             width: width,
             usage: usage,
@@ -90,7 +88,7 @@ struct EnergyFormat: FormatStyle {
 }
 
 extension FormatStyle where Self == EnergyFormat {
-    static func measurement(
+    public static func measurement(
         width: Measurement<UnitEnergy>.FormatStyle.UnitWidth,
         usage: MeasurementFormatUnitUsage<UnitEnergy> = .general,
         numberFormatStyle: FloatingPointFormatStyle<Double>? = nil

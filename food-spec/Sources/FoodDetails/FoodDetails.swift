@@ -1,18 +1,15 @@
-//
-//  FoodDetails.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 30/11/2023.
-//
-
 import SwiftUI
 import ComposableArchitecture
 import Shared
 
-struct FoodDetails: View {
+public struct FoodDetails: View {
     @Bindable var store: StoreOf<FoodDetailsFeature>
 
-    var body: some View {
+    public init(store: StoreOf<FoodDetailsFeature>) {
+        self.store = store
+    }
+
+    public var body: some View {
         ScrollView {
             Section {
                 energy

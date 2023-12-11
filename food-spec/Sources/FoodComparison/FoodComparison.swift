@@ -1,20 +1,17 @@
-//
-//  FoodComparison.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 09/12/2023.
-//
-
 import SwiftUI
 import Shared
 import ComposableArchitecture
 
-struct FoodComparison: View {
+public struct FoodComparison: View {
     typealias SortingStrategy = FoodComparisonFeature.State.SortingStrategy
 
     @Bindable var store: StoreOf<FoodComparisonFeature>
 
-    var body: some View {
+    public init(store: StoreOf<FoodComparisonFeature>) {
+        self.store = store
+    }
+
+    public var body: some View {
         Section {
             chart
         } header: {

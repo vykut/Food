@@ -1,25 +1,20 @@
-//
-//  DatabaseClient.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 05/12/2023.
-//
-
 import Foundation
-import GRDB
-import ComposableArchitecture
+import Shared
+import Dependencies
+import DependenciesMacros
+@_exported import GRDB
 
 @DependencyClient
-struct DatabaseClient {
-    var observeFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
-    var getRecentFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) async throws -> [Food]
-    var getFood: (_ name: String) async throws -> Food?
-    var insert: (_ food: Food) async throws -> Food
-    var delete: (_ food: Food) async throws -> Void
+public struct DatabaseClient {
+    public var observeFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
+    public var getRecentFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) async throws -> [Food]
+    public var getFood: (_ name: String) async throws -> Food?
+    public var insert: (_ food: Food) async throws -> Food
+    public var delete: (_ food: Food) async throws -> Void
 }
 
 extension DatabaseClient: DependencyKey {
-    static var liveValue: DatabaseClient = {
+    public static var liveValue: DatabaseClient = {
         let db = createAppDatabase()
         @Sendable func fetchFoods(db: Database, sortedBy column: Column, order: SortOrder) throws -> [Food] {
             try Food
@@ -59,11 +54,11 @@ extension DatabaseClient: DependencyKey {
         )
     }()
 
-    static let testValue: DatabaseClient = .init()
+    public static let testValue: DatabaseClient = .init()
 }
 
 extension DependencyValues {
-    var databaseClient: DatabaseClient {
+    public var databaseClient: DatabaseClient {
         get { self[DatabaseClient.self] }
         set { self[DatabaseClient.self] = newValue }
     }

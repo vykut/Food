@@ -1,10 +1,3 @@
-//
-//  NutritionalValueCard.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 30/11/2023.
-//
-
 import SwiftUI
 
 struct NutritionalValueCard<U: Dimension>: View {

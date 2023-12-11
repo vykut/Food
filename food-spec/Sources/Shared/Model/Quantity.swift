@@ -1,28 +1,26 @@
-//
-//  Quantity.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 02/12/2023.
-//
-
 import Foundation
 
-struct Quantity: Codable, Hashable {
-    let value: Double
-    let unit: Unit
+public struct Quantity: Codable, Hashable {
+    public let value: Double
+    public let unit: Unit
 
-    var measurement: Measurement<UnitMass> {
+    public init(value: Double, unit: Unit) {
+        self.value = value
+        self.unit = unit
+    }
+
+    public var measurement: Measurement<UnitMass> {
         .init(value: value, unit: unit.unit)
     }
 
-    func converted(to otherUnit: Unit) -> Self {
+    public func converted(to otherUnit: Unit) -> Self {
         .init(
             value: measurement.converted(to: otherUnit.unit).value,
             unit: otherUnit
         )
     }
 
-    enum Unit: Codable {
+    public enum Unit: Codable {
         case kilograms
         case grams
         case decigrams
@@ -63,7 +61,7 @@ struct Quantity: Codable, Hashable {
     }
 }
 
-extension Quantity {
+public extension Quantity {
     static var zero: Self { .zero(unit: .grams) }
 
     static func zero(unit: Unit) -> Self {
@@ -81,12 +79,12 @@ extension Quantity {
 
 
 extension Quantity: Comparable {
-    static func < (lhs: Quantity, rhs: Quantity) -> Bool {
+    public static func < (lhs: Quantity, rhs: Quantity) -> Bool {
         lhs.measurement < rhs.measurement
     }
 }
 
-extension Quantity {
+public extension Quantity {
     func formatted<Style: FormatStyle>(
         _ style: Style
     ) -> Style.FormatOutput where Style.FormatInput == Self {
@@ -106,12 +104,12 @@ extension Quantity {
     }
 }
 
-struct QuantityFormat: FormatStyle {
+public struct QuantityFormat: FormatStyle {
     let width: Measurement<UnitMass>.FormatStyle.UnitWidth
     let usage: MeasurementFormatUnitUsage<UnitMass>
     let numberFormatStyle: FloatingPointFormatStyle<Double>?
 
-    func format(_ value: Quantity) -> String {
+    public func format(_ value: Quantity) -> String {
         value.measurement.formatted(.measurement(
             width: width,
             usage: usage,
@@ -121,7 +119,7 @@ struct QuantityFormat: FormatStyle {
 }
 
 extension FormatStyle where Self == QuantityFormat {
-    static func measurement(
+    public static func measurement(
         width: Measurement<UnitMass>.FormatStyle.UnitWidth,
         usage: MeasurementFormatUnitUsage<UnitMass> = .general,
         numberFormatStyle: FloatingPointFormatStyle<Double>? = nil

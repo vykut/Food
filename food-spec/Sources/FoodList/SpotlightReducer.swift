@@ -1,13 +1,6 @@
-//
-//  SpotlightReducer.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 07/12/2023.
-//
-
 import Foundation
 import ComposableArchitecture
-import CoreSpotlight
+import Spotlight
 import Database
 
 @Reducer
@@ -62,7 +55,7 @@ struct SpotlightReducer {
 
 extension FoodListFeature.Action {
     @CasePathable
-    enum Spotlight {
+    public enum Spotlight {
         case handleSelectedFood(NSUserActivity)
         case handleSearchInApp(NSUserActivity)
     }

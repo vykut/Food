@@ -1,21 +1,19 @@
-//
-//  ContentView.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 29/11/2023.
-//
-
 import SwiftUI
-import SwiftData
 import ComposableArchitecture
-import CoreSpotlight
-import Billboard
+import Ads
+import Spotlight
 import Shared
+import FoodDetails
+import FoodComparison
 
-struct FoodList: View {
+public struct FoodList: View {
     @Bindable var store: StoreOf<FoodListFeature>
 
-    var body: some View {
+    public init(store: StoreOf<FoodListFeature>) {
+        self.store = store
+    }
+
+    public var body: some View {
         NavigationStack {
             list
                 .toolbar {

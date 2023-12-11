@@ -1,14 +1,7 @@
-//
-//  BillboardReducerTests.swift
-//  FoodSpecTests
-//
-//  Created by Victor Socaciu on 09/12/2023.
-//
-
 import XCTest
 import ComposableArchitecture
 @testable import Billboard
-@testable import FoodSpec
+@testable import FoodList
 
 @MainActor
 final class BillboardReducerTests: XCTestCase {

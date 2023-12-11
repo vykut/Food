@@ -1,20 +1,17 @@
-//
-//  FoodListFeature.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 02/12/2023.
-//
-
 import Foundation
-import GRDB
+import Database
 import ComposableArchitecture
 import Shared
 import API
+import Ads
+import FoodDetails
+import FoodComparison
+import UserDefaults
 
 @Reducer
-struct FoodListFeature {
+public struct FoodListFeature {
     @ObservableState
-    struct State: Equatable {
+    public struct State: Equatable {
         var recentFoods: [Food] = []
         var recentFoodsSortingStrategy: Food.SortingStrategy = .name
         var recentFoodsSortingOrder: SortOrder = .forward
@@ -52,10 +49,12 @@ struct FoodListFeature {
         var isSortMenuDisabled: Bool {
             recentFoods.count < 2
         }
+
+        public init() { }
     }
 
     @CasePathable
-    enum Action {
+    public enum Action {
         case onAppear
         case updateFromUserDefaults(Food.SortingStrategy?, SortOrder?)
         case startObservingRecentFoods
@@ -78,7 +77,7 @@ struct FoodListFeature {
         case alert(PresentationAction<Alert>)
 
         @CasePathable
-        enum Alert: Equatable {
+        public enum Alert: Equatable {
             case showGenericAlert
         }
     }
@@ -88,12 +87,15 @@ struct FoodListFeature {
         case recentFoodsObservation
     }
 
+    public init() { }
+
     @Dependency(\.databaseClient) private var databaseClient
     @Dependency(\.foodClient) private var foodClient
     @Dependency(\.mainQueue) private var mainQueue
     @Dependency(\.userDefaults) private var userDefaults
 
-    var body: some ReducerOf<Self> {
+
+    public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
                 case .onAppear:
@@ -252,14 +254,5 @@ struct FoodListFeature {
         .ifLet(\.$alert, action: \.alert)
         SpotlightReducer()
         BillboardReducer()
-    }
-}
-
-extension SortOrder {
-    mutating func toggle() {
-        self = switch self {
-            case .forward: .reverse
-            case .reverse: .forward
-        }
     }
 }

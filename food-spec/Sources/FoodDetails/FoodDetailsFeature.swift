@@ -1,27 +1,26 @@
-//
-//  FoodDetailsFeature.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 02/12/2023.
-//
-
 import Foundation
 import ComposableArchitecture
 import Shared
 
 @Reducer
-struct FoodDetailsFeature {
+public struct FoodDetailsFeature {
     @ObservableState
-    struct State: Hashable {
+    public struct State: Hashable {
         let food: Food
+
+        public init(food: Food) {
+            self.food = food
+        }
     }
 
     @CasePathable
-    enum Action {
+    public enum Action {
 
     }
 
-    var body: some ReducerOf<Self> {
+    public init() { }
+
+    public var body: some ReducerOf<Self> {
         Reduce { state, action in
             return .none
         }

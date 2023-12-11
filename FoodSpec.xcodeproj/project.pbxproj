@@ -7,100 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EC2799862B19ECE900D9E4B0 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = EC2799852B19ECE900D9E4B0 /* ComposableArchitecture */; };
 		EC2799882B1B2BBA00D9E4B0 /* APIKeys.json in Resources */ = {isa = PBXBuildFile; fileRef = EC2799872B1B2BBA00D9E4B0 /* APIKeys.json */; settings = {ASSET_TAGS = (APIKeys, ); }; };
-		EC27998A2B1B304900D9E4B0 /* ApiKeysClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC2799892B1B304900D9E4B0 /* ApiKeysClient.swift */; };
-		EC27998D2B1B385200D9E4B0 /* FoodListFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC27998C2B1B385200D9E4B0 /* FoodListFeature.swift */; };
-		EC2799902B1B390E00D9E4B0 /* FoodDetailsFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC27998F2B1B390E00D9E4B0 /* FoodDetailsFeature.swift */; };
 		EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E5592B175A140007CD40 /* FoodSpecApp.swift */; };
-		EC43E55C2B175A140007CD40 /* FoodList.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E55B2B175A140007CD40 /* FoodList.swift */; };
 		EC43E5602B175A160007CD40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E55F2B175A160007CD40 /* Assets.xcassets */; };
 		EC43E5632B175A160007CD40 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E5622B175A160007CD40 /* Preview Assets.xcassets */; };
-		EC4717A42B1B8474007B491C /* Quantity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4717A32B1B8474007B491C /* Quantity.swift */; };
-		EC4717A62B1C4DD5007B491C /* FoodListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4717A52B1C4DD5007B491C /* FoodListRow.swift */; };
-		EC7DC2872B1DC38100BC8FD5 /* UserDefaultsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */; };
-		EC7DC2892B1DF22900BC8FD5 /* FoodListReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */; };
-		EC7DC28D2B1F32C400BC8FD5 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = EC7DC28C2B1F32C400BC8FD5 /* GRDB */; };
-		EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2912B1F375100BC8FD5 /* Food.swift */; };
-		EC7DC2952B1F397D00BC8FD5 /* Database+Creation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */; };
-		EC7DC2982B1F669D00BC8FD5 /* DatabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */; };
-		EC7F56722B221519005C372B /* SpotlightReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56712B221519005C372B /* SpotlightReducer.swift */; };
-		EC7F56742B221572005C372B /* SpotlightClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56732B221572005C372B /* SpotlightClient.swift */; };
-		EC7F56762B2303DB005C372B /* SpotlightReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56752B2303DB005C372B /* SpotlightReducerTests.swift */; };
-		EC7F56782B230D9E005C372B /* EnergyCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56772B230D9E005C372B /* EnergyCalculator.swift */; };
-		EC7F567B2B23136D005C372B /* EnergyBreakdownChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F567A2B23136D005C372B /* EnergyBreakdownChart.swift */; };
-		EC7F567D2B237036005C372B /* EnergyCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F567C2B237036005C372B /* EnergyCalculatorTests.swift */; };
-		EC7F56802B2395E7005C372B /* Billboard in Frameworks */ = {isa = PBXBuildFile; productRef = EC7F567F2B2395E7005C372B /* Billboard */; };
-		EC7F56822B2397B3005C372B /* BillboardClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56812B2397B3005C372B /* BillboardClient.swift */; };
-		EC7F56842B24638B005C372B /* BillboardReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56832B24638B005C372B /* BillboardReducer.swift */; };
-		EC7F56862B2466F6005C372B /* BillboardReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56852B2466F6005C372B /* BillboardReducerTests.swift */; };
-		EC7F568A2B24E983005C372B /* FoodComparison.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56892B24E983005C372B /* FoodComparison.swift */; };
-		EC7F568C2B24E997005C372B /* FoodSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F568B2B24E997005C372B /* FoodSelection.swift */; };
-		EC7F568E2B24F14B005C372B /* FoodComparisonFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F568D2B24F14B005C372B /* FoodComparisonFeature.swift */; };
-		EC7F56922B25A529005C372B /* QuantityComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56912B25A529005C372B /* QuantityComparisonChart.swift */; };
-		EC7F56952B25B44F005C372B /* MacronutrientsComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56942B25B44F005C372B /* MacronutrientsComparisonChart.swift */; };
-		EC7F56972B25BEBB005C372B /* EnergyBreakdownComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F56962B25BEBB005C372B /* EnergyBreakdownComparisonChart.swift */; };
-		EC87FC4E2B21B4BA006B8B28 /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = EC87FC4D2B21B4BA006B8B28 /* AsyncAlgorithms */; };
-		EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577AF2B1869760082A0D1 /* FoodDetails.swift */; };
-		EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */; };
-		ECA2EC422B2615F2000BD06F /* Comparison.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA2EC412B2615F2000BD06F /* Comparison.swift */; };
-		ECA2EC442B2618B7000BD06F /* FoodComparisonReducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA2EC432B2618B7000BD06F /* FoodComparisonReducerTests.swift */; };
-		ECA64C232B1DB18E0036EE4F /* Energy.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECA64C222B1DB18E0036EE4F /* Energy.swift */; };
-		ECCA83F82B177A1400C9EF4D /* FoodClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCA83F52B177A1400C9EF4D /* FoodClient.swift */; };
+		EC47C94B2B27285C00D30381 /* AppFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC47C94A2B27285C00D30381 /* AppFeature.swift */; };
+		EC47C9532B27323B00D30381 /* Database in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C9522B27323B00D30381 /* Database */; };
+		EC47C9552B27323B00D30381 /* Shared in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C9542B27323B00D30381 /* Shared */; };
+		EC47C9572B27348A00D30381 /* API in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C9562B27348A00D30381 /* API */; };
+		EC47C9592B27493600D30381 /* Ads in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C9582B27493600D30381 /* Ads */; };
+		EC47C95B2B27493600D30381 /* FoodList in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C95A2B27493600D30381 /* FoodList */; };
+		EC47C95D2B274B8900D30381 /* Spotlight in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C95C2B274B8900D30381 /* Spotlight */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		EC43E56B2B175A160007CD40 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EC43E54E2B175A140007CD40 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EC43E5552B175A140007CD40;
-			remoteInfo = FoodSpec;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		EC2799872B1B2BBA00D9E4B0 /* APIKeys.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = APIKeys.json; sourceTree = "<group>"; };
-		EC2799892B1B304900D9E4B0 /* ApiKeysClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiKeysClient.swift; sourceTree = "<group>"; };
-		EC27998C2B1B385200D9E4B0 /* FoodListFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodListFeature.swift; sourceTree = "<group>"; };
-		EC27998F2B1B390E00D9E4B0 /* FoodDetailsFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetailsFeature.swift; sourceTree = "<group>"; };
 		EC43E5562B175A140007CD40 /* FoodSpec.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FoodSpec.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC43E5592B175A140007CD40 /* FoodSpecApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSpecApp.swift; sourceTree = "<group>"; };
-		EC43E55B2B175A140007CD40 /* FoodList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodList.swift; sourceTree = "<group>"; };
 		EC43E55F2B175A160007CD40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EC43E5622B175A160007CD40 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EC43E5642B175A160007CD40 /* FoodSpec.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FoodSpec.entitlements; sourceTree = "<group>"; };
 		EC43E5652B175A160007CD40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EC43E56A2B175A160007CD40 /* FoodSpecTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodSpecTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EC4717A32B1B8474007B491C /* Quantity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quantity.swift; sourceTree = "<group>"; };
-		EC4717A52B1C4DD5007B491C /* FoodListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodListRow.swift; sourceTree = "<group>"; };
-		EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsClient.swift; sourceTree = "<group>"; };
-		EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodListReducerTests.swift; sourceTree = "<group>"; };
+		EC47C94A2B27285C00D30381 /* AppFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFeature.swift; sourceTree = "<group>"; };
+		EC47C9502B272C1E00D30381 /* food-spec */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = "food-spec"; sourceTree = "<group>"; };
 		EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = FoodSpec.xctestplan; sourceTree = "<group>"; };
-		EC7DC2912B1F375100BC8FD5 /* Food.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
-		EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Database+Creation.swift"; sourceTree = "<group>"; };
-		EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseClient.swift; sourceTree = "<group>"; };
-		EC7F56712B221519005C372B /* SpotlightReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightReducer.swift; sourceTree = "<group>"; };
-		EC7F56732B221572005C372B /* SpotlightClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightClient.swift; sourceTree = "<group>"; };
-		EC7F56752B2303DB005C372B /* SpotlightReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightReducerTests.swift; sourceTree = "<group>"; };
-		EC7F56772B230D9E005C372B /* EnergyCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyCalculator.swift; sourceTree = "<group>"; };
-		EC7F567A2B23136D005C372B /* EnergyBreakdownChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyBreakdownChart.swift; sourceTree = "<group>"; };
-		EC7F567C2B237036005C372B /* EnergyCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyCalculatorTests.swift; sourceTree = "<group>"; };
-		EC7F56812B2397B3005C372B /* BillboardClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillboardClient.swift; sourceTree = "<group>"; };
-		EC7F56832B24638B005C372B /* BillboardReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillboardReducer.swift; sourceTree = "<group>"; };
-		EC7F56852B2466F6005C372B /* BillboardReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillboardReducerTests.swift; sourceTree = "<group>"; };
-		EC7F56892B24E983005C372B /* FoodComparison.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodComparison.swift; sourceTree = "<group>"; };
-		EC7F568B2B24E997005C372B /* FoodSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSelection.swift; sourceTree = "<group>"; };
-		EC7F568D2B24F14B005C372B /* FoodComparisonFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodComparisonFeature.swift; sourceTree = "<group>"; };
-		EC7F56912B25A529005C372B /* QuantityComparisonChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityComparisonChart.swift; sourceTree = "<group>"; };
-		EC7F56942B25B44F005C372B /* MacronutrientsComparisonChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacronutrientsComparisonChart.swift; sourceTree = "<group>"; };
-		EC7F56962B25BEBB005C372B /* EnergyBreakdownComparisonChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyBreakdownComparisonChart.swift; sourceTree = "<group>"; };
-		EC9577AF2B1869760082A0D1 /* FoodDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodDetails.swift; sourceTree = "<group>"; };
-		EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionalValueCard.swift; sourceTree = "<group>"; };
-		ECA2EC412B2615F2000BD06F /* Comparison.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comparison.swift; sourceTree = "<group>"; };
-		ECA2EC432B2618B7000BD06F /* FoodComparisonReducerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodComparisonReducerTests.swift; sourceTree = "<group>"; };
-		ECA64C222B1DB18E0036EE4F /* Energy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Energy.swift; sourceTree = "<group>"; };
-		ECCA83F52B177A1400C9EF4D /* FoodClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,53 +38,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EC7F56802B2395E7005C372B /* Billboard in Frameworks */,
-				EC2799862B19ECE900D9E4B0 /* ComposableArchitecture in Frameworks */,
-				EC7DC28D2B1F32C400BC8FD5 /* GRDB in Frameworks */,
-				EC87FC4E2B21B4BA006B8B28 /* AsyncAlgorithms in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EC43E5672B175A160007CD40 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				EC47C9532B27323B00D30381 /* Database in Frameworks */,
+				EC47C95D2B274B8900D30381 /* Spotlight in Frameworks */,
+				EC47C95B2B27493600D30381 /* FoodList in Frameworks */,
+				EC47C9592B27493600D30381 /* Ads in Frameworks */,
+				EC47C9572B27348A00D30381 /* API in Frameworks */,
+				EC47C9552B27323B00D30381 /* Shared in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		EC27998B2B1B382500D9E4B0 /* Food List */ = {
-			isa = PBXGroup;
-			children = (
-				EC7F56832B24638B005C372B /* BillboardReducer.swift */,
-				EC43E55B2B175A140007CD40 /* FoodList.swift */,
-				EC27998C2B1B385200D9E4B0 /* FoodListFeature.swift */,
-				EC4717A52B1C4DD5007B491C /* FoodListRow.swift */,
-				EC7F56712B221519005C372B /* SpotlightReducer.swift */,
-			);
-			path = "Food List";
-			sourceTree = "<group>";
-		};
-		EC27998E2B1B38EC00D9E4B0 /* Food Details */ = {
-			isa = PBXGroup;
-			children = (
-				EC7F567A2B23136D005C372B /* EnergyBreakdownChart.swift */,
-				EC9577AF2B1869760082A0D1 /* FoodDetails.swift */,
-				EC27998F2B1B390E00D9E4B0 /* FoodDetailsFeature.swift */,
-				EC9577B12B1872E60082A0D1 /* NutritionalValueCard.swift */,
-			);
-			path = "Food Details";
-			sourceTree = "<group>";
-		};
 		EC43E54D2B175A140007CD40 = {
 			isa = PBXGroup;
 			children = (
+				EC47C9502B272C1E00D30381 /* food-spec */,
 				EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */,
 				EC43E5582B175A140007CD40 /* FoodSpec */,
-				EC43E56D2B175A160007CD40 /* FoodSpecTests */,
 				EC43E5572B175A140007CD40 /* Products */,
+				EC47C9512B27323B00D30381 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -162,7 +65,6 @@
 			isa = PBXGroup;
 			children = (
 				EC43E5562B175A140007CD40 /* FoodSpec.app */,
-				EC43E56A2B175A160007CD40 /* FoodSpecTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -170,18 +72,12 @@
 		EC43E5582B175A140007CD40 /* FoodSpec */ = {
 			isa = PBXGroup;
 			children = (
+				EC47C9492B27283400D30381 /* App */,
 				EC43E5642B175A160007CD40 /* FoodSpec.entitlements */,
 				EC2799872B1B2BBA00D9E4B0 /* APIKeys.json */,
 				EC43E5652B175A160007CD40 /* Info.plist */,
-				EC43E5592B175A140007CD40 /* FoodSpecApp.swift */,
 				EC43E55F2B175A160007CD40 /* Assets.xcassets */,
-				ECA64C212B1C53380036EE4F /* Clients */,
-				EC7F56872B24E95F005C372B /* Food Comparison */,
-				EC27998E2B1B38EC00D9E4B0 /* Food Details */,
-				EC27998B2B1B382500D9E4B0 /* Food List */,
-				EC4717A12B1B8041007B491C /* Model */,
 				EC43E5612B175A160007CD40 /* Preview Content */,
-				EC7F56792B230DA3005C372B /* Utilities */,
 			);
 			path = FoodSpec;
 			sourceTree = "<group>";
@@ -194,78 +90,20 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		EC43E56D2B175A160007CD40 /* FoodSpecTests */ = {
+		EC47C9492B27283400D30381 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				EC7F56852B2466F6005C372B /* BillboardReducerTests.swift */,
-				EC7F567C2B237036005C372B /* EnergyCalculatorTests.swift */,
-				ECA2EC432B2618B7000BD06F /* FoodComparisonReducerTests.swift */,
-				EC7DC2882B1DF22900BC8FD5 /* FoodListReducerTests.swift */,
-				EC7F56752B2303DB005C372B /* SpotlightReducerTests.swift */,
+				EC43E5592B175A140007CD40 /* FoodSpecApp.swift */,
+				EC47C94A2B27285C00D30381 /* AppFeature.swift */,
 			);
-			path = FoodSpecTests;
+			path = App;
 			sourceTree = "<group>";
 		};
-		EC4717A12B1B8041007B491C /* Model */ = {
+		EC47C9512B27323B00D30381 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EC7DC2912B1F375100BC8FD5 /* Food.swift */,
-				ECA64C222B1DB18E0036EE4F /* Energy.swift */,
-				EC4717A32B1B8474007B491C /* Quantity.swift */,
 			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		EC7F56792B230DA3005C372B /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				EC7F56772B230D9E005C372B /* EnergyCalculator.swift */,
-			);
-			path = Utilities;
-			sourceTree = "<group>";
-		};
-		EC7F56872B24E95F005C372B /* Food Comparison */ = {
-			isa = PBXGroup;
-			children = (
-				ECA2EC412B2615F2000BD06F /* Comparison.swift */,
-				EC7F56892B24E983005C372B /* FoodComparison.swift */,
-				EC7F568D2B24F14B005C372B /* FoodComparisonFeature.swift */,
-				EC7F568B2B24E997005C372B /* FoodSelection.swift */,
-				EC7F56932B25B34D005C372B /* Charts */,
-			);
-			path = "Food Comparison";
-			sourceTree = "<group>";
-		};
-		EC7F56932B25B34D005C372B /* Charts */ = {
-			isa = PBXGroup;
-			children = (
-				EC7F56912B25A529005C372B /* QuantityComparisonChart.swift */,
-				EC7F56942B25B44F005C372B /* MacronutrientsComparisonChart.swift */,
-				EC7F56962B25BEBB005C372B /* EnergyBreakdownComparisonChart.swift */,
-			);
-			path = Charts;
-			sourceTree = "<group>";
-		};
-		EC864F852B207592004FE264 /* Database */ = {
-			isa = PBXGroup;
-			children = (
-				EC7DC2932B1F397D00BC8FD5 /* Database+Creation.swift */,
-				EC7DC2972B1F669D00BC8FD5 /* DatabaseClient.swift */,
-			);
-			path = Database;
-			sourceTree = "<group>";
-		};
-		ECA64C212B1C53380036EE4F /* Clients */ = {
-			isa = PBXGroup;
-			children = (
-				EC2799892B1B304900D9E4B0 /* ApiKeysClient.swift */,
-				EC7F56812B2397B3005C372B /* BillboardClient.swift */,
-				ECCA83F52B177A1400C9EF4D /* FoodClient.swift */,
-				EC7F56732B221572005C372B /* SpotlightClient.swift */,
-				EC7DC2862B1DC38100BC8FD5 /* UserDefaultsClient.swift */,
-				EC864F852B207592004FE264 /* Database */,
-			);
-			path = Clients;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -285,34 +123,16 @@
 			);
 			name = FoodSpec;
 			packageProductDependencies = (
-				EC2799852B19ECE900D9E4B0 /* ComposableArchitecture */,
-				EC7DC28C2B1F32C400BC8FD5 /* GRDB */,
-				EC87FC4D2B21B4BA006B8B28 /* AsyncAlgorithms */,
-				EC7F567F2B2395E7005C372B /* Billboard */,
+				EC47C9522B27323B00D30381 /* Database */,
+				EC47C9542B27323B00D30381 /* Shared */,
+				EC47C9562B27348A00D30381 /* API */,
+				EC47C9582B27493600D30381 /* Ads */,
+				EC47C95A2B27493600D30381 /* FoodList */,
+				EC47C95C2B274B8900D30381 /* Spotlight */,
 			);
 			productName = FoodSpec;
 			productReference = EC43E5562B175A140007CD40 /* FoodSpec.app */;
 			productType = "com.apple.product-type.application";
-		};
-		EC43E5692B175A160007CD40 /* FoodSpecTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EC43E5812B175A160007CD40 /* Build configuration list for PBXNativeTarget "FoodSpecTests" */;
-			buildPhases = (
-				EC43E5662B175A160007CD40 /* Sources */,
-				EC43E5672B175A160007CD40 /* Frameworks */,
-				EC43E5682B175A160007CD40 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				EC43E56C2B175A160007CD40 /* PBXTargetDependency */,
-			);
-			name = FoodSpecTests;
-			packageProductDependencies = (
-			);
-			productName = FoodSpecTests;
-			productReference = EC43E56A2B175A160007CD40 /* FoodSpecTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -330,10 +150,6 @@
 					EC43E5552B175A140007CD40 = {
 						CreatedOnToolsVersion = 15.0.1;
 					};
-					EC43E5692B175A160007CD40 = {
-						CreatedOnToolsVersion = 15.0.1;
-						TestTargetID = EC43E5552B175A140007CD40;
-					};
 				};
 			};
 			buildConfigurationList = EC43E5512B175A140007CD40 /* Build configuration list for PBXProject "FoodSpec" */;
@@ -345,17 +161,12 @@
 			);
 			mainGroup = EC43E54D2B175A140007CD40;
 			packageReferences = (
-				EC2799842B19ECE900D9E4B0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
-				EC7DC28B2B1F32C400BC8FD5 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
-				EC87FC4C2B21B4BA006B8B28 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
-				EC7F567E2B2395E7005C372B /* XCRemoteSwiftPackageReference "Billboard" */,
 			);
 			productRefGroup = EC43E5572B175A140007CD40 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				EC43E5552B175A140007CD40 /* FoodSpec */,
-				EC43E5692B175A160007CD40 /* FoodSpecTests */,
 			);
 		};
 /* End PBXProject section */
@@ -371,13 +182,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EC43E5682B175A160007CD40 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -385,58 +189,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EC43E55C2B175A140007CD40 /* FoodList.swift in Sources */,
-				EC7DC2952B1F397D00BC8FD5 /* Database+Creation.swift in Sources */,
-				EC7F56822B2397B3005C372B /* BillboardClient.swift in Sources */,
-				EC9577B02B1869760082A0D1 /* FoodDetails.swift in Sources */,
-				EC7DC2872B1DC38100BC8FD5 /* UserDefaultsClient.swift in Sources */,
-				EC2799902B1B390E00D9E4B0 /* FoodDetailsFeature.swift in Sources */,
-				EC7F56782B230D9E005C372B /* EnergyCalculator.swift in Sources */,
-				ECCA83F82B177A1400C9EF4D /* FoodClient.swift in Sources */,
 				EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */,
-				EC9577B22B1872E60082A0D1 /* NutritionalValueCard.swift in Sources */,
-				EC7F56922B25A529005C372B /* QuantityComparisonChart.swift in Sources */,
-				EC7F568A2B24E983005C372B /* FoodComparison.swift in Sources */,
-				EC7F568E2B24F14B005C372B /* FoodComparisonFeature.swift in Sources */,
-				EC7DC2922B1F375100BC8FD5 /* Food.swift in Sources */,
-				EC7F56722B221519005C372B /* SpotlightReducer.swift in Sources */,
-				EC7F56842B24638B005C372B /* BillboardReducer.swift in Sources */,
-				EC7DC2982B1F669D00BC8FD5 /* DatabaseClient.swift in Sources */,
-				EC4717A62B1C4DD5007B491C /* FoodListRow.swift in Sources */,
-				EC4717A42B1B8474007B491C /* Quantity.swift in Sources */,
-				EC7F56742B221572005C372B /* SpotlightClient.swift in Sources */,
-				ECA64C232B1DB18E0036EE4F /* Energy.swift in Sources */,
-				EC7F568C2B24E997005C372B /* FoodSelection.swift in Sources */,
-				EC27998D2B1B385200D9E4B0 /* FoodListFeature.swift in Sources */,
-				EC7F56972B25BEBB005C372B /* EnergyBreakdownComparisonChart.swift in Sources */,
-				EC7F56952B25B44F005C372B /* MacronutrientsComparisonChart.swift in Sources */,
-				EC27998A2B1B304900D9E4B0 /* ApiKeysClient.swift in Sources */,
-				ECA2EC422B2615F2000BD06F /* Comparison.swift in Sources */,
-				EC7F567B2B23136D005C372B /* EnergyBreakdownChart.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EC43E5662B175A160007CD40 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				ECA2EC442B2618B7000BD06F /* FoodComparisonReducerTests.swift in Sources */,
-				EC7DC2892B1DF22900BC8FD5 /* FoodListReducerTests.swift in Sources */,
-				EC7F56762B2303DB005C372B /* SpotlightReducerTests.swift in Sources */,
-				EC7F56862B2466F6005C372B /* BillboardReducerTests.swift in Sources */,
-				EC7F567D2B237036005C372B /* EnergyCalculatorTests.swift in Sources */,
+				EC47C94B2B27285C00D30381 /* AppFeature.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		EC43E56C2B175A160007CD40 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EC43E5552B175A140007CD40 /* FoodSpec */;
-			targetProxy = EC43E56B2B175A160007CD40 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		EC43E57C2B175A160007CD40 /* Debug */ = {
@@ -624,46 +382,6 @@
 			};
 			name = Release;
 		};
-		EC43E5822B175A160007CD40 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S587A4HQ4C;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.victorsocaciu.FoodSpecTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoodSpec.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FoodSpec";
-			};
-			name = Debug;
-		};
-		EC43E5832B175A160007CD40 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S587A4HQ4C;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.victorsocaciu.FoodSpecTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoodSpec.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FoodSpec";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -685,72 +403,32 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EC43E5812B175A160007CD40 /* Build configuration list for PBXNativeTarget "FoodSpecTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EC43E5822B175A160007CD40 /* Debug */,
-				EC43E5832B175A160007CD40 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		EC2799842B19ECE900D9E4B0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
-			requirement = {
-				branch = "observation-beta";
-				kind = branch;
-			};
-		};
-		EC7DC28B2B1F32C400BC8FD5 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/groue/GRDB.swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.23.0;
-			};
-		};
-		EC7F567E2B2395E7005C372B /* XCRemoteSwiftPackageReference "Billboard" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/hiddevdploeg/Billboard";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.2;
-			};
-		};
-		EC87FC4C2B21B4BA006B8B28 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		EC2799852B19ECE900D9E4B0 /* ComposableArchitecture */ = {
+		EC47C9522B27323B00D30381 /* Database */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = EC2799842B19ECE900D9E4B0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
-			productName = ComposableArchitecture;
+			productName = Database;
 		};
-		EC7DC28C2B1F32C400BC8FD5 /* GRDB */ = {
+		EC47C9542B27323B00D30381 /* Shared */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = EC7DC28B2B1F32C400BC8FD5 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
-			productName = GRDB;
+			productName = Shared;
 		};
-		EC7F567F2B2395E7005C372B /* Billboard */ = {
+		EC47C9562B27348A00D30381 /* API */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = EC7F567E2B2395E7005C372B /* XCRemoteSwiftPackageReference "Billboard" */;
-			productName = Billboard;
+			productName = API;
 		};
-		EC87FC4D2B21B4BA006B8B28 /* AsyncAlgorithms */ = {
+		EC47C9582B27493600D30381 /* Ads */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = EC87FC4C2B21B4BA006B8B28 /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
-			productName = AsyncAlgorithms;
+			productName = Ads;
+		};
+		EC47C95A2B27493600D30381 /* FoodList */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FoodList;
+		};
+		EC47C95C2B274B8900D30381 /* Spotlight */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Spotlight;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

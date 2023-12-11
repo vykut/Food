@@ -1,13 +1,7 @@
-//
-//  FoodComparisonReducerTests.swift
-//  FoodSpecTests
-//
-//  Created by Victor Socaciu on 10/12/2023.
-//
-
 import XCTest
 import ComposableArchitecture
-@testable import FoodSpec
+import Shared
+@testable import FoodComparison
 
 @MainActor
 final class FoodComparisonReducerTests: XCTestCase {
@@ -34,22 +28,20 @@ final class FoodComparisonReducerTests: XCTestCase {
     }
 
     func testComputedProperty_filteredFoods() async throws {
-        var state = FoodComparisonFeature.State(
-            foods: [.ribeye, .eggplant],
-            filterQuery: "e"
-        )
+        var state = FoodComparisonFeature.State()
+        state.foods = [.ribeye, .eggplant]
+        state.filterQuery = "e"
+
         XCTAssertNoDifference(state.filteredFoods, [.ribeye, .eggplant])
 
-        state = FoodComparisonFeature.State(
-            foods: [.ribeye, .eggplant],
-            filterQuery: "eg"
-        )
+        state = FoodComparisonFeature.State()
+        state.foods = [.ribeye, .eggplant]
+        state.filterQuery = "eg"
         XCTAssertNoDifference(state.filteredFoods, [.eggplant])
 
-        state = FoodComparisonFeature.State(
-            foods: [.ribeye, .eggplant],
-            filterQuery: ""
-        )
+        state = FoodComparisonFeature.State()
+        state.foods = [.ribeye, .eggplant]
+        state.filterQuery = ""
         XCTAssertNoDifference(state.filteredFoods, [.ribeye, .eggplant])
     }
 
@@ -90,9 +82,9 @@ final class FoodComparisonReducerTests: XCTestCase {
     }
 
     func testComputedProperty_availableSortingStrategies() async throws {
-        var state = State(
-            comparison: .energy
-        )
+        var state = State()
+        state.comparison = .energy
+
         XCTAssertNoDifference(state.availableSortingStrategies, State.SortingStrategy.allCases)
 
         state.comparison = .macronutrients
@@ -288,6 +280,40 @@ extension Food {
             carbohydrate: .zero,
             fiber: .zero,
             sugar: .zero
+        )
+    }
+}
+
+extension Food {
+    static var ribeye: Self {
+        .init(
+            name: "ribeye",
+            energy: .kcal(274.1),
+            fatTotal: .grams(18.9),
+            fatSaturated: .grams(8.5),
+            protein: .grams(24.8),
+            sodium: .milligrams(58.0),
+            potassium: .milligrams(166.0),
+            cholesterol: .milligrams(78),
+            carbohydrate: .grams(0),
+            fiber: .grams(0),
+            sugar: .grams(0)
+        )
+    }
+
+    static var eggplant: Self {
+        .init(
+            name: "eggplant",
+            energy: .kcal(34.7),
+            fatTotal: .grams(0.2),
+            fatSaturated: .grams(0),
+            protein: .grams(0.8),
+            sodium: .milligrams(0),
+            potassium: .milligrams(15.0),
+            cholesterol: .milligrams(0),
+            carbohydrate: .grams(8.7),
+            fiber: .grams(2.5),
+            sugar: .grams(3.2)
         )
     }
 }

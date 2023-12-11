@@ -1,18 +1,15 @@
-//
-//  FoodSelection.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 09/12/2023.
-//
-
 import SwiftUI
 import ComposableArchitecture
 import Shared
 
-struct FoodSelection: View {
+public struct FoodSelection: View {
     @Bindable var store: StoreOf<FoodComparisonFeature>
 
-    var body: some View {
+    public init(store: StoreOf<FoodComparisonFeature>) {
+        self.store = store
+    }
+
+    public var body: some View {
         List(selection: $store.selectedFoodIds.sending(\.didChangeSelection)) {
             recentSearchesSection
         }

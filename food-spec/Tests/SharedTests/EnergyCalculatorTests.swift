@@ -1,13 +1,5 @@
-//
-//  EnergyCalculatorTests.swift
-//  FoodSpecTests
-//
-//  Created by Victor Socaciu on 08/12/2023.
-//
-
 import XCTest
-import ComposableArchitecture
-@testable import FoodSpec
+@testable import Shared
 
 final class EnergyCalculatorTests: XCTestCase {
     func testCalculate() async throws {
@@ -26,7 +18,7 @@ final class EnergyCalculatorTests: XCTestCase {
         )
         let energyCalculator = EnergyCalculator()
         let breakdown = energyCalculator.calculateEnergy(for: food)
-        XCTAssertNoDifference(
+        XCTAssertEqual(
             breakdown,
             .init(
                 protein: .kcal(3.2),

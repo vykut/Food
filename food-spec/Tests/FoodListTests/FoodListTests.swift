@@ -1,21 +1,13 @@
-//
-//  FoodListReducerTests.swift
-//  FoodSpecTests
-//
-//  Created by Victor Socaciu on 04/12/2023.
-//
-
 import XCTest
 import ComposableArchitecture
-import SwiftData
-import GRDB
-import AsyncAlgorithms
-import CoreSpotlight
+import Shared
+import API
+import Spotlight
 @testable import Billboard
-@testable import FoodSpec
+@testable import FoodList
 
 @MainActor
-final class FoodListReducerTests: XCTestCase {
+final class FoodListTests: XCTestCase {
     func testStateDefaultInitializer() async throws {
         let store = TestStore(
             initialState: FoodListFeature.State(),
@@ -395,9 +387,11 @@ final class FoodListReducerTests: XCTestCase {
 
     func testDeletion_error() async throws {
         let store = TestStore(
-            initialState: FoodListFeature.State(
-                recentFoods: [.preview]
-            ),
+            initialState: {
+                var state = FoodListFeature.State()
+                state.recentFoods = [.preview]
+                return state
+            }(),
             reducer: {
                 FoodListFeature()
             },
@@ -439,9 +433,11 @@ final class FoodListReducerTests: XCTestCase {
     func testIntegrationWithSpotlight_search() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListFeature.State(
-                foodDetails: .init(food: eggplant)
-            ),
+            initialState: {
+                var state = FoodListFeature.State()
+                state.foodDetails = .init(food: eggplant)
+                return state
+            }(),
             reducer: {
                 FoodListFeature()
             }
@@ -497,7 +493,7 @@ final class FoodListReducerTests: XCTestCase {
             }
         )
         store.exhaustivity = .off
-        store.dependencies.userDefaults.data = { _ in nil }
+        store.dependencies.userDefaults.data = { @Sendable _ in nil }
         store.dependencies.billboardClient.getRandomBanners = {
             .init {
                 $0.yield(firstAd)
@@ -520,9 +516,11 @@ final class FoodListReducerTests: XCTestCase {
 
     func testIntegrationWithComparisonFeature() async throws {
         let store = TestStore(
-            initialState: FoodListFeature.State(
-                recentFoods: [.eggplant, .ribeye]
-            ),
+            initialState: {
+                var state = FoodListFeature.State()
+                state.recentFoods = [.eggplant, .ribeye]
+                return state
+            }(),
             reducer: {
                 FoodListFeature()
             }

@@ -1,10 +1,3 @@
-//
-//  QuantityComparisonChart.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 10/12/2023.
-//
-
 import SwiftUI
 import Charts
 import Shared

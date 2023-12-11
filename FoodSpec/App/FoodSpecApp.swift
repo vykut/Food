@@ -1,13 +1,6 @@
-//
-//  FoodSpecApp.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 29/11/2023.
-//
-
 import SwiftUI
-import SwiftData
 import ComposableArchitecture
+import FoodList
 
 @main
 struct FoodSpecApp: App {

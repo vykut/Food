@@ -1,36 +1,31 @@
-//
-//  UserDefaultsClient.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 04/12/2023.
-//
-
 import Foundation
-import ComposableArchitecture
-import XCTestDynamicOverlay
+import Dependencies
+import DependenciesMacros
 import Shared
 
+@DependencyClient
 public struct UserDefaultsClient {
-    public var bool: @Sendable (_ key: String) -> Bool
+    public var bool: @Sendable (_ key: String) -> Bool = { _ in false }
     public var string: @Sendable (_ key: String) -> String?
     public var data: @Sendable (_ key: String) -> Data?
-    public var double: @Sendable (_ key: String) -> Double
-    public var integer: @Sendable (_ key: String) -> Int
+    public var double: @Sendable (_ key: String) -> Double = { _ in 0 }
+    public var integer: @Sendable (_ key: String) -> Int = { _ in 0 }
     public var remove: @Sendable (_ key: String) -> Void
     public var set: @Sendable (_ object: any Codable, _ key: String) -> Void
 
-    func object<T: Codable>(key: String) -> T? {
+    @Sendable
+    public func object<T: Codable>(key: String) -> T? {
         guard let data = self.data(key) else { return nil }
         let decoder = JSONDecoder()
         return try? decoder.decode(T.self, from: data)
     }
 
-    mutating func override(data: Data, forKey key: String) {
-        self.data = { [self] in $0 == key ? data : self.data($0) }
+    public mutating func override(data: Data, forKey key: String) {
+        self.data = { @Sendable [self] in $0 == key ? data : self.data($0) }
     }
 }
 
-extension UserDefaultsClient {
+public extension UserDefaultsClient {
     var recentSearchesSortingStrategy: Food.SortingStrategy? {
         get { object(key: recentSearchesSortingStrategyKey) }
         nonmutating set {
@@ -75,15 +70,7 @@ extension UserDefaultsClient: DependencyKey {
         )
     }()
 
-    static public var testValue: UserDefaultsClient = .init(
-        bool: unimplemented("\(Self.self).bool", placeholder: false),
-        string: unimplemented("\(Self.self).string", placeholder: nil),
-        data: unimplemented("\(Self.self).data", placeholder: nil),
-        double: unimplemented("\(Self.self).double", placeholder: .zero),
-        integer: unimplemented("\(Self.self).integer", placeholder: .zero),
-        remove: unimplemented("\(Self.self).remove"),
-        set: unimplemented("\(Self.self).set")
-    )
+    public static var testValue: UserDefaultsClient = .init()
 }
 
 extension DependencyValues {

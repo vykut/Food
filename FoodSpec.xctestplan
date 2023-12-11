@@ -17,11 +17,24 @@
   },
   "testTargets" : [
     {
-      "parallelizable" : true,
       "target" : {
-        "containerPath" : "container:FoodSpec.xcodeproj",
-        "identifier" : "EC43E5692B175A160007CD40",
-        "name" : "FoodSpecTests"
+        "containerPath" : "container:food-spec",
+        "identifier" : "FoodComparisonTests",
+        "name" : "FoodComparisonTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "FoodListTests",
+        "name" : "FoodListTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "SharedTests",
+        "name" : "SharedTests"
       }
     }
   ],

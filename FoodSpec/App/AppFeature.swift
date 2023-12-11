@@ -1,12 +1,6 @@
-//
-//  AppFeature.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 11/12/2023.
-//
-
 import Foundation
 import ComposableArchitecture
+import FoodList
 
 @Reducer
 struct AppFeature {

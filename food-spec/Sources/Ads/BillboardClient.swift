@@ -1,10 +1,3 @@
-//
-//  BillboardClient.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 08/12/2023.
-//
-
 import Foundation
 import Dependencies
 import DependenciesMacros
@@ -12,7 +5,7 @@ import DependenciesMacros
 
 @DependencyClient
 public struct BillboardClient {
-    var getRandomBanners: () async throws -> AsyncThrowingStream<BillboardAd?, Error>
+    public var getRandomBanners: () async throws -> AsyncThrowingStream<BillboardAd?, Error>
 }
 
 extension BillboardClient: DependencyKey {

@@ -1,20 +1,14 @@
-//
-//  FoodClient.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 29/11/2023.
-//
-
 import Foundation
-import ComposableArchitecture
+import Dependencies
+import DependenciesMacros
 
 @DependencyClient
-struct FoodClient {
-    var getFoods: (_ query: String) async throws -> [FoodApiModel]
+public struct FoodClient {
+    public var getFoods: (_ query: String) async throws -> [FoodApiModel]
 }
 
 extension FoodClient: DependencyKey {
-    static let liveValue: FoodClient = .init(
+    public static let liveValue: FoodClient = .init(
         getFoods: { query in
             @Dependency(\.apiKeysClient) var apiKeysClient
             @Dependency(\.urlSession) var session
@@ -35,29 +29,57 @@ extension FoodClient: DependencyKey {
         }
     )
 
-    static let testValue: FoodClient = .init()
+    public static let testValue: FoodClient = .init()
 }
 
 extension DependencyValues {
-    var foodClient: FoodClient {
+    public var foodClient: FoodClient {
         get { self[FoodClient.self] }
         set { self[FoodClient.self] = newValue }
     }
 }
 
-struct FoodApiModel: Hashable, Codable {
-    let name: String
-    let calories: Double
-    let servingSizeG: Double
-    let fatTotalG: Double
-    let fatSaturatedG: Double
-    let proteinG: Double
-    let sodiumMg: Double
-    let potassiumMg: Double
-    let cholesterolMg: Double
-    let carbohydratesTotalG: Double
-    let fiberG: Double
-    let sugarG: Double
+public struct FoodApiModel: Hashable, Codable {
+    public let name: String
+    public let calories: Double
+    public let servingSizeG: Double
+    public let fatTotalG: Double
+    public let fatSaturatedG: Double
+    public let proteinG: Double
+    public let sodiumMg: Double
+    public let potassiumMg: Double
+    public let cholesterolMg: Double
+    public let carbohydratesTotalG: Double
+    public let fiberG: Double
+    public let sugarG: Double
+
+    public init(
+        name: String,
+        calories: Double,
+        servingSizeG: Double,
+        fatTotalG: Double,
+        fatSaturatedG: Double,
+        proteinG: Double,
+        sodiumMg: Double,
+        potassiumMg: Double,
+        cholesterolMg: Double,
+        carbohydratesTotalG: Double,
+        fiberG: Double,
+        sugarG: Double
+    ) {
+        self.name = name
+        self.calories = calories
+        self.servingSizeG = servingSizeG
+        self.fatTotalG = fatTotalG
+        self.fatSaturatedG = fatSaturatedG
+        self.proteinG = proteinG
+        self.sodiumMg = sodiumMg
+        self.potassiumMg = potassiumMg
+        self.cholesterolMg = cholesterolMg
+        self.carbohydratesTotalG = carbohydratesTotalG
+        self.fiberG = fiberG
+        self.sugarG = sugarG
+    }
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -75,7 +97,7 @@ struct FoodApiModel: Hashable, Codable {
     }
 }
 
-extension FoodApiModel {
+public extension FoodApiModel {
     static var preview: Self {
         .init(
             name: "eggplant",

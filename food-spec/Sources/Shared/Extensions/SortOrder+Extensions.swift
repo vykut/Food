@@ -1,8 +1,10 @@
-//
-//  File.swift
-//  
-//
-//  Created by Victor Socaciu on 11/12/2023.
-//
-
 import Foundation
+
+public extension SortOrder {
+    mutating func toggle() {
+        self = switch self {
+            case .forward: .reverse
+            case .reverse: .forward
+        }
+    }
+}

@@ -1,10 +1,3 @@
-//
-//  FoodListRow.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 03/12/2023.
-//
-
 import SwiftUI
 import Shared
 

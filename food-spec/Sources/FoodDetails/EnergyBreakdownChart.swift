@@ -1,10 +1,3 @@
-//
-//  EnergyBreakdownChart.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 08/12/2023.
-//
-
 import SwiftUI
 import Charts
 import Shared

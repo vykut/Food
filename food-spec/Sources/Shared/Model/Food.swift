@@ -1,28 +1,20 @@
-//
-//  Food.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 05/12/2023.
-//
-
 import Foundation
-import GRDB
 
-struct Food: Codable, Hashable {
-    var id: Int64?
-    var name: String
-    var energy: Energy
-    var fatTotal: Quantity
-    var fatSaturated: Quantity
-    var protein: Quantity
-    var sodium: Quantity
-    var potassium: Quantity
-    var cholesterol: Quantity
-    var carbohydrate: Quantity
-    var fiber: Quantity
-    var sugar: Quantity
+public struct Food: Codable, Hashable {
+    public var id: Int64?
+    public var name: String
+    public var energy: Energy
+    public var fatTotal: Quantity
+    public var fatSaturated: Quantity
+    public var protein: Quantity
+    public var sodium: Quantity
+    public var potassium: Quantity
+    public var cholesterol: Quantity
+    public var carbohydrate: Quantity
+    public var fiber: Quantity
+    public var sugar: Quantity
 
-    var nutritionalSummary: String {
+    public var nutritionalSummary: String {
         """
 \(energy.formatted(width: .narrow)) | \
 P: \(protein.formatted(width: .narrow)) | \
@@ -30,26 +22,37 @@ C: \(carbohydrate.formatted(width: .narrow)) | \
 F: \(fatTotal.formatted(width: .narrow))
 """
     }
-}
 
-extension Food: FetchableRecord, MutablePersistableRecord {
-    mutating func didInsert(_ inserted: InsertionSuccess) {
-        id = inserted.rowID
+    public init(
+        id: Int64? = nil,
+        name: String,
+        energy: Energy,
+        fatTotal: Quantity,
+        fatSaturated: Quantity,
+        protein: Quantity,
+        sodium: Quantity,
+        potassium: Quantity,
+        cholesterol: Quantity,
+        carbohydrate: Quantity,
+        fiber: Quantity,
+        sugar: Quantity
+    ) {
+        self.id = id
+        self.name = name
+        self.energy = energy
+        self.fatTotal = fatTotal
+        self.fatSaturated = fatSaturated
+        self.protein = protein
+        self.sodium = sodium
+        self.potassium = potassium
+        self.cholesterol = cholesterol
+        self.carbohydrate = carbohydrate
+        self.fiber = fiber
+        self.sugar = sugar
     }
 }
 
-extension Energy: DatabaseValueConvertible {
-    var databaseValue: DatabaseValue {
-        self.measurement.converted(to: .kilocalories).value.databaseValue
-    }
-
-    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Energy? {
-        guard let value = Double.fromDatabaseValue(dbValue) else { return nil }
-        return .init(value: value, unit: .kilocalories)
-    }
-}
-
-extension Food {
+public extension Food {
     enum SortingStrategy: String, Codable, Identifiable, Hashable, CaseIterable {
         case name
         case energy
@@ -57,51 +60,11 @@ extension Food {
         case protein
         case fat
 
-        var id: Self { self }
-
-        var column: Column {
-            switch self {
-                case .name: Column(CodingKeys.name)
-                case .energy: Column(CodingKeys.energy)
-                case .carbohydrates: Column(CodingKeys.carbohydrate)
-                case .protein: Column(CodingKeys.protein)
-                case .fat: Column(CodingKeys.fatTotal)
-            }
-        }
+        public var id: Self { self }
     }
 }
 
-extension Quantity: DatabaseValueConvertible {
-    var databaseValue: DatabaseValue {
-        self.measurement.converted(to: .grams).value.databaseValue
-    }
-
-    static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Quantity? {
-        guard let value = Double.fromDatabaseValue(dbValue) else { return nil }
-        return .init(value: value, unit: .grams)
-    }
-}
-
-extension Food {
-    init(foodApiModel: FoodApiModel) {
-        self.init(
-            id: nil,
-            name: foodApiModel.name,
-            energy: .init(value: foodApiModel.calories, unit: .kilocalories),
-            fatTotal: .init(value: foodApiModel.fatTotalG, unit: .grams),
-            fatSaturated: .init(value: foodApiModel.fatSaturatedG, unit: .grams),
-            protein: .init(value: foodApiModel.proteinG, unit: .grams),
-            sodium: .init(value: foodApiModel.sodiumMg, unit: .milligrams),
-            potassium: .init(value: foodApiModel.potassiumMg, unit: .milligrams),
-            cholesterol: .init(value: foodApiModel.cholesterolMg, unit: .milligrams),
-            carbohydrate:  .init(value: foodApiModel.carbohydratesTotalG, unit: .grams),
-            fiber: .init(value: foodApiModel.fiberG, unit: .grams),
-            sugar: .init(value: foodApiModel.sugarG, unit: .grams)
-        )
-    }
-}
-
-extension Food {
+public extension Food {
     static var preview: Self {
         preview(id: nil)
     }

@@ -1,22 +1,16 @@
-//
-//  SpotlightClient.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 07/12/2023.
-//
-
 import Foundation
-import CoreSpotlight
-import ComposableArchitecture
+import Dependencies
+import DependenciesMacros
 import Shared
+@_exported import CoreSpotlight
 
 @DependencyClient
-struct SpotlightClient {
-    var indexFoods: (_ foods: [Food]) async throws -> Void
+public struct SpotlightClient {
+    public var indexFoods: (_ foods: [Food]) async throws -> Void
 }
 
 extension SpotlightClient: DependencyKey {
-    static var liveValue: SpotlightClient = .init(
+    public static var liveValue: SpotlightClient = .init(
         indexFoods: { foods in
             guard CSSearchableIndex.isIndexingAvailable() else {
                 struct SpotlightIndexingNotAvailable: Error { }
@@ -40,11 +34,11 @@ extension SpotlightClient: DependencyKey {
         }
     )
 
-    static let testValue: SpotlightClient = .init()
+    public static let testValue: SpotlightClient = .init()
 }
 
 extension DependencyValues {
-    var spotlightClient: SpotlightClient {
+    public var spotlightClient: SpotlightClient {
         get { self[SpotlightClient.self ] }
         set { self[SpotlightClient.self ] = newValue }
     }

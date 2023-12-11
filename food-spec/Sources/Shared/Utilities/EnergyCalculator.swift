@@ -1,37 +1,31 @@
-//
-//  EnergyCalculator.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 08/12/2023.
-//
-
 import Foundation
-import Shared
 
-struct EnergyCalculator {
-    struct EnergyBreakdown: Hashable {
-        let protein: Energy
-        let carbohydrate: Energy
-        let fat: Energy
+public struct EnergyCalculator {
+    public struct EnergyBreakdown: Hashable {
+        public let protein: Energy
+        public let carbohydrate: Energy
+        public let fat: Energy
 
-        var total: Energy {
+        public var total: Energy {
             protein + carbohydrate + fat
         }
 
-        var proteinRatio: Double {
+        public var proteinRatio: Double {
             protein.value / total.value
         }
 
-        var carbohydrateRatio: Double {
+        public var carbohydrateRatio: Double {
             carbohydrate.value / total.value
         }
 
-        var fatRatio: Double {
+        public var fatRatio: Double {
             fat.value / total.value
         }
     }
 
-    func calculateEnergy(for food: Food) -> EnergyBreakdown {
+    public init() { }
+
+    public func calculateEnergy(for food: Food) -> EnergyBreakdown {
         .init(
             protein: calculateEnergy(protein: food.protein),
             carbohydrate: calculateEnergy(carbohydrate: food.carbohydrate),
@@ -39,7 +33,7 @@ struct EnergyCalculator {
         )
     }
 
-    func calculateEnergy(protein quantity: Quantity) -> Energy {
+    public func calculateEnergy(protein quantity: Quantity) -> Energy {
         calculateEnergy(quantity: quantity, energyPerGram: 4)
     }
 
@@ -47,7 +41,7 @@ struct EnergyCalculator {
         calculateEnergy(quantity: quantity, energyPerGram: 4)
     }
 
-    func calculateEnergy(fat quantity: Quantity) -> Energy {
+    public func calculateEnergy(fat quantity: Quantity) -> Energy {
         calculateEnergy(quantity: quantity, energyPerGram: 9)
     }
 

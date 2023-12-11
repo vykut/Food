@@ -1,10 +1,3 @@
-//
-//  BillboardReducer.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 09/12/2023.
-//
-
 import Foundation
 import ComposableArchitecture
 import Billboard
@@ -48,14 +41,14 @@ struct BillboardReducer {
 }
 
 extension FoodListFeature.State {
-    struct Billboard: Equatable {
+    public struct Billboard: Equatable {
         var banner: BillboardAd?
     }
 }
 
 extension FoodListFeature.Action {
     @CasePathable
-    enum Billboard {
+    public enum Billboard {
         case showBanner(BillboardAd?)
     }
 }

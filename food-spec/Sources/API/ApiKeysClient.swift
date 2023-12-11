@@ -1,12 +1,6 @@
-//
-//  ApiKeysClient.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 02/12/2023.
-//
-
 import Foundation
-import ComposableArchitecture
+import Dependencies
+import DependenciesMacros
 
 @DependencyClient
 struct ApiKeysClient {
@@ -16,10 +10,9 @@ struct ApiKeysClient {
 extension ApiKeysClient: DependencyKey {
     static let liveValue: ApiKeysClient = .init(
         getApiKeys: {
-            @Dependency(\.bundle) var bundle
             let request = NSBundleResourceRequest(tags: ["APIKeys"])
             try await request.beginAccessingResources()
-            let url = bundle.url(forResource: "APIKeys", withExtension: "json")!
+            let url = Bundle.main.url(forResource: "APIKeys", withExtension: "json")!
             let data = try Data(contentsOf: url)
             // TODO: Store in keychain and skip NSBundleResourceRequest on next launches
             let apiKeys = try JSONDecoder().decode(ApiKeys.self, from: data)

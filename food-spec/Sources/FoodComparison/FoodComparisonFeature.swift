@@ -1,18 +1,11 @@
-//
-//  FoodComparisonFeature.swift
-//  FoodSpec
-//
-//  Created by Victor Socaciu on 09/12/2023.
-//
-
 import Foundation
 import ComposableArchitecture
 import Shared
 
 @Reducer
-struct FoodComparisonFeature {
+public struct FoodComparisonFeature {
     @ObservableState
-    struct State: Hashable {
+    public struct State: Hashable {
         var foods: [Food] = []
         var selectedFoodIds: Set<Int64?> = []
         var comparedFoods: [Food] = []
@@ -46,19 +39,26 @@ struct FoodComparisonFeature {
             }
         }
 
-        enum SortingStrategy: String, Identifiable, Hashable, CaseIterable {
+        public enum SortingStrategy: String, Identifiable, Hashable, CaseIterable {
             case name
             case value
             case protein
             case carbohydrate
             case fat
 
-            var id: Self { self }
+            public var id: Self { self }
         }
+
+        public init(foods: [Food] = [], selectedFoodIds: Set<Int64?> = []) {
+            self.foods = foods
+            self.selectedFoodIds = selectedFoodIds
+        }
+
+        init() { }
     }
 
     @CasePathable
-    enum Action {
+    public enum Action {
         case didTapCancel
         case didTapCompare(Comparison)
         case didChangeSelection(Set<Int64?>)
@@ -68,9 +68,11 @@ struct FoodComparisonFeature {
         case updateComparisonType(Comparison)
     }
 
+    public init() { }
+
     @Dependency(\.dismiss) private var dismiss
 
-    var body: some ReducerOf<Self> {
+    public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
                 case .didChangeSelection(let selection):
