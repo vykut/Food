@@ -1,8 +1,8 @@
 import XCTest
 import ComposableArchitecture
 import Shared
-import API
 import Spotlight
+@testable import API
 @testable import Billboard
 @testable import FoodList
 

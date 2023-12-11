@@ -32,105 +32,53 @@ let package = Package(
         .package(url: "https://github.com/hiddevdploeg/Billboard", from: "1.0.2"),
     ],
     targets: [
-        .target(
-            name: "FoodList",
-            dependencies: [
-                "FoodDetails",
-                "FoodComparison",
-                "Shared",
-                "API",
-                "Database",
-                "UserDefaults",
-                "Ads",
-                tcaDependency,
-            ]
-        ),
-        .target(
-            name: "FoodDetails",
-            dependencies: [
-                "Shared",
-                tcaDependency,
-            ]
-        ),
-        .target(
-            name: "FoodComparison",
-            dependencies: [
-                "Shared",
-                tcaDependency,
-            ]
-        ),
-        .target(
-            name: "UserDefaults",
-            dependencies: [
-                "Shared",
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .target(
-            name: "API",
-            dependencies: [
-                "Shared",
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .target(
-            name: "Database",
-            dependencies: [
-                "Shared",
-                grdbDependency,
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .target(
-            name: "Ads",
-            dependencies: [
-                "Shared",
-                billboardDependency,
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .target(
-            name: "Spotlight",
-            dependencies: [
-                "Shared",
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .target(
-            name: "Shared",
-            dependencies: [
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .testTarget(
-            name: "FoodComparisonTests",
-            dependencies: [
-                "FoodComparison",
-                "Shared"
-            ]
-        ),
-        .testTarget(
-            name: "FoodListTests",
-            dependencies: [
-                "FoodList",
-                "Shared",
-                "Ads",
-                "API",
-                "Spotlight"
-            ]
-        ),
-        .testTarget(
-            name: "SharedTests",
-            dependencies: ["Shared"]
-        ),
+        .feature(name: "FoodList", dependencies: ["FoodDetails", "FoodComparison", "API", "Database", "UserDefaults", "Ads", "Spotlight"]),
+        .featureTests(for: "FoodList"),
+        .feature(name: "FoodDetails"),
+        .feature(name: "FoodComparison"),
+        .featureTests(for: "FoodComparison"),
+        .client(name: "UserDefaults"),
+        .client(name: "API"),
+        .testTarget(for: "API"),
+        .client(name: "Database", dependencies: [grdbDependency]),
+        .client(name: "Ads", dependencies: [billboardDependency]),
+        .client(name: "Spotlight"),
+        .target(name: "Shared"),
+        .testTarget(for: "Shared"),
     ]
 )
+
+extension Target {
+    /// adds `Shared`, `DI` and `DIMacro` as default dependencies
+    static func client(name: String, dependencies: [Dependency] = []) -> Target {
+        .target(
+            name: name,
+            dependencies: ["Shared", tcaDIDependency, tcaDIMacroDependency] + dependencies
+        )
+    }
+
+    /// adds `TCA` as a default dependency
+    static func feature(name: String, dependencies: [Dependency] = []) -> Target {
+        .target(
+            name: name,
+            dependencies: ["Shared", tcaDependency] + dependencies
+        )
+    }
+    /// adds `Shared` and `TCA` as default dependencies
+    static func featureTests(for feature: String, dependencies: [Dependency] = []) -> Target {
+        .testTarget(
+            for: feature,
+            dependencies: ["Shared"]
+        )
+    }
+
+    static func testTarget(for target: String, dependencies: [Dependency] = []) -> Target {
+        .testTarget(
+            name: target+"Tests",
+            dependencies: CollectionOfOne(.target(name: target)) + dependencies
+        )
+    }
+}
 
 extension Product {
     static func library(name: String, type: PackageDescription.Product.Library.LibraryType? = nil) -> PackageDescription.Product {

@@ -36,6 +36,13 @@
         "identifier" : "SharedTests",
         "name" : "SharedTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "APITests",
+        "name" : "APITests"
+      }
     }
   ],
   "version" : 1
