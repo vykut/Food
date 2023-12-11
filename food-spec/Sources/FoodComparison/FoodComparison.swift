@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Shared
 import ComposableArchitecture
 
 struct FoodComparison: View {

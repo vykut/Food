@@ -10,6 +10,7 @@ import SwiftData
 import ComposableArchitecture
 import CoreSpotlight
 import Billboard
+import Shared
 
 struct FoodList: View {
     @Bindable var store: StoreOf<FoodListFeature>

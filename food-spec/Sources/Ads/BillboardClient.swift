@@ -6,16 +6,17 @@
 //
 
 import Foundation
-import ComposableArchitecture
-import Billboard
+import Dependencies
+import DependenciesMacros
+@_exported import Billboard
 
 @DependencyClient
-struct BillboardClient {
+public struct BillboardClient {
     var getRandomBanners: () async throws -> AsyncThrowingStream<BillboardAd?, Error>
 }
 
 extension BillboardClient: DependencyKey {
-    static var liveValue: BillboardClient = .init(
+    public static var liveValue: BillboardClient = .init(
         getRandomBanners: {
             @Dependency(\.continuousClock) var continuousClock
             let first = ActorIsolated(true)
@@ -30,11 +31,11 @@ extension BillboardClient: DependencyKey {
         }
     )
 
-    static var testValue: BillboardClient = .init()
+    public static var testValue: BillboardClient = .init()
 }
 
 extension DependencyValues {
-    var billboardClient: BillboardClient {
+    public var billboardClient: BillboardClient {
         get { self[BillboardClient.self] }
         set { self[BillboardClient.self] = newValue }
     }

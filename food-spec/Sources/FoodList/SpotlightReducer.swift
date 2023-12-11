@@ -8,6 +8,7 @@
 import Foundation
 import ComposableArchitecture
 import CoreSpotlight
+import Database
 
 @Reducer
 struct SpotlightReducer {

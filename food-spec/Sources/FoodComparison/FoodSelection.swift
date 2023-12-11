@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import Shared
 
 struct FoodSelection: View {
     @Bindable var store: StoreOf<FoodComparisonFeature>

@@ -8,6 +8,7 @@
 import Foundation
 import ComposableArchitecture
 import XCTestDynamicOverlay
+import Shared
 
 public struct UserDefaultsClient {
     public var bool: @Sendable (_ key: String) -> Bool

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import Shared
 
 struct QuantityComparisonChart: View {
     let foods: [Food]
@@ -69,11 +70,11 @@ struct QuantityComparisonChart: View {
 }
 
 extension Quantity: Plottable {
-    var primitivePlottable: Double {
+    public var primitivePlottable: Double {
         value
     }
 
-    init?(primitivePlottable: Double) {
+    public init?(primitivePlottable: Double) {
         self = .grams(primitivePlottable)
     }
 }

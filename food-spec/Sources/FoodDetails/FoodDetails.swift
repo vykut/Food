@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import Shared
 
 struct FoodDetails: View {
     @Bindable var store: StoreOf<FoodDetailsFeature>

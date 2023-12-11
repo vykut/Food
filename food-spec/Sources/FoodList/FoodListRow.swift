@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftData
+import Shared
 
 struct FoodListRow: View {
     let food: Food

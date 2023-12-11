@@ -8,6 +8,7 @@
 import Foundation
 import CoreSpotlight
 import ComposableArchitecture
+import Shared
 
 @DependencyClient
 struct SpotlightClient {

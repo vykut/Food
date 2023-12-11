@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import Shared
 
 struct EnergyBreakdownComparisonChart: View {
     let foods: [Food]
@@ -93,11 +94,11 @@ Fat: \(breakdown.fatRatio.formatted(.percent.precision(.fractionLength(0...1))))
 }
 
 extension Energy: Plottable {
-    var primitivePlottable: Double {
+    public var primitivePlottable: Double {
         value
     }
 
-    init?(primitivePlottable: Double) {
+    public init?(primitivePlottable: Double) {
         self = .kcal(primitivePlottable)
     }
 }
