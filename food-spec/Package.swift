@@ -5,6 +5,7 @@ import PackageDescription
 
 let grdbDependency: Target.Dependency = .product(name: "GRDB", package: "GRDB.swift")
 let billboardDependency: Target.Dependency = .product(name: "Billboard", package: "billboard")
+let asyncSemaphoreDependency: Target.Dependency = .product(name: "Semaphore", package: "Semaphore")
 let tcaDependency: Target.Dependency = .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 let tcaDIDependency: Target.Dependency = .product(name: "Dependencies", package: "swift-dependencies")
 let tcaDIMacroDependency: Target.Dependency = .product(name: "DependenciesMacros", package: "swift-dependencies")
@@ -30,13 +31,15 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.1.2"),
         .package(url: "https://github.com/groue/GRDB.swift", from: "6.23.0"),
         .package(url: "https://github.com/hiddevdploeg/Billboard", from: "1.0.2"),
+        .package(url: "https://github.com/groue/Semaphore", from: "0.0.8"),
     ],
     targets: [
-        .feature(name: "FoodList", dependencies: ["FoodDetails", "FoodComparison", "API", "Database", "UserDefaults", "Ads", "Spotlight"]),
+        .feature(name: "FoodList", dependencies: ["FoodDetails", "FoodComparison", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
         .featureTests(for: "FoodList"),
         .feature(name: "FoodDetails"),
         .feature(name: "FoodComparison"),
         .featureTests(for: "FoodComparison"),
+        .client(name: "UserPreferences", dependencies: ["UserDefaults", asyncSemaphoreDependency]),
         .client(name: "UserDefaults"),
         .client(name: "API"),
         .testTarget(for: "API"),

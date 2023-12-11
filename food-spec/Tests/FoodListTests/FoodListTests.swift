@@ -2,6 +2,7 @@ import XCTest
 import ComposableArchitecture
 import Shared
 import Spotlight
+@testable import UserPreferences
 @testable import API
 @testable import Billboard
 @testable import FoodList
@@ -36,6 +37,22 @@ final class FoodListTests: XCTestCase {
             initialState: FoodListFeature.State(),
             reducer: {
                 FoodListFeature()
+            },
+            withDependencies: {
+                $0.userPreferencesClient = .init(
+                    getPreferences: {
+                        .init(
+                            recentSearchesSortingStrategy: .energy,
+                            recentSearchesSortingOrder: .reverse
+                        )
+                    },
+                    setPreferences: { _ in
+
+                    },
+                    observeChanges: {
+                        .finished
+                    }
+                )
             }
         )
         let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
@@ -50,18 +67,12 @@ final class FoodListTests: XCTestCase {
             XCTAssertEqual(order, .reverse)
             return stream
         }
-        let encoder = JSONEncoder()
-        store.dependencies.userDefaults.override(data: try! encoder.encode(Food.SortingStrategy.energy), forKey: "recentSearchesSortingStrategyKey")
-        store.dependencies.userDefaults.override(data: try! encoder.encode(SortOrder.reverse), forKey: "recentSearchesSortingOrderKey")
 
         await store.send(.onAppear)
-        await store.receive(\.updateFromUserDefaults) {
-            $0.recentFoodsSortingStrategy = .energy
-            $0.recentFoodsSortingOrder = .reverse
-        }
         await store.receive(\.startObservingRecentFoods)
+        await store.receive(\.startObservingUserPreferences)
         continuation.yield([])
-        await store.receive(\.didFetchRecentFoods) {
+        await store.receive(\.onRecentFoodsChange) {
             $0.isSearchFocused = true
         }
         XCTAssertNoDifference(store.state.shouldShowRecentSearches, false)
@@ -78,6 +89,22 @@ final class FoodListTests: XCTestCase {
             initialState: FoodListFeature.State(),
             reducer: {
                 FoodListFeature()
+            },
+            withDependencies: {
+                $0.userPreferencesClient = .init(
+                    getPreferences: {
+                        .init(
+                            recentSearchesSortingStrategy: .energy,
+                            recentSearchesSortingOrder: .reverse
+                        )
+                    },
+                    setPreferences: { _ in
+
+                    },
+                    observeChanges: {
+                        .finished
+                    }
+                )
             }
         )
         store.dependencies.spotlightClient.indexFoods = {
@@ -92,18 +119,12 @@ final class FoodListTests: XCTestCase {
             XCTAssertEqual(order, .reverse)
             return stream
         }
-        let encoder = JSONEncoder()
-        store.dependencies.userDefaults.override(data: try! encoder.encode(Food.SortingStrategy.energy), forKey: "recentSearchesSortingStrategyKey")
-        store.dependencies.userDefaults.override(data: try! encoder.encode(SortOrder.reverse), forKey: "recentSearchesSortingOrderKey")
 
         await store.send(.onAppear)
-        await store.receive(\.updateFromUserDefaults) {
-            $0.recentFoodsSortingStrategy = .energy
-            $0.recentFoodsSortingOrder = .reverse
-        }
         await store.receive(\.startObservingRecentFoods)
+        await store.receive(\.startObservingUserPreferences)
         continuation.yield([food])
-        await store.receive(\.didFetchRecentFoods) {
+        await store.receive(\.onRecentFoodsChange) {
             $0.recentFoods = [food]
         }
 
@@ -129,6 +150,20 @@ final class FoodListTests: XCTestCase {
             },
             withDependencies: {
                 $0.mainQueue = .immediate
+                $0.userPreferencesClient = .init(
+                    getPreferences: {
+                        .init(
+                            recentSearchesSortingStrategy: .energy,
+                            recentSearchesSortingOrder: .reverse
+                        )
+                    },
+                    setPreferences: { _ in
+
+                    },
+                    observeChanges: {
+                        .finished
+                    }
+                )
             }
         )
         store.dependencies.spotlightClient.indexFoods = {
@@ -146,21 +181,15 @@ final class FoodListTests: XCTestCase {
             XCTAssertEqual(order, .reverse)
             return stream
         }
-        let encoder = JSONEncoder()
-        store.dependencies.userDefaults.override(data: try! encoder.encode(Food.SortingStrategy.energy), forKey: "recentSearchesSortingStrategyKey")
-        store.dependencies.userDefaults.override(data: try! encoder.encode(SortOrder.reverse), forKey: "recentSearchesSortingOrderKey")
 
         await store.send(.onAppear)
-        await store.receive(\.updateFromUserDefaults) {
-            $0.recentFoodsSortingStrategy = .energy
-            $0.recentFoodsSortingOrder = .reverse
-        }
         await store.receive(\.startObservingRecentFoods)
+        await store.receive(\.startObservingUserPreferences)
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = .preview
         }
         continuation.yield([])
-        await store.receive(\.didFetchRecentFoods) {
+        await store.receive(\.onRecentFoodsChange) {
             $0.isSearchFocused = true
         }
         XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
@@ -194,7 +223,7 @@ final class FoodListTests: XCTestCase {
         }
         XCTAssertEqual(store.state.shouldShowSpinner, false)
         continuation.yield([eggplant])
-        await store.receive(\.didFetchRecentFoods) {
+        await store.receive(\.onRecentFoodsChange) {
             $0.recentFoods = [eggplant]
         }
         XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
@@ -234,7 +263,7 @@ final class FoodListTests: XCTestCase {
             $0.isSearching = false
             $0.inlineFood = .init(food: ribeye)
         }
-        await store.send(.didFetchRecentFoods([ribeye, eggplant])) {
+        await store.send(.onRecentFoodsChange([ribeye, eggplant])) {
             $0.recentFoods = [ribeye, eggplant]
         }
         XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
@@ -243,7 +272,6 @@ final class FoodListTests: XCTestCase {
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [eggplant, ribeye])
         }
-        store.dependencies.userDefaults.set = { _, _ in }
         (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.databaseClient.observeFoods = { sortedBy, order in
             XCTAssertEqual(sortedBy, .carbohydrates)
@@ -256,7 +284,7 @@ final class FoodListTests: XCTestCase {
         }
         await store.receive(\.startObservingRecentFoods)
         continuation.yield([eggplant, ribeye])
-        await store.receive(\.didFetchRecentFoods) {
+        await store.receive(\.onRecentFoodsChange) {
             $0.recentFoods = [eggplant, ribeye]
         }
         XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
@@ -277,7 +305,7 @@ final class FoodListTests: XCTestCase {
         }
         await store.receive(\.startObservingRecentFoods)
         continuation.yield([ribeye, eggplant])
-        await store.receive(\.didFetchRecentFoods) {
+        await store.receive(\.onRecentFoodsChange) {
             $0.recentFoods = [ribeye, eggplant]
         }
 
@@ -288,7 +316,7 @@ final class FoodListTests: XCTestCase {
             XCTAssertNoDifference($0, ribeye)
         }
         await store.send(.didDeleteRecentFoods(.init(integer: 0)))
-        await store.send(.didFetchRecentFoods([eggplant])) {
+        await store.send(.onRecentFoodsChange([eggplant])) {
             $0.recentFoods = [eggplant]
         }
         XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
@@ -493,7 +521,20 @@ final class FoodListTests: XCTestCase {
             }
         )
         store.exhaustivity = .off
-        store.dependencies.userDefaults.data = { @Sendable _ in nil }
+        store.dependencies.userPreferencesClient = .init(
+            getPreferences: {
+                .init(
+                    recentSearchesSortingStrategy: .energy,
+                    recentSearchesSortingOrder: .reverse
+                )
+            },
+            setPreferences: { _ in
+
+            },
+            observeChanges: {
+                .finished
+            }
+        )
         store.dependencies.billboardClient.getRandomBanners = {
             .init {
                 $0.yield(firstAd)

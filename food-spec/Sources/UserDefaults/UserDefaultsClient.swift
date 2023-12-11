@@ -13,44 +13,10 @@ public struct UserDefaultsClient {
     public var remove: @Sendable (_ key: String) -> Void
     public var set: @Sendable (_ object: any Codable, _ key: String) -> Void
 
-    @Sendable
-    public func object<T: Codable>(key: String) -> T? {
-        guard let data = self.data(key) else { return nil }
-        let decoder = JSONDecoder()
-        return try? decoder.decode(T.self, from: data)
-    }
-
     public mutating func override(data: Data, forKey key: String) {
         self.data = { @Sendable [self] in $0 == key ? data : self.data($0) }
     }
 }
-
-public extension UserDefaultsClient {
-    var recentSearchesSortingStrategy: Food.SortingStrategy? {
-        get { object(key: recentSearchesSortingStrategyKey) }
-        nonmutating set {
-            if let newValue {
-                set(newValue, recentSearchesSortingStrategyKey)
-            } else {
-                remove(recentSearchesSortingStrategyKey)
-            }
-        }
-    }
-
-    var recentSearchesSortingOrder: SortOrder? {
-        get { object(key: recentSearchesSortingOrderKey) }
-        nonmutating set {
-            if let newValue {
-                set(newValue, recentSearchesSortingOrderKey)
-            } else {
-                remove(recentSearchesSortingOrderKey)
-            }
-        }
-    }
-}
-
-private let recentSearchesSortingStrategyKey = "recentSearchesSortingStrategyKey"
-private let recentSearchesSortingOrderKey = "recentSearchesSortingOrderKey"
 
 extension UserDefaultsClient: DependencyKey {
     public static let liveValue: Self = {
