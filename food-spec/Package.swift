@@ -25,7 +25,6 @@ let package = Package(
         .library(name: "Spotlight"),
         .library(name: "API"),
         .library(name: "Ads"),
-        .library(name: "NutritionalValuePicker")
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
@@ -37,10 +36,12 @@ let package = Package(
     targets: [
         .feature(name: "FoodList", dependencies: ["FoodDetails", "FoodComparison", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
         .featureTests(for: "FoodList"),
-        .feature(name: "FoodDetails", dependencies: ["NutritionalValuePicker"]),
+        .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
+        .testTarget(for: "FoodDetails"),
         .feature(name: "FoodComparison"),
         .featureTests(for: "FoodComparison"),
-        .feature(name: "NutritionalValuePicker"),
+        .feature(name: "QuantityPicker"),
+        .testTarget(for: "QuantityPicker"),
         .client(name: "UserPreferences", dependencies: ["UserDefaults", asyncSemaphoreDependency]),
         .client(name: "UserDefaults"),
         .client(name: "API"),

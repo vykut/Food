@@ -1,7 +1,7 @@
 import Foundation
 import ComposableArchitecture
 import Shared
-import NutritionalValuePicker
+import QuantityPicker
 
 @Reducer
 public struct FoodDetailsFeature {
@@ -9,7 +9,7 @@ public struct FoodDetailsFeature {
     public struct State: Hashable {
         let originalFood: Food
         var food: Food
-        var nutritionalValuePicker: NutritionalValuePickerFeature.State = .init()
+        var quantityPicker: QuantityPickerFeature.State = .init()
 
         public init(food: Food) {
             self.originalFood = food
@@ -19,25 +19,25 @@ public struct FoodDetailsFeature {
 
     @CasePathable
     public enum Action {
-        case nutritionalValuePicker(NutritionalValuePickerFeature.Action)
+        case quantityPicker(QuantityPickerFeature.Action)
     }
 
     public init() { }
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.nutritionalValuePicker, action: \.nutritionalValuePicker) {
-            NutritionalValuePickerFeature()
+        Scope(state: \.quantityPicker, action: \.quantityPicker) {
+            QuantityPickerFeature()
         }
         Reduce { state, action in
             switch action {
-                case .nutritionalValuePicker(let action):
+                case .quantityPicker(let action):
                     return reduce(state: &state, action: action)
             }
         }
     }
 
-    private func reduce(state: inout State, action: NutritionalValuePickerFeature.Action) -> Effect<Action> {
-        state.food = state.originalFood.changeServingSize(to: state.nutritionalValuePicker.quantity)
+    private func reduce(state: inout State, action: QuantityPickerFeature.Action) -> Effect<Action> {
+        state.food = state.originalFood.changeServingSize(to: state.quantityPicker.quantity)
         return .none
     }
 }

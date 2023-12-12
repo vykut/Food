@@ -1,7 +1,7 @@
 import SwiftUI
 import ComposableArchitecture
 import Shared
-import NutritionalValuePicker
+import QuantityPicker
 
 public struct FoodDetails: View {
     @Bindable var store: StoreOf<FoodDetailsFeature>
@@ -129,8 +129,8 @@ public struct FoodDetails: View {
     }
 
     var header: some View {
-        NutritionalValuePicker(
-            store: store.scope(state: \.nutritionalValuePicker, action: \.nutritionalValuePicker)
+        QuantityPicker(
+            store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
         )
         .font(.title2)
     }

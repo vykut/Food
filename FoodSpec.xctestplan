@@ -43,6 +43,20 @@
         "identifier" : "APITests",
         "name" : "APITests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "FoodDetailsTests",
+        "name" : "FoodDetailsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "QuantityPickerTests",
+        "name" : "QuantityPickerTests"
+      }
     }
   ],
   "version" : 1

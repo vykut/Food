@@ -3,7 +3,7 @@ import ComposableArchitecture
 import Shared
 
 @Reducer
-public struct NutritionalValuePickerFeature {
+public struct QuantityPickerFeature {
     @ObservableState
     public struct State: Hashable {
         public var quantity: Quantity

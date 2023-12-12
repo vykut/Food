@@ -2,8 +2,8 @@ import SwiftUI
 import ComposableArchitecture
 import Shared
 
-public struct NutritionalValuePicker: View {
-    @Bindable var store: StoreOf<NutritionalValuePickerFeature>
+public struct QuantityPicker: View {
+    @Bindable var store: StoreOf<QuantityPickerFeature>
 
     private let formatter: NumberFormatter = {
         let n = NumberFormatter()
@@ -13,7 +13,7 @@ public struct NutritionalValuePicker: View {
         return n
     }()
 
-    public init(store: StoreOf<NutritionalValuePickerFeature>) {
+    public init(store: StoreOf<QuantityPickerFeature>) {
         self.store = store
     }
 
@@ -67,11 +67,11 @@ public struct NutritionalValuePicker: View {
         @State var quantity = Quantity(value: 100, unit: .grams)
 
         var body: some View {
-            NutritionalValuePicker(
+            QuantityPicker(
                 store: .init(
-                    initialState: NutritionalValuePickerFeature.State(),
+                    initialState: QuantityPickerFeature.State(),
                     reducer: {
-                        NutritionalValuePickerFeature()
+                        QuantityPickerFeature()
                     }
                 )
             )
