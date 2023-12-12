@@ -6,15 +6,15 @@ import API
 import Ads
 import FoodDetails
 import FoodComparison
-import UserDefaults
+import UserPreferences
 
 @Reducer
 public struct FoodListFeature {
     @ObservableState
     public struct State: Equatable {
         var recentFoods: [Food] = []
-        var recentFoodsSortingStrategy: Food.SortingStrategy = .name
-        var recentFoodsSortingOrder: SortOrder = .forward
+        var recentFoodsSortingStrategy: Food.SortingStrategy
+        var recentFoodsSortingOrder: SortOrder
         var searchQuery = ""
         var isSearchFocused = false
         var isSearching = false
@@ -50,15 +50,21 @@ public struct FoodListFeature {
             recentFoods.count < 2
         }
 
-        public init() { }
+        public init() { 
+            @Dependency(\.userPreferencesClient) var userPreferencesClient
+            let prefs = userPreferencesClient.getPreferences()
+            self.recentFoodsSortingStrategy = prefs.recentSearchesSortingStrategy ?? .name
+            self.recentFoodsSortingOrder = prefs.recentSearchesSortingOrder ?? .forward
+        }
     }
 
     @CasePathable
     public enum Action {
         case onAppear
-        case updateFromUserDefaults(Food.SortingStrategy?, SortOrder?)
         case startObservingRecentFoods
-        case didFetchRecentFoods([Food])
+        case onRecentFoodsChange([Food])
+        case startObservingUserPreferences
+        case onUserPreferencesChange(UserPreferences)
         case updateSearchQuery(String)
         case updateSearchFocus(Bool)
         case didSelectRecentFood(Food)
@@ -92,7 +98,7 @@ public struct FoodListFeature {
     @Dependency(\.databaseClient) private var databaseClient
     @Dependency(\.foodClient) private var foodClient
     @Dependency(\.mainQueue) private var mainQueue
-    @Dependency(\.userDefaults) private var userDefaults
+    @Dependency(\.userPreferencesClient) private var userPreferencesClient
 
 
     public var body: some ReducerOf<Self> {
@@ -100,36 +106,50 @@ public struct FoodListFeature {
             switch action {
                 case .onAppear:
                     return .run { send in
-                        let strategy = userDefaults.recentSearchesSortingStrategy
-                        let order = userDefaults.recentSearchesSortingOrder
-                        await send(.updateFromUserDefaults(strategy, order))
                         await send(.startObservingRecentFoods)
-                    }
-
-                case .updateFromUserDefaults(let strategy, let order):
-                    if let strategy {
-                        state.recentFoodsSortingStrategy = strategy
-                    }
-                    if let order {
-                        state.recentFoodsSortingOrder = order
-                    }
-                    return .none
+                    }.merge(with: .run { send in
+                        await send(.startObservingUserPreferences)
+                    })
 
                 case .startObservingRecentFoods:
                     return .run { [strategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
                         let stream = databaseClient.observeFoods(sortedBy: strategy, order: order)
                         for await foods in stream {
-                            await send(.didFetchRecentFoods(foods), animation: .default)
+                            await send(.onRecentFoodsChange(foods), animation: .default)
                         }
                     }
                     .cancellable(id: CancelID.recentFoodsObservation, cancelInFlight: true)
 
-                case .didFetchRecentFoods(let foods):
+                case .onRecentFoodsChange(let foods):
                     state.recentFoods = foods
                     if foods.isEmpty && state.searchQuery.isEmpty {
                         state.isSearchFocused = true
                     }
                     return .none
+
+                case .startObservingUserPreferences:
+                    return .run { send in
+                        let stream = await userPreferencesClient.observeChanges()
+                        for await preferences in stream {
+                            await send(.onUserPreferencesChange(preferences))
+                        }
+                    }
+
+                case .onUserPreferencesChange(let preferences):
+                    var shouldRestartDatabaseObservation = false
+                    if let newStrategy = preferences.recentSearchesSortingStrategy, newStrategy != state.recentFoodsSortingStrategy {
+                        state.recentFoodsSortingStrategy = newStrategy
+                        shouldRestartDatabaseObservation = true
+                    }
+                    if let newOrder = preferences.recentSearchesSortingOrder, newOrder != state.recentFoodsSortingOrder {
+                        state.recentFoodsSortingOrder = newOrder
+                        shouldRestartDatabaseObservation = true
+                    }
+                    if shouldRestartDatabaseObservation {
+                        return .send(.startObservingRecentFoods)
+                    } else {
+                        return .none
+                    }
 
                 case .updateSearchQuery(let query):
                     guard state.searchQuery != query else { return .none }
@@ -222,8 +242,10 @@ public struct FoodListFeature {
                         state.recentFoodsSortingOrder = .forward
                     }
                     return .run { [strategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
-                        userDefaults.recentSearchesSortingStrategy = strategy
-                        userDefaults.recentSearchesSortingOrder = order
+                        try await userPreferencesClient.setPreferences {
+                            $0.recentSearchesSortingStrategy = strategy
+                            $0.recentSearchesSortingOrder = order
+                        }
                         await send(.startObservingRecentFoods)
                     }
 

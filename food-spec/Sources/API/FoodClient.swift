@@ -25,7 +25,8 @@ extension FoodClient: DependencyKey {
             request.setValue(apiKeys.ninja, forHTTPHeaderField: "X-Api-Key")
             let (data, _) = try await session.data(for: request)
             let items = try JSONDecoder().decode([FoodApiModel].self, from: data)
-            return items
+            let foodsWithValidServingSize = items.filter(hasValidServingSize)
+            return foodsWithValidServingSize
         }
     )
 
@@ -39,21 +40,25 @@ extension DependencyValues {
     }
 }
 
-public struct FoodApiModel: Hashable, Codable {
-    public let name: String
-    public let calories: Double
-    public let servingSizeG: Double
-    public let fatTotalG: Double
-    public let fatSaturatedG: Double
-    public let proteinG: Double
-    public let sodiumMg: Double
-    public let potassiumMg: Double
-    public let cholesterolMg: Double
-    public let carbohydratesTotalG: Double
-    public let fiberG: Double
-    public let sugarG: Double
+func hasValidServingSize(_ food: FoodApiModel) -> Bool {
+    (99.5...100.5).contains(food.servingSizeG)
+}
 
-    public init(
+public struct FoodApiModel: Hashable, Codable {
+    let name: String
+    let calories: Double
+    let servingSizeG: Double
+    let fatTotalG: Double
+    let fatSaturatedG: Double
+    let proteinG: Double
+    let sodiumMg: Double
+    let potassiumMg: Double
+    let cholesterolMg: Double
+    let carbohydratesTotalG: Double
+    let fiberG: Double
+    let sugarG: Double
+
+    init(
         name: String,
         calories: Double,
         servingSizeG: Double,

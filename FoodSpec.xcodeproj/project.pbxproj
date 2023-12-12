@@ -56,8 +56,8 @@
 				EC47C9502B272C1E00D30381 /* food-spec */,
 				EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */,
 				EC43E5582B175A140007CD40 /* FoodSpec */,
-				EC43E5572B175A140007CD40 /* Products */,
 				EC47C9512B27323B00D30381 /* Frameworks */,
+				EC43E5572B175A140007CD40 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -344,6 +344,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.victorsocaciu.FoodSpec;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -377,6 +378,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.victorsocaciu.FoodSpec;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

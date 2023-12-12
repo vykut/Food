@@ -22,7 +22,7 @@ extension Food.SortingStrategy {
 
 extension Energy: DatabaseValueConvertible {
     public var databaseValue: DatabaseValue {
-        self.measurement.converted(to: .kilocalories).value.databaseValue
+        converted(to: .kilocalories).value.databaseValue
     }
 
     public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Energy? {
@@ -33,7 +33,7 @@ extension Energy: DatabaseValueConvertible {
 
 extension Quantity: DatabaseValueConvertible {
     public var databaseValue: DatabaseValue {
-        self.measurement.converted(to: .grams).value.databaseValue
+        converted(to: .grams).value.databaseValue
     }
 
     public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Quantity? {

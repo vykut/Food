@@ -5,6 +5,7 @@ import PackageDescription
 
 let grdbDependency: Target.Dependency = .product(name: "GRDB", package: "GRDB.swift")
 let billboardDependency: Target.Dependency = .product(name: "Billboard", package: "billboard")
+let asyncSemaphoreDependency: Target.Dependency = .product(name: "Semaphore", package: "Semaphore")
 let tcaDependency: Target.Dependency = .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 let tcaDIDependency: Target.Dependency = .product(name: "Dependencies", package: "swift-dependencies")
 let tcaDIMacroDependency: Target.Dependency = .product(name: "DependenciesMacros", package: "swift-dependencies")
@@ -30,107 +31,74 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.1.2"),
         .package(url: "https://github.com/groue/GRDB.swift", from: "6.23.0"),
         .package(url: "https://github.com/hiddevdploeg/Billboard", from: "1.0.2"),
+        .package(url: "https://github.com/groue/Semaphore", from: "0.0.8"),
     ],
     targets: [
-        .target(
-            name: "FoodList",
-            dependencies: [
-                "FoodDetails",
-                "FoodComparison",
-                "Shared",
-                "API",
-                "Database",
-                "UserDefaults",
-                "Ads",
-                tcaDependency,
-            ]
-        ),
-        .target(
-            name: "FoodDetails",
-            dependencies: [
-                "Shared",
-                tcaDependency,
-            ]
-        ),
-        .target(
-            name: "FoodComparison",
-            dependencies: [
-                "Shared",
-                tcaDependency,
-            ]
-        ),
-        .target(
-            name: "UserDefaults",
-            dependencies: [
-                "Shared",
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .target(
-            name: "API",
-            dependencies: [
-                "Shared",
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .target(
-            name: "Database",
-            dependencies: [
-                "Shared",
-                grdbDependency,
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .target(
-            name: "Ads",
-            dependencies: [
-                "Shared",
-                billboardDependency,
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
-        .target(
-            name: "Spotlight",
-            dependencies: [
-                "Shared",
-                tcaDIDependency,
-                tcaDIMacroDependency,
-            ]
-        ),
+        .feature(name: "FoodList", dependencies: ["FoodDetails", "FoodComparison", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
+        .featureTests(for: "FoodList"),
+        .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
+        .testTarget(for: "FoodDetails"),
+        .feature(name: "FoodComparison"),
+        .featureTests(for: "FoodComparison"),
+        .feature(name: "QuantityPicker"),
+        .testTarget(for: "QuantityPicker"),
+        .client(name: "UserPreferences", dependencies: ["UserDefaults", asyncSemaphoreDependency]),
+        .client(name: "UserDefaults"),
+        .client(name: "API"),
+        .testTarget(for: "API"),
+        .client(name: "Database", dependencies: [grdbDependency]),
+        .client(name: "Ads", dependencies: [billboardDependency]),
+        .client(name: "Spotlight"),
         .target(
             name: "Shared",
-            dependencies: [
-                tcaDIDependency,
-                tcaDIMacroDependency,
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
             ]
         ),
-        .testTarget(
-            name: "FoodComparisonTests",
-            dependencies: [
-                "FoodComparison",
-                "Shared"
-            ]
-        ),
-        .testTarget(
-            name: "FoodListTests",
-            dependencies: [
-                "FoodList",
-                "Shared",
-                "Ads",
-                "API",
-                "Spotlight"
-            ]
-        ),
-        .testTarget(
-            name: "SharedTests",
-            dependencies: ["Shared"]
-        ),
+        .testTarget(for: "Shared"),
     ]
 )
+
+extension Target {
+    /// adds `Shared`, `DI` and `DIMacro` as default dependencies
+    static func client(name: String, dependencies: [Dependency] = []) -> Target {
+        .target(
+            name: name,
+            dependencies: ["Shared", tcaDIDependency, tcaDIMacroDependency] + dependencies,
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+        )
+    }
+
+    /// adds `TCA` as a default dependency
+    static func feature(name: String, dependencies: [Dependency] = []) -> Target {
+        .target(
+            name: name,
+            dependencies: ["Shared", tcaDependency] + dependencies,
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+        )
+    }
+    /// adds `Shared` and `TCA` as default dependencies
+    static func featureTests(for feature: String, dependencies: [Dependency] = []) -> Target {
+        .testTarget(
+            for: feature,
+            dependencies: ["Shared"]
+        )
+    }
+
+    static func testTarget(for target: String, dependencies: [Dependency] = []) -> Target {
+        .testTarget(
+            name: target+"Tests",
+            dependencies: CollectionOfOne(.target(name: target)) + dependencies,
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+        )
+    }
+}
 
 extension Product {
     static func library(name: String, type: PackageDescription.Product.Library.LibraryType? = nil) -> PackageDescription.Product {

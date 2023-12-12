@@ -19,7 +19,7 @@ final class SpotlightReducerTests: XCTestCase {
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, foods)
         }
-        await store.send(.didFetchRecentFoods(foods))
+        await store.send(.onRecentFoodsChange(foods))
     }
 
     func testSpotlightSelection() async throws {

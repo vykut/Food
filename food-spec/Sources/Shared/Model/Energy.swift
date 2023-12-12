@@ -1,8 +1,8 @@
 import Foundation
 
 public struct Energy: Codable, Hashable {
-    public let value: Double
-    public let unit: Unit
+    public var value: Double
+    public var unit: Unit
 
     public init(value: Double, unit: Unit) {
         self.value = value
