@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Food: Codable, Hashable {
+public struct Food: Codable, Hashable, Sendable {
     public var id: Int64?
     public var name: String
     public var energy: Energy
@@ -53,7 +53,7 @@ F: \(fatTotal.formatted(width: .narrow))
 }
 
 public extension Food {
-    enum SortingStrategy: String, Codable, Identifiable, Hashable, CaseIterable {
+    enum SortingStrategy: String, Codable, Identifiable, Hashable, CaseIterable, Sendable {
         case name
         case energy
         case carbohydrates

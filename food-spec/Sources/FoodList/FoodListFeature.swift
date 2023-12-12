@@ -5,7 +5,6 @@ import Shared
 import API
 import Ads
 import FoodDetails
-import FoodComparison
 import UserPreferences
 
 @Reducer
@@ -23,7 +22,6 @@ public struct FoodListFeature {
         var inlineFood: FoodDetailsFeature.State?
         var billboard: Billboard = .init()
         @Presents var foodDetails: FoodDetailsFeature.State?
-        @Presents var foodComparison: FoodComparisonFeature.State?
         @Presents var alert: AlertState<Action.Alert>?
 
         var shouldShowRecentSearches: Bool {
@@ -40,10 +38,6 @@ public struct FoodListFeature {
 
         var shouldShowSearchResults: Bool {
             isSearchFocused && !searchResults.isEmpty && inlineFood == nil
-        }
-
-        var isCompareButtonDisabled: Bool {
-            recentFoods.count < 2
         }
 
         var isSortMenuDisabled: Bool {
@@ -74,8 +68,6 @@ public struct FoodListFeature {
         case didReceiveSearchFoods([FoodApiModel])
         case foodDetails(PresentationAction<FoodDetailsFeature.Action>)
         case inlineFood(FoodDetailsFeature.Action)
-        case didTapCompare
-        case foodComparison(PresentationAction<FoodComparisonFeature.Action>)
         case updateRecentFoodsSortingStrategy(Food.SortingStrategy)
         case billboard(Billboard)
         case spotlight(Spotlight)
@@ -225,15 +217,6 @@ public struct FoodListFeature {
                 case .inlineFood:
                     return .none
 
-                case .didTapCompare:
-                    state.foodComparison = .init(
-                        foods: state.recentFoods
-                    )
-                    return .none
-
-                case .foodComparison:
-                    return .none
-
                 case .updateRecentFoodsSortingStrategy(let newStrategy):
                     if newStrategy == state.recentFoodsSortingStrategy {
                         state.recentFoodsSortingOrder.toggle()
@@ -269,9 +252,6 @@ public struct FoodListFeature {
         }
         .ifLet(\.$foodDetails, action: \.foodDetails) {
             FoodDetailsFeature()
-        }
-        .ifLet(\.$foodComparison, action: \.foodComparison) {
-            FoodComparisonFeature()
         }
         .ifLet(\.$alert, action: \.alert)
         SpotlightReducer()

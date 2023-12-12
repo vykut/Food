@@ -7,17 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EC231CA22B28BBA600DBF3E3 /* TabBar in Frameworks */ = {isa = PBXBuildFile; productRef = EC231CA12B28BBA600DBF3E3 /* TabBar */; };
 		EC2799882B1B2BBA00D9E4B0 /* APIKeys.json in Resources */ = {isa = PBXBuildFile; fileRef = EC2799872B1B2BBA00D9E4B0 /* APIKeys.json */; settings = {ASSET_TAGS = (APIKeys, ); }; };
 		EC43E55A2B175A140007CD40 /* FoodSpecApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC43E5592B175A140007CD40 /* FoodSpecApp.swift */; };
 		EC43E5602B175A160007CD40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E55F2B175A160007CD40 /* Assets.xcassets */; };
 		EC43E5632B175A160007CD40 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC43E5622B175A160007CD40 /* Preview Assets.xcassets */; };
 		EC47C94B2B27285C00D30381 /* AppFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC47C94A2B27285C00D30381 /* AppFeature.swift */; };
-		EC47C9532B27323B00D30381 /* Database in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C9522B27323B00D30381 /* Database */; };
-		EC47C9552B27323B00D30381 /* Shared in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C9542B27323B00D30381 /* Shared */; };
-		EC47C9572B27348A00D30381 /* API in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C9562B27348A00D30381 /* API */; };
-		EC47C9592B27493600D30381 /* Ads in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C9582B27493600D30381 /* Ads */; };
-		EC47C95B2B27493600D30381 /* FoodList in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C95A2B27493600D30381 /* FoodList */; };
-		EC47C95D2B274B8900D30381 /* Spotlight in Frameworks */ = {isa = PBXBuildFile; productRef = EC47C95C2B274B8900D30381 /* Spotlight */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,12 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EC47C9532B27323B00D30381 /* Database in Frameworks */,
-				EC47C95D2B274B8900D30381 /* Spotlight in Frameworks */,
-				EC47C95B2B27493600D30381 /* FoodList in Frameworks */,
-				EC47C9592B27493600D30381 /* Ads in Frameworks */,
-				EC47C9572B27348A00D30381 /* API in Frameworks */,
-				EC47C9552B27323B00D30381 /* Shared in Frameworks */,
+				EC231CA22B28BBA600DBF3E3 /* TabBar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,12 +113,7 @@
 			);
 			name = FoodSpec;
 			packageProductDependencies = (
-				EC47C9522B27323B00D30381 /* Database */,
-				EC47C9542B27323B00D30381 /* Shared */,
-				EC47C9562B27348A00D30381 /* API */,
-				EC47C9582B27493600D30381 /* Ads */,
-				EC47C95A2B27493600D30381 /* FoodList */,
-				EC47C95C2B274B8900D30381 /* Spotlight */,
+				EC231CA12B28BBA600DBF3E3 /* TabBar */,
 			);
 			productName = FoodSpec;
 			productReference = EC43E5562B175A140007CD40 /* FoodSpec.app */;
@@ -408,29 +393,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		EC47C9522B27323B00D30381 /* Database */ = {
+		EC231CA12B28BBA600DBF3E3 /* TabBar */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Database;
-		};
-		EC47C9542B27323B00D30381 /* Shared */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Shared;
-		};
-		EC47C9562B27348A00D30381 /* API */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = API;
-		};
-		EC47C9582B27493600D30381 /* Ads */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Ads;
-		};
-		EC47C95A2B27493600D30381 /* FoodList */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = FoodList;
-		};
-		EC47C95C2B274B8900D30381 /* Spotlight */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Spotlight;
+			productName = TabBar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

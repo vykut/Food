@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Ads"
-               BuildableName = "Ads"
-               BlueprintName = "Ads"
+               BlueprintIdentifier = "TabBar"
+               BuildableName = "TabBar"
+               BlueprintName = "TabBar"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -49,9 +49,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "Ads"
-            BuildableName = "Ads"
-            BlueprintName = "Ads"
+            BlueprintIdentifier = "TabBar"
+            BuildableName = "TabBar"
+            BlueprintName = "TabBar"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>

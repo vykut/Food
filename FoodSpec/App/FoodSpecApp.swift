@@ -1,6 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
-import FoodList
+import TabBar
 
 @main
 struct FoodSpecApp: App {
@@ -14,11 +14,8 @@ struct FoodSpecApp: App {
 
     var body: some Scene {
         WindowGroup {
-            FoodList(
-                store: store.scope(
-                    state: \.foodList,
-                    action: \.foodList
-                )
+            TabBar(
+                store: store.scope(state: \.tabBar, action: \.tabBar)
             )
         }
     }

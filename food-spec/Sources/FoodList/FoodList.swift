@@ -4,7 +4,6 @@ import Ads
 import Spotlight
 import Shared
 import FoodDetails
-import FoodComparison
 
 public struct FoodList: View {
     @Bindable var store: StoreOf<FoodListFeature>
@@ -14,36 +13,27 @@ public struct FoodList: View {
     }
 
     public var body: some View {
-        NavigationStack {
-            list
-                .toolbar {
-                    toolbar
-                }
-                .searchable(
-                    text: self.$store.searchQuery.sending(\.updateSearchQuery),
-                    isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus),
-                    placement: .navigationBarDrawer
-                )
-                .safeAreaInset(edge: .bottom) {
-                    if let ad = store.billboard.banner {
-                        BillboardBannerView(advert: ad, hideDismissButtonAndTimer: true)
-                            .padding([.horizontal, .bottom])
-                    }
-                }
-                .navigationDestination(
-                    item: $store.scope(state: \.foodDetails, action: \.foodDetails)
-                ) { store in
-                    FoodDetails(store: store)
-                }
-                .navigationTitle("Search")
-        }
-        .sheet(
-            item: $store.scope(state: \.foodComparison, action: \.foodComparison)
-        ) { store in
-            NavigationStack {
-                FoodSelection(store: store)
+        list
+            .toolbar {
+                toolbar
             }
-        }
+            .searchable(
+                text: self.$store.searchQuery.sending(\.updateSearchQuery),
+                isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus),
+                placement: .navigationBarDrawer
+            )
+            .safeAreaInset(edge: .bottom) {
+                if let ad = store.billboard.banner {
+                    BillboardBannerView(advert: ad, hideDismissButtonAndTimer: true)
+                        .padding([.horizontal, .bottom])
+                }
+            }
+            .navigationDestination(
+                item: $store.scope(state: \.foodDetails, action: \.foodDetails)
+            ) { store in
+                FoodDetails(store: store)
+            }
+            .navigationTitle("Search")
         .alert($store.scope(state: \.alert, action: \.alert))
         .onAppear {
             self.store.send(.onAppear)
@@ -119,16 +109,8 @@ public struct FoodList: View {
 
     private var toolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
-            compareButton
             sortRecentFoodsMenu
         }
-    }
-
-    private var compareButton: some View {
-        Button("Compare") {
-            store.send(.didTapCompare)
-        }
-        .disabled(store.isCompareButtonDisabled)
     }
 
     private var sortRecentFoodsMenu: some View {
