@@ -1,8 +1,8 @@
 import Foundation
 
 public struct Quantity: Codable, Hashable {
-    public let value: Double
-    public let unit: Unit
+    public var value: Double
+    public var unit: Unit
 
     public init(value: Double, unit: Unit) {
         self.value = value
@@ -20,7 +20,7 @@ public struct Quantity: Codable, Hashable {
         )
     }
 
-    public enum Unit: Codable {
+    public enum Unit: String, Codable, Hashable {
         case kilograms
         case grams
         case decigrams
@@ -32,11 +32,14 @@ public struct Quantity: Codable, Hashable {
         case ounces
         case pounds
         case stones
-        case metricTons
-        case shortTons
+        case metricTons = "metric tons"
+        case shortTons = "short tons"
         case carats
-        case ouncesTroy
+        case ouncesTroy = "troy ounces"
         case slugs
+        case cups
+        case teaspoons
+        case tablespoons
 
         var unit: UnitMass {
             switch self {
@@ -56,6 +59,9 @@ public struct Quantity: Codable, Hashable {
                 case .carats: .carats
                 case .ouncesTroy: .ouncesTroy
                 case .slugs: .slugs
+                case .cups: .cups
+                case .teaspoons: .teaspoons
+                case .tablespoons: .tablespoons
             }
         }
     }
@@ -109,12 +115,46 @@ public struct QuantityFormat: FormatStyle {
     let usage: MeasurementFormatUnitUsage<UnitMass>
     let numberFormatStyle: FloatingPointFormatStyle<Double>?
 
-    public func format(_ value: Quantity) -> String {
-        value.measurement.formatted(.measurement(
-            width: width,
-            usage: usage,
+    private var volumeWidth: Measurement<UnitVolume>.FormatStyle.UnitWidth {
+        switch width {
+            case .wide: .wide
+            case .abbreviated: .abbreviated
+            case .narrow: .narrow
+            default: .abbreviated
+        }
+    }
+
+    private var volumeUsage: MeasurementFormatUnitUsage<UnitVolume> {
+        switch usage {
+            case .general: .general
+            case .asProvided: .asProvided
+            default: .general
+        }
+    }
+
+    private var volumeMeasurement: Measurement<UnitVolume>.FormatStyle {
+        .measurement(
+            width: volumeWidth,
+            usage: volumeUsage,
             numberFormatStyle: numberFormatStyle
-        ))
+        )
+    }
+
+    public func format(_ value: Quantity) -> String {
+        switch value.unit {
+            case .cups:
+                Measurement<UnitVolume>(value: value.value, unit: .cups).formatted(volumeMeasurement)
+            case .tablespoons:
+                Measurement<UnitVolume>(value: value.value, unit: .tablespoons).formatted(volumeMeasurement)
+            case .teaspoons:
+                Measurement<UnitVolume>(value: value.value, unit: .teaspoons).formatted(volumeMeasurement)
+            default:
+                value.measurement.formatted(.measurement(
+                    width: width,
+                    usage: usage,
+                    numberFormatStyle: numberFormatStyle
+                ))
+        }
     }
 }
 
@@ -149,4 +189,10 @@ extension Quantity {
             unit: lhs.unit
         )
     }
+}
+
+extension UnitMass {
+    static let cups: UnitMass = .init(symbol: "c", converter: UnitConverterLinear(coefficient: 0.236588236485))
+    static let teaspoons: UnitMass = .init(symbol: "tsp", converter: UnitConverterLinear(coefficient: 0.004928921594))
+    static let tablespoons: UnitMass = .init(symbol: "tbsp", converter: UnitConverterLinear(coefficient: 0.014786764782))
 }

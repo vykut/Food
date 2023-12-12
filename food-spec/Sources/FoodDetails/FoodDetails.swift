@@ -25,6 +25,7 @@ public struct FoodDetails: View {
             }
             .padding(.horizontal)
         }
+        .scrollDismissesKeyboard(.immediately)
         .navigationTitle(store.food.name.capitalized)
     }
 

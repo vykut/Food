@@ -15,26 +15,26 @@ struct NutritionalValueCard<U: Dimension>: View {
     let model: Model
 
     var body: some View {
-        VStack {
-            LabeledContent(
-                model.title,
-                value: model.value,
-                format: .measurement(width: .wide, usage: .asProvided)
-            )
-            .font(.title2)
-            if !model.breakdown.isEmpty {
-                Divider()
-                ForEach(model.breakdown, id: \.self) { breakdown in
-                    LabeledContent(
-                        breakdown.title,
-                        value: breakdown.value,
-                        format: .measurement(width: .wide, usage: .asProvided)
-                    )
+        GroupBox {
+            VStack {
+                LabeledContent(
+                    model.title,
+                    value: model.value,
+                    format: .measurement(width: .wide, usage: .asProvided)
+                )
+                .font(.title2)
+                if !model.breakdown.isEmpty {
+                    Divider()
+                    ForEach(model.breakdown, id: \.self) { breakdown in
+                        LabeledContent(
+                            breakdown.title,
+                            value: breakdown.value,
+                            format: .measurement(width: .wide, usage: .asProvided)
+                        )
+                    }
                 }
             }
         }
-        .padding()
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
     }
 }
 
