@@ -33,7 +33,9 @@ public struct FoodSelectionFeature {
             !selectedFoodIds.contains(food.id)
         }
 
-        public init() { }
+        public init(selectedFoodIds: Set<Int64?> = []) {
+            self.selectedFoodIds = selectedFoodIds
+        }
     }
 
     @CasePathable

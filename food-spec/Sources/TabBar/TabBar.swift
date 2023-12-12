@@ -48,7 +48,7 @@ public struct TabBar: View {
         .tabItem {
             Label("Food Comparison", systemImage: "shuffle")
         }
-        .tag(Tab.foodComparison)
+        .tag(Tab.foodSelection)
     }
 }
 

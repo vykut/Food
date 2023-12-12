@@ -28,27 +28,33 @@ let package = Package(
     targets: [
         .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection"]),
         .feature(name: "FoodList", dependencies: ["FoodDetails", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
-        .featureTests(for: "FoodList"),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
-        .testTarget(for: "FoodDetails"),
         .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison"]),
         .feature(name: "FoodComparison"),
-        .featureTests(for: "FoodComparison"),
         .feature(name: "QuantityPicker"),
-        .testTarget(for: "QuantityPicker"),
+
         .client(name: "UserPreferences", dependencies: ["UserDefaults", asyncSemaphoreDependency]),
         .client(name: "UserDefaults"),
         .client(name: "API"),
-        .testTarget(for: "API"),
         .client(name: "Database", dependencies: [grdbDependency]),
         .client(name: "Ads", dependencies: [billboardDependency]),
         .client(name: "Spotlight"),
+
         .target(
             name: "Shared",
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
             ]
         ),
+
+        .featureTests(for: "TabBar"),
+        .featureTests(for: "FoodList"),
+        .featureTests(for: "FoodDetails"),
+        .featureTests(for: "FoodSelection"),
+        .featureTests(for: "FoodComparison"),
+        .featureTests(for: "QuantityPicker"),
+
+        .testTarget(for: "API"),
         .testTarget(for: "Shared"),
     ]
 )

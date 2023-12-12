@@ -27,7 +27,6 @@ final class FoodListTests: XCTestCase {
             state.shouldShowNoResults = false
             state.foodDetails = nil
             state.billboard = .init(banner: nil)
-            state.foodComparison = nil
             state.alert = nil
         }
     }
@@ -192,7 +191,6 @@ final class FoodListTests: XCTestCase {
         await store.receive(\.onRecentFoodsChange) {
             $0.isSearchFocused = true
         }
-        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
         XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
         XCTAssertNoDifference(store.state.shouldShowRecentSearches, false)
         XCTAssertNoDifference(store.state.shouldShowPrompt, true)
@@ -226,7 +224,6 @@ final class FoodListTests: XCTestCase {
         await store.receive(\.onRecentFoodsChange) {
             $0.recentFoods = [eggplant]
         }
-        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
         XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
 
         await store.send(.updateSearchQuery("")) {
@@ -266,7 +263,6 @@ final class FoodListTests: XCTestCase {
         await store.send(.onRecentFoodsChange([ribeye, eggplant])) {
             $0.recentFoods = [ribeye, eggplant]
         }
-        XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
         XCTAssertNoDifference(store.state.isSortMenuDisabled, false)
 
         store.dependencies.spotlightClient.indexFoods = {
@@ -287,7 +283,6 @@ final class FoodListTests: XCTestCase {
         await store.receive(\.onRecentFoodsChange) {
             $0.recentFoods = [eggplant, ribeye]
         }
-        XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
         XCTAssertNoDifference(store.state.isSortMenuDisabled, false)
 
         store.dependencies.spotlightClient.indexFoods = {
@@ -319,7 +314,6 @@ final class FoodListTests: XCTestCase {
         await store.send(.onRecentFoodsChange([eggplant])) {
             $0.recentFoods = [eggplant]
         }
-        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
         XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
 
         await store.send(.didSelectRecentFood(eggplant)) {
@@ -552,22 +546,6 @@ final class FoodListTests: XCTestCase {
         }
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = secondAd
-        }
-    }
-
-    func testIntegrationWithComparisonFeature() async throws {
-        let store = TestStore(
-            initialState: {
-                var state = FoodListFeature.State()
-                state.recentFoods = [.eggplant, .ribeye]
-                return state
-            }(),
-            reducer: {
-                FoodListFeature()
-            }
-        )
-        await store.send(.didTapCompare) {
-            $0.foodComparison = .init(foods: [.eggplant, .ribeye])
         }
     }
 }

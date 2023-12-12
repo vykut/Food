@@ -13,7 +13,7 @@ public struct TabBarFeature {
 
         public enum Tab: Hashable {
             case foodList
-            case foodComparison
+            case foodSelection
         }
 
         public init() { }
