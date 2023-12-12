@@ -20,7 +20,7 @@ struct NutritionalValueCard<U: Dimension>: View {
                 LabeledContent(
                     model.title,
                     value: model.value,
-                    format: .measurement(width: .wide, usage: .asProvided)
+                    format: .measurement(width: .wide, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...1)))
                 )
                 .font(.title2)
                 if !model.breakdown.isEmpty {
@@ -29,7 +29,7 @@ struct NutritionalValueCard<U: Dimension>: View {
                         LabeledContent(
                             breakdown.title,
                             value: breakdown.value,
-                            format: .measurement(width: .wide, usage: .asProvided)
+                            format: .measurement(width: .wide, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...1)))
                         )
                     }
                 }

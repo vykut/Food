@@ -6,8 +6,8 @@ import Shared
 public struct NutritionalValuePickerFeature {
     @ObservableState
     public struct State: Hashable {
-        var quantity: Quantity
-        var options: [Quantity.Unit]
+        public var quantity: Quantity
+        public var options: [Quantity.Unit]
 
         public init(
             quantity: Quantity = .grams(100),
@@ -31,7 +31,7 @@ public struct NutritionalValuePickerFeature {
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
         switch action {
             case .updateValue(let value):
-                guard value > 0 && value < 1000 else { return .none }
+                guard value > 0 && value <= 1000 else { return .none }
                 state.quantity.value = value
                 return .none
 

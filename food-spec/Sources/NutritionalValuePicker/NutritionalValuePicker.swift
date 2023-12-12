@@ -47,9 +47,14 @@ public struct NutritionalValuePicker: View {
                 .font(nil)
                 .padding(.top)
             } label: {
-                Text(
-                    "Nutritional values per \(store.quantity.formatted(width: .wide))"
-                )
+                ViewThatFits {
+                    Text(
+                        "Nutritional values per \(store.quantity.formatted(width: .wide))"
+                    )
+                    Text(
+                        "Nutritional values per \(store.quantity.formatted(width: .abbreviated))"
+                    )
+                }
                 .lineLimit(1)
             }
             .tint(.primary)
