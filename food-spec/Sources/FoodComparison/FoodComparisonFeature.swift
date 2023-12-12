@@ -115,7 +115,7 @@ public struct FoodComparisonFeature {
                     return .none
 
                 case .didTapCancel:
-                    return .run { _ in
+                    return .run { [dismiss] _ in
                         await dismiss()
                     }
 

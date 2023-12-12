@@ -49,7 +49,12 @@ let package = Package(
         .client(name: "Database", dependencies: [grdbDependency]),
         .client(name: "Ads", dependencies: [billboardDependency]),
         .client(name: "Spotlight"),
-        .target(name: "Shared"),
+        .target(
+            name: "Shared",
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+        ),
         .testTarget(for: "Shared"),
     ]
 )
@@ -59,7 +64,10 @@ extension Target {
     static func client(name: String, dependencies: [Dependency] = []) -> Target {
         .target(
             name: name,
-            dependencies: ["Shared", tcaDIDependency, tcaDIMacroDependency] + dependencies
+            dependencies: ["Shared", tcaDIDependency, tcaDIMacroDependency] + dependencies,
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
         )
     }
 
@@ -67,7 +75,10 @@ extension Target {
     static func feature(name: String, dependencies: [Dependency] = []) -> Target {
         .target(
             name: name,
-            dependencies: ["Shared", tcaDependency] + dependencies
+            dependencies: ["Shared", tcaDependency] + dependencies,
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
         )
     }
     /// adds `Shared` and `TCA` as default dependencies
@@ -81,7 +92,10 @@ extension Target {
     static func testTarget(for target: String, dependencies: [Dependency] = []) -> Target {
         .testTarget(
             name: target+"Tests",
-            dependencies: CollectionOfOne(.target(name: target)) + dependencies
+            dependencies: CollectionOfOne(.target(name: target)) + dependencies,
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
         )
     }
 }

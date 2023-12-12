@@ -56,7 +56,7 @@ public struct FoodList: View {
         }
     }
 
-    @ViewBuilder
+    @MainActor @ViewBuilder
     private var list: some View {
         if let store = store.scope(state: \.inlineFood, action: \.inlineFood) {
             FoodDetails(store: store)
