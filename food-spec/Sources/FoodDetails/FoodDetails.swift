@@ -1,6 +1,7 @@
 import SwiftUI
 import ComposableArchitecture
 import Shared
+import NutritionalValuePicker
 
 public struct FoodDetails: View {
     @Bindable var store: StoreOf<FoodDetailsFeature>
@@ -114,26 +115,24 @@ public struct FoodDetails: View {
     }
 
     var energyBreakdown: some View {
-        VStack(alignment: .leading) {
-            Text("Energy Breakdown")
-            .font(.title2)
-            Divider()
+        GroupBox {
             EnergyBreakdownChart(
                 food: store.food
             )
             .frame(height: 150)
             .padding(.top)
+        } label: {
+            Text("Energy Breakdown")
+                .font(.title2)
+            Divider()
         }
-        .padding()
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
     }
 
     var header: some View {
-        Text(
-            "Nutritional values per \(Quantity(value: 100, unit: .grams).formatted(width: .wide))"
+        NutritionalValuePicker(
+            store: store.scope(state: \.nutritionalValuePicker, action: \.nutritionalValuePicker)
         )
         .font(.title2)
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
