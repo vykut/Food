@@ -22,6 +22,8 @@ let package = Package(
         .library(name: "FoodSelection"),
         .library(name: "FoodComparison"),
         .library(name: "QuantityPicker"),
+        .library(name: "Recipes"),
+        .library(name: "RecipeCalculator"),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
@@ -31,11 +33,13 @@ let package = Package(
         .package(url: "https://github.com/groue/Semaphore", from: "0.0.8"),
     ],
     targets: [
-        .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection"]),
+        .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection", "Recipes"]),
         .feature(name: "FoodList", dependencies: ["FoodDetails", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
         .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),
+        .feature(name: "Recipes", dependencies: ["Database", "RecipeCalculator"]),
+        .feature(name: "RecipeCalculator"),
         .feature(name: "QuantityPicker"),
 
         .client(name: "UserPreferences", dependencies: ["UserDefaults", asyncSemaphoreDependency]),

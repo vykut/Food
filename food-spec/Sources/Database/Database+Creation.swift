@@ -52,11 +52,11 @@ func createAppDatabase() -> some DatabaseWriter {
 fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
     var migrator = DatabaseMigrator()
 
-#if DEBUG
-    // Speed up development by nuking the database when migrations change
-    // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/migrations>
-    migrator.eraseDatabaseOnSchemaChange = true
-#endif
+//#if DEBUG
+//    // Speed up development by nuking the database when migrations change
+//    // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/migrations>
+//    migrator.eraseDatabaseOnSchemaChange = true
+//#endif
 
     migrator.registerMigration("createFood") { db in
         // Create a table
@@ -76,6 +76,22 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
             t.column("sugar", .double)
         }
     }
+
+    migrator.registerMigration("createRecipe") { db in
+        try db.create(table: "recipe") { t in
+            t.autoIncrementedPrimaryKey("id")
+            t.column("name", .text).notNull().unique(onConflict: .replace)
+            t.column("instructions")
+        }
+
+        try db.create(table: "foodQuantity") { t in
+            t.autoIncrementedPrimaryKey("id")
+            t.belongsTo("recipe").notNull()
+            t.column("foodId", .integer).notNull().references("food")
+            t.column("quantity", .double).notNull()
+        }
+    }
+
 
     // Migrations for future application versions will be inserted here:
     // migrator.registerMigration(...) { db in
