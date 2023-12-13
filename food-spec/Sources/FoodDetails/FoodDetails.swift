@@ -129,9 +129,11 @@ public struct FoodDetails: View {
     }
 
     var header: some View {
-        QuantityPicker(
-            store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
-        )
+        GroupBox {
+            QuantityPicker(
+                store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
+            )
+        }
         .font(.title2)
     }
 }

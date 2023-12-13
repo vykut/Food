@@ -100,7 +100,7 @@ public extension Quantity {
     func formatted(
         width: Measurement<UnitMass>.FormatStyle.UnitWidth,
         usage: MeasurementFormatUnitUsage<UnitMass> = .asProvided,
-        numberFormatStyle: FloatingPointFormatStyle<Double>? = nil
+        numberFormatStyle: FloatingPointFormatStyle<Double> = .number
     ) -> String {
         self.formatted(.measurement(
             width: width,
@@ -113,7 +113,7 @@ public extension Quantity {
 public struct QuantityFormat: FormatStyle {
     let width: Measurement<UnitMass>.FormatStyle.UnitWidth
     let usage: MeasurementFormatUnitUsage<UnitMass>
-    let numberFormatStyle: FloatingPointFormatStyle<Double>?
+    let numberFormatStyle: FloatingPointFormatStyle<Double>
 
     private var volumeWidth: Measurement<UnitVolume>.FormatStyle.UnitWidth {
         switch width {
@@ -161,10 +161,14 @@ public struct QuantityFormat: FormatStyle {
 extension FormatStyle where Self == QuantityFormat {
     public static func measurement(
         width: Measurement<UnitMass>.FormatStyle.UnitWidth,
-        usage: MeasurementFormatUnitUsage<UnitMass> = .general,
-        numberFormatStyle: FloatingPointFormatStyle<Double>? = nil
+        usage: MeasurementFormatUnitUsage<UnitMass> = .asProvided,
+        numberFormatStyle: FloatingPointFormatStyle<Double> = .number
     ) -> Self {
-        .init(width: width, usage: usage, numberFormatStyle: numberFormatStyle)
+        .init(
+            width: width,
+            usage: usage,
+            numberFormatStyle: numberFormatStyle.precision(.fractionLength(0...1))
+        )
     }
 }
 

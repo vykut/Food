@@ -19,7 +19,7 @@ final class FoodComparisonReducerTests: XCTestCase {
         )
 
         store.assert {
-            $0.comparedFoods = [.preview(id: 1), .preview(id: 2)]
+            $0.originalFoods = [.preview(id: 1), .preview(id: 2)]
             $0.comparison = .energy
             $0.foodSortingStrategy = .value
             $0.foodSortingOrder = .forward
@@ -143,28 +143,68 @@ final class FoodComparisonReducerTests: XCTestCase {
         )
 
         await store.send(.updateSortingStrategy(.name)) {
-            $0.comparedFoods = [eggplant, oliveOil, ribeye]
             $0.foodSortingStrategy = .name
         }
+        XCTAssertNoDifference(store.state.comparedFoods, [eggplant, oliveOil, ribeye])
         await store.send(.updateSortingStrategy(.name)) {
-            $0.comparedFoods = [ribeye, oliveOil, eggplant]
             $0.foodSortingStrategy = .name
             $0.foodSortingOrder = .reverse
         }
+        XCTAssertNoDifference(store.state.comparedFoods, [ribeye, oliveOil, eggplant])
         await store.send(.updateSortingStrategy(.protein)) {
-            $0.comparedFoods = [oliveOil, eggplant, ribeye]
             $0.foodSortingStrategy = .protein
             $0.foodSortingOrder = .forward
         }
+        XCTAssertNoDifference(store.state.comparedFoods, [oliveOil, eggplant, ribeye])
         await store.send(.updateComparisonType(.fat)) {
-            $0.comparedFoods = [eggplant, ribeye, oliveOil]
             $0.comparison = .fat
             $0.foodSortingStrategy = .value
             $0.foodSortingOrder = .forward
         }
+        XCTAssertNoDifference(store.state.comparedFoods, [eggplant, ribeye, oliveOil])
         await store.send(.updateComparisonType(.macronutrients)) {
-            $0.comparedFoods = [eggplant, ribeye, oliveOil]
             $0.comparison = .macronutrients
+        }
+        XCTAssertNoDifference(store.state.comparedFoods, [eggplant, ribeye, oliveOil])
+        await store.send(.quantityPicker(.incrementButtonTapped)) {
+            $0.quantityPicker.quantity.value = 110
+        }
+    }
+
+    func testIntegration_withQuantityPicker() async throws {
+        let store = TestStore(
+            initialState: FoodComparisonFeature.State(
+                foods: [.preview],
+                comparison: .energy
+            ),
+            reducer: {
+                FoodComparisonFeature()
+            }
+        )
+
+        await store.send(.quantityPicker(.updateValue(200))) {
+            $0.quantityPicker.quantity.value = 200
+        }
+        XCTAssertNoDifference(
+            store.state.comparedFoods,
+            [
+                .init(
+                    name: "eggplant",
+                    energy: .kcal(69.4),
+                    fatTotal: .grams(0.4),
+                    fatSaturated: .zero,
+                    protein: .grams(1.6),
+                    sodium: .milligrams(0),
+                    potassium: .milligrams(30),
+                    cholesterol: .milligrams(0),
+                    carbohydrate: .grams(17.4),
+                    fiber: .grams(5),
+                    sugar: .grams(6.4)
+                )
+            ]
+        )
+        await store.send(.quantityPicker(.updateUnit(.pounds))) {
+            $0.quantityPicker.quantity = .init(value: 1, unit: .pounds)
         }
     }
 }

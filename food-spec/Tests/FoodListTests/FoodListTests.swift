@@ -31,7 +31,7 @@ final class FoodListTests: XCTestCase {
         }
     }
 
-    func test_onAppear() async throws {
+    func test_onTask() async throws {
         let store = TestStore(
             initialState: FoodListFeature.State(),
             reducer: {
@@ -41,12 +41,12 @@ final class FoodListTests: XCTestCase {
                 $0.userPreferencesClient = .init(
                     getPreferences: {
                         .init(
-                            recentSearchesSortingStrategy: .energy,
+                            recentSearchesSortingStrategy: FoodListFeature.State.SortingStrategy.energy.rawValue,
                             recentSearchesSortingOrder: .reverse
                         )
                     },
                     setPreferences: { _ in
-
+                        XCTFail()
                     },
                     observeChanges: {
                         .finished
@@ -61,15 +61,14 @@ final class FoodListTests: XCTestCase {
         store.dependencies.billboardClient.getRandomBanners = {
             .finished()
         }
-        store.dependencies.databaseClient.observeFoods = { sortedBy, order in
-            XCTAssertEqual(sortedBy, .energy)
+        store.dependencies.databaseClient.observeFoods = { strategy, order in
+            XCTAssertEqual(strategy.name, "energy")
             XCTAssertEqual(order, .reverse)
             return stream
         }
 
-        await store.send(.onAppear)
+        await store.send(.onTask)
         await store.receive(\.startObservingRecentFoods)
-        await store.receive(\.startObservingUserPreferences)
         continuation.yield([])
         await store.receive(\.onRecentFoodsChange) {
             $0.isSearchFocused = true
@@ -82,7 +81,7 @@ final class FoodListTests: XCTestCase {
         await store.finish()
     }
 
-    func test_onAppear_hasRecentFoods() async throws {
+    func test_onTask_hasRecentFoods() async throws {
         let food = Food.preview
         let store = TestStore(
             initialState: FoodListFeature.State(),
@@ -93,7 +92,7 @@ final class FoodListTests: XCTestCase {
                 $0.userPreferencesClient = .init(
                     getPreferences: {
                         .init(
-                            recentSearchesSortingStrategy: .energy,
+                            recentSearchesSortingStrategy: FoodListFeature.State.SortingStrategy.energy.rawValue,
                             recentSearchesSortingOrder: .reverse
                         )
                     },
@@ -113,15 +112,14 @@ final class FoodListTests: XCTestCase {
             .finished()
         }
         let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
-        store.dependencies.databaseClient.observeFoods = { sortedBy, order in
-            XCTAssertEqual(sortedBy, .energy)
+        store.dependencies.databaseClient.observeFoods = { strategy, order in
+            XCTAssertEqual(strategy.name, "energy")
             XCTAssertEqual(order, .reverse)
             return stream
         }
 
-        await store.send(.onAppear)
+        await store.send(.onTask)
         await store.receive(\.startObservingRecentFoods)
-        await store.receive(\.startObservingUserPreferences)
         continuation.yield([food])
         await store.receive(\.onRecentFoodsChange) {
             $0.recentFoods = [food]
@@ -152,7 +150,7 @@ final class FoodListTests: XCTestCase {
                 $0.userPreferencesClient = .init(
                     getPreferences: {
                         .init(
-                            recentSearchesSortingStrategy: .energy,
+                            recentSearchesSortingStrategy: FoodListFeature.State.SortingStrategy.energy.rawValue,
                             recentSearchesSortingOrder: .reverse
                         )
                     },
@@ -175,15 +173,14 @@ final class FoodListTests: XCTestCase {
             }
         }
         var (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
-        store.dependencies.databaseClient.observeFoods = { sortedBy, order in
-            XCTAssertEqual(sortedBy, .energy)
+        store.dependencies.databaseClient.observeFoods = { strategy, order in
+            XCTAssertEqual(strategy.name, "energy")
             XCTAssertEqual(order, .reverse)
             return stream
         }
 
-        await store.send(.onAppear)
+        await store.send(.onTask)
         await store.receive(\.startObservingRecentFoods)
-        await store.receive(\.startObservingUserPreferences)
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = .preview
         }
@@ -269,8 +266,8 @@ final class FoodListTests: XCTestCase {
             XCTAssertNoDifference($0, [eggplant, ribeye])
         }
         (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
-        store.dependencies.databaseClient.observeFoods = { sortedBy, order in
-            XCTAssertEqual(sortedBy, .carbohydrates)
+        store.dependencies.databaseClient.observeFoods = { strategy, order in
+            XCTAssertEqual(strategy.name, "carbohydrate")
             XCTAssertEqual(order, .forward)
             return stream
         }
@@ -289,8 +286,8 @@ final class FoodListTests: XCTestCase {
             XCTAssertNoDifference($0, [ribeye, eggplant])
         }
         (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
-        store.dependencies.databaseClient.observeFoods = { sortedBy, order in
-            XCTAssertEqual(sortedBy, .carbohydrates)
+        store.dependencies.databaseClient.observeFoods = { strategy, order in
+            XCTAssertEqual(strategy.name, "carbohydrate")
             XCTAssertEqual(order, .reverse)
             return stream
         }
@@ -518,7 +515,7 @@ final class FoodListTests: XCTestCase {
         store.dependencies.userPreferencesClient = .init(
             getPreferences: {
                 .init(
-                    recentSearchesSortingStrategy: .energy,
+                    recentSearchesSortingStrategy: FoodListFeature.State.SortingStrategy.energy.rawValue,
                     recentSearchesSortingOrder: .reverse
                 )
             },
@@ -537,7 +534,7 @@ final class FoodListTests: XCTestCase {
                 $0.finish()
             }
         }
-        await store.send(.onAppear)
+        await store.send(.onTask)
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = firstAd
         }

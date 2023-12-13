@@ -41,7 +41,7 @@ struct EnergyBreakdownComparisonChart: View {
         AxisMarks(preset: .inset) {
             AxisGridLine()
             AxisValueLabel(
-                format: EnergyFormat.measurement(width: .abbreviated, usage: .asProvided),
+                format: EnergyFormat.measurement(width: .abbreviated),
                 anchor: .top
             )
         }

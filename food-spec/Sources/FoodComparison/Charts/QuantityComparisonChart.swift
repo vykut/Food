@@ -13,7 +13,7 @@ struct QuantityComparisonChart: View {
             let quantity = food[keyPath: keyPath]
             BarMark(
                 x: .value(name, quantity),
-                y: .value("Name", "\(food.name.capitalized)\n\(quantity.formatted(width: .abbreviated, usage: .asProvided))")
+                y: .value("Name", "\(food.name.capitalized)\n\(quantity.formatted(width: .abbreviated))")
             )
             .foregroundStyle(by: .value("Type", name))
             .alignsMarkStylesWithPlotArea()
@@ -23,7 +23,7 @@ struct QuantityComparisonChart: View {
                 let quantity = value.as(Quantity.self)!
                 let plottableQuantity = Quantity(value: quantity.value, unit: foods.first![keyPath: keyPath].unit)
                 AxisGridLine()
-                AxisValueLabel(plottableQuantity.formatted(width: .abbreviated, usage: .asProvided), anchor: .top)
+                AxisValueLabel(plottableQuantity.formatted(width: .abbreviated), anchor: .top)
             }
         }
         .chartYAxis {

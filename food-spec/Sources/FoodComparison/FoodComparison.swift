@@ -1,6 +1,7 @@
 import SwiftUI
 import Shared
 import ComposableArchitecture
+import QuantityPicker
 
 public struct FoodComparison: View {
     typealias SortingStrategy = FoodComparisonFeature.State.SortingStrategy
@@ -15,8 +16,8 @@ public struct FoodComparison: View {
         Section {
             chart
         } header: {
-            Text(
-                "Nutritional values per \(Quantity(value: 100, unit: .grams).formatted(width: .wide))"
+            QuantityPicker(
+                store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
             )
             .font(.title2)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -159,7 +160,7 @@ public struct FoodComparison: View {
     FoodComparison(
         store: Store(
             initialState: FoodComparisonFeature.State(
-                foods: [],
+                foods: (1...7).map { Food.preview(id: $0, name: "eggplant\($0)") },
                 comparison: .energy
             ),
             reducer: {

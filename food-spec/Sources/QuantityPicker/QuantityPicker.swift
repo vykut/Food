@@ -18,7 +18,6 @@ public struct QuantityPicker: View {
     }
 
     public var body: some View {
-        GroupBox {
             DisclosureGroup {
                 VStack {
                     LabeledContent("Value") {
@@ -58,7 +57,6 @@ public struct QuantityPicker: View {
                 .lineLimit(1)
             }
             .tint(.primary)
-        }
     }
 }
 

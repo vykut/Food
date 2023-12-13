@@ -1,15 +1,17 @@
 import Foundation
 import ComposableArchitecture
 import Shared
+import QuantityPicker
 
 @Reducer
 public struct FoodComparisonFeature {
     @ObservableState
     public struct State: Hashable {
-        var comparedFoods: [Food] = []
+        var originalFoods: [Food]
         var comparison: Comparison
         var foodSortingStrategy: SortingStrategy = .value
         var foodSortingOrder: SortOrder = .forward
+        var quantityPicker: QuantityPickerFeature.State = .init()
 
         var availableSortingStrategies: [SortingStrategy] {
             if [Comparison.energy, .macronutrients].contains(comparison) {
@@ -17,6 +19,18 @@ public struct FoodComparisonFeature {
             } else {
                 [.name, .value]
             }
+        }
+
+        var comparedFoods: [Food] {
+            originalFoods
+                .map {
+                    $0.changingServingSize(to: quantityPicker.quantity)
+                }
+                .sorted(
+                    by: foodSortingStrategy,
+                    comparison: comparison,
+                    order: foodSortingOrder
+                )
         }
 
         public enum SortingStrategy: String, Identifiable, Hashable, CaseIterable {
@@ -35,7 +49,7 @@ public struct FoodComparisonFeature {
             foodSortingStrategy: SortingStrategy = .value,
             foodSortingOrder: SortOrder = .forward
         ) {
-            self.comparedFoods = foods
+            self.originalFoods = foods
             self.comparison = comparison
             self.foodSortingStrategy = foodSortingStrategy
             self.foodSortingOrder = foodSortingOrder
@@ -46,11 +60,15 @@ public struct FoodComparisonFeature {
     public enum Action {
         case updateSortingStrategy(State.SortingStrategy)
         case updateComparisonType(Comparison)
+        case quantityPicker(QuantityPickerFeature.Action)
     }
 
     public init() { }
 
     public var body: some ReducerOf<Self> {
+        Scope(state: \.quantityPicker, action: \.quantityPicker) {
+            QuantityPickerFeature()
+        }
         Reduce { state, action in
             switch action {
                 case .updateSortingStrategy(let strategy):
@@ -60,7 +78,6 @@ public struct FoodComparisonFeature {
                         state.foodSortingStrategy = strategy
                         state.foodSortingOrder = .forward
                     }
-                    sortFoods(state: &state)
                     return .none
 
                 case .updateComparisonType(let comparison):
@@ -71,18 +88,17 @@ public struct FoodComparisonFeature {
                         state.foodSortingStrategy = .value
                         state.foodSortingOrder = .forward
                     }
-                    sortFoods(state: &state)
                     return .none
+
+                case .quantityPicker(let action):
+                    return reduce(state: &state, action: action)
             }
         }
     }
 
-    private func sortFoods(state: inout State) {
-        state.comparedFoods.sort(
-            by: state.foodSortingStrategy,
-            comparison: state.comparison,
-            order: state.foodSortingOrder
-        )
+    private func reduce(state: inout State, action: QuantityPickerFeature.Action) -> Effect<Action> {
+        // nothing
+        return .none
     }
 }
 

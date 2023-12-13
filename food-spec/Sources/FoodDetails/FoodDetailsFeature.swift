@@ -37,29 +37,7 @@ public struct FoodDetailsFeature {
     }
 
     private func reduce(state: inout State, action: QuantityPickerFeature.Action) -> Effect<Action> {
-        state.food = state.originalFood.changeServingSize(to: state.quantityPicker.quantity)
+        state.food = state.originalFood.changingServingSize(to: state.quantityPicker.quantity)
         return .none
-    }
-}
-
-extension Food {
-    func changeServingSize(to quantity: Quantity) -> Self {
-        let quantityInGrams = quantity.converted(to: .grams)
-        let ratio = quantityInGrams.value / 100
-
-        return  .init(
-            id: nil,
-            name: self.name,
-            energy: self.energy * ratio,
-            fatTotal: self.fatTotal * ratio,
-            fatSaturated: self.fatSaturated * ratio,
-            protein: self.protein * ratio,
-            sodium: self.sodium * ratio,
-            potassium: self.potassium * ratio,
-            cholesterol: self.cholesterol * ratio,
-            carbohydrate: self.carbohydrate * ratio,
-            fiber: self.fiber * ratio,
-            sugar: self.sugar * ratio
-        )
     }
 }
