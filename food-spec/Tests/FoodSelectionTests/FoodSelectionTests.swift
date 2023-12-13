@@ -115,7 +115,7 @@ final class FoodSelectionTests: XCTestCase {
             $0.foodComparison = .init(
                 foods: [eggplant, oliveOil, ribeye,],
                 comparison: .energy,
-                foodSortingStrategy: .name,
+                foodSortingStrategy: .value,
                 foodSortingOrder: .forward
             )
         }

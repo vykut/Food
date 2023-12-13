@@ -86,7 +86,7 @@ public struct FoodSelectionFeature {
                             state.selectedFoodIds.contains($0.id)
                         },
                         comparison: comparison,
-                        foodSortingStrategy: .name,
+                        foodSortingStrategy: .value,
                         foodSortingOrder: .forward
                     )
                     return .none
