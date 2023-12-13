@@ -63,7 +63,7 @@ public extension Energy {
     func formatted(
         width: Measurement<UnitEnergy>.FormatStyle.UnitWidth,
         usage: MeasurementFormatUnitUsage<UnitEnergy> = .asProvided,
-        numberFormatStyle: FloatingPointFormatStyle<Double>? = nil
+        numberFormatStyle: FloatingPointFormatStyle<Double> = .number
     ) -> String {
         self.formatted(.measurement(
             width: width,
@@ -76,7 +76,7 @@ public extension Energy {
 public struct EnergyFormat: FormatStyle {
     let width: Measurement<UnitEnergy>.FormatStyle.UnitWidth
     let usage: MeasurementFormatUnitUsage<UnitEnergy>
-    let numberFormatStyle: FloatingPointFormatStyle<Double>?
+    let numberFormatStyle: FloatingPointFormatStyle<Double>
 
     public func format(_ value: Energy) -> String {
         value.measurement.formatted(.measurement(
@@ -90,10 +90,14 @@ public struct EnergyFormat: FormatStyle {
 extension FormatStyle where Self == EnergyFormat {
     public static func measurement(
         width: Measurement<UnitEnergy>.FormatStyle.UnitWidth,
-        usage: MeasurementFormatUnitUsage<UnitEnergy> = .general,
-        numberFormatStyle: FloatingPointFormatStyle<Double>? = nil
+        usage: MeasurementFormatUnitUsage<UnitEnergy> = .asProvided,
+        numberFormatStyle: FloatingPointFormatStyle<Double> = .number
     ) -> Self {
-        .init(width: width, usage: usage, numberFormatStyle: numberFormatStyle)
+        .init(
+            width: width,
+            usage: usage,
+            numberFormatStyle: numberFormatStyle.precision(.fractionLength(0...1))
+        )
     }
 }
 

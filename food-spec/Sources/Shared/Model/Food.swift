@@ -14,15 +14,6 @@ public struct Food: Codable, Hashable, Sendable {
     public var fiber: Quantity
     public var sugar: Quantity
 
-    public var nutritionalSummary: String {
-        """
-\(energy.formatted(width: .narrow)) | \
-P: \(protein.formatted(width: .narrow)) | \
-C: \(carbohydrate.formatted(width: .narrow)) | \
-F: \(fatTotal.formatted(width: .narrow))
-"""
-    }
-
     public init(
         id: Int64? = nil,
         name: String,
@@ -50,43 +41,19 @@ F: \(fatTotal.formatted(width: .narrow))
         self.fiber = fiber
         self.sugar = sugar
     }
-}
 
-public extension Food {
-    enum SortingStrategy: String, Codable, Identifiable, Hashable, CaseIterable, Sendable {
+    public enum CodingKeys: CodingKey {
+        case id
         case name
         case energy
-        case carbohydrates
+        case fatTotal
+        case fatSaturated
         case protein
-        case fat
-
-        public var id: Self { self }
-    }
-}
-
-public extension Food {
-    static var preview: Self {
-        preview(id: nil)
-    }
-
-    static func preview(id: Int64) -> Self {
-        preview(id: Optional<Int64>.some(id))
-    }
-
-    private static func preview(id: Int64?) -> Self {
-        .init(
-            id: id,
-            name: "eggplant",
-            energy: .init(value: 34.7, unit: .kilocalories),
-            fatTotal: .init(value: 0.2, unit: .grams),
-            fatSaturated: .init(value: 0.0, unit: .grams),
-            protein: .init(value: 0.8, unit: .grams),
-            sodium: .init(value: 0.0, unit: .milligrams),
-            potassium: .init(value: 15.0, unit: .milligrams),
-            cholesterol: .init(value: 0.0, unit: .milligrams),
-            carbohydrate: .init(value: 8.7, unit: .grams),
-            fiber: .init(value: 2.5, unit: .grams),
-            sugar: .init(value: 3.2, unit: .grams)
-        )
+        case sodium
+        case potassium
+        case cholesterol
+        case carbohydrate
+        case fiber
+        case sugar
     }
 }

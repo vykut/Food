@@ -6,7 +6,7 @@ import XCTest
 
 @MainActor
 final class FoodDetailsTests: XCTestCase {
-    func testQuantityChange() async throws {
+    func testIntegration_withQuantityPicker() async throws {
         let food = Food.preview
         let store = TestStore(
             initialState: FoodDetailsFeature.State(food: food),

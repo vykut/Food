@@ -18,7 +18,6 @@ public struct QuantityPicker: View {
     }
 
     public var body: some View {
-        GroupBox {
             DisclosureGroup {
                 VStack {
                     LabeledContent("Value") {
@@ -44,7 +43,6 @@ public struct QuantityPicker: View {
                         }
                     }
                 }
-                .font(nil)
                 .padding(.top)
             } label: {
                 ViewThatFits {
@@ -55,10 +53,10 @@ public struct QuantityPicker: View {
                         "Nutritional values per \(store.quantity.formatted(width: .abbreviated))"
                     )
                 }
+                .font(.title2)
                 .lineLimit(1)
             }
             .tint(.primary)
-        }
     }
 }
 

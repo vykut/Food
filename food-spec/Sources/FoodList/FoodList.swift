@@ -6,6 +6,8 @@ import Shared
 import FoodDetails
 
 public struct FoodList: View {
+    typealias State = FoodListFeature.State
+
     @Bindable var store: StoreOf<FoodListFeature>
 
     public init(store: StoreOf<FoodListFeature>) {
@@ -35,8 +37,8 @@ public struct FoodList: View {
             }
             .navigationTitle("Search")
         .alert($store.scope(state: \.alert, action: \.alert))
-        .onAppear {
-            self.store.send(.onAppear)
+        .task {
+            await self.store.send(.onTask).finish()
         }
         .onContinueUserActivity(CSSearchableItemActionType) { activity in
             store.send(.spotlight(.handleSelectedFood(activity)))
@@ -119,7 +121,7 @@ public struct FoodList: View {
                 "Sort by",
                 selection: self.$store.recentFoodsSortingStrategy.sending(\.updateRecentFoodsSortingStrategy)
             ) {
-                ForEach(Food.SortingStrategy.allCases) { strategy in
+                ForEach(State.SortingStrategy.allCases) { strategy in
                     let text = strategy.rawValue.capitalized
                     ZStack {
                         if strategy == self.store.recentFoodsSortingStrategy {

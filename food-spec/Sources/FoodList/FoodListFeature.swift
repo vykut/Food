@@ -12,7 +12,7 @@ public struct FoodListFeature {
     @ObservableState
     public struct State: Equatable {
         var recentFoods: [Food] = []
-        var recentFoodsSortingStrategy: Food.SortingStrategy
+        var recentFoodsSortingStrategy: SortingStrategy
         var recentFoodsSortingOrder: SortOrder
         var searchQuery = ""
         var isSearchFocused = false
@@ -44,20 +44,39 @@ public struct FoodListFeature {
             recentFoods.count < 2
         }
 
+        public enum SortingStrategy: String, Codable, Identifiable, Hashable, CaseIterable, Sendable {
+            case name
+            case energy
+            case carbohydrates
+            case protein
+            case fat
+
+            public var id: Self { self }
+
+            var column: Column {
+                switch self {
+                    case .name: Food.Columns.name
+                    case .energy: Food.Columns.energy
+                    case .carbohydrates: Food.Columns.carbohydrate
+                    case .protein: Food.Columns.protein
+                    case .fat: Food.Columns.fatTotal
+                }
+            }
+        }
+
         public init() { 
             @Dependency(\.userPreferencesClient) var userPreferencesClient
             let prefs = userPreferencesClient.getPreferences()
-            self.recentFoodsSortingStrategy = prefs.recentSearchesSortingStrategy ?? .name
+            self.recentFoodsSortingStrategy = prefs.foodSortingStrategy ?? .name
             self.recentFoodsSortingOrder = prefs.recentSearchesSortingOrder ?? .forward
         }
     }
 
     @CasePathable
     public enum Action {
-        case onAppear
+        case onTask
         case startObservingRecentFoods
         case onRecentFoodsChange([Food])
-        case startObservingUserPreferences
         case onUserPreferencesChange(UserPreferences)
         case updateSearchQuery(String)
         case updateSearchFocus(Bool)
@@ -68,7 +87,7 @@ public struct FoodListFeature {
         case didReceiveSearchFoods([FoodApiModel])
         case foodDetails(PresentationAction<FoodDetailsFeature.Action>)
         case inlineFood(FoodDetailsFeature.Action)
-        case updateRecentFoodsSortingStrategy(Food.SortingStrategy)
+        case updateRecentFoodsSortingStrategy(State.SortingStrategy)
         case billboard(Billboard)
         case spotlight(Spotlight)
         case showGenericAlert
@@ -96,16 +115,19 @@ public struct FoodListFeature {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-                case .onAppear:
+                case .onTask:
                     return .run { send in
                         await send(.startObservingRecentFoods)
-                    }.merge(with: .run { send in
-                        await send(.startObservingUserPreferences)
+                    }.merge(with: .run { [userPreferencesClient] send in
+                        let stream = await userPreferencesClient.observeChanges()
+                        for await preferences in stream {
+                            await send(.onUserPreferencesChange(preferences))
+                        }
                     })
 
                 case .startObservingRecentFoods:
-                    return .run { [strategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
-                        let stream = databaseClient.observeFoods(sortedBy: strategy, order: order)
+                    return .run { [databaseClient, strategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
+                        let stream = databaseClient.observeFoods(sortedBy: strategy.column, order: order)
                         for await foods in stream {
                             await send(.onRecentFoodsChange(foods), animation: .default)
                         }
@@ -119,17 +141,9 @@ public struct FoodListFeature {
                     }
                     return .none
 
-                case .startObservingUserPreferences:
-                    return .run { send in
-                        let stream = await userPreferencesClient.observeChanges()
-                        for await preferences in stream {
-                            await send(.onUserPreferencesChange(preferences))
-                        }
-                    }
-
                 case .onUserPreferencesChange(let preferences):
                     var shouldRestartDatabaseObservation = false
-                    if let newStrategy = preferences.recentSearchesSortingStrategy, newStrategy != state.recentFoodsSortingStrategy {
+                    if let newStrategy = preferences.foodSortingStrategy, newStrategy != state.recentFoodsSortingStrategy {
                         state.recentFoodsSortingStrategy = newStrategy
                         shouldRestartDatabaseObservation = true
                     }
@@ -226,7 +240,7 @@ public struct FoodListFeature {
                     }
                     return .run { [strategy = state.recentFoodsSortingStrategy, order = state.recentFoodsSortingOrder] send in
                         try await userPreferencesClient.setPreferences {
-                            $0.recentSearchesSortingStrategy = strategy
+                            $0.foodSortingStrategy = strategy
                             $0.recentSearchesSortingOrder = order
                         }
                         await send(.startObservingRecentFoods)
@@ -256,5 +270,16 @@ public struct FoodListFeature {
         .ifLet(\.$alert, action: \.alert)
         SpotlightReducer()
         BillboardReducer()
+    }
+}
+
+fileprivate extension UserPreferences {
+    var foodSortingStrategy: FoodListFeature.State.SortingStrategy? {
+        get {
+            recentSearchesSortingStrategy.flatMap { .init(rawValue: $0) }
+        }
+        set {
+            recentSearchesSortingStrategy = newValue?.rawValue
+        }
     }
 }

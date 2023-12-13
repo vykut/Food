@@ -27,7 +27,7 @@ struct MacronutrientsComparisonChart: View {
             AxisMarks(preset: .inset) {
                 AxisGridLine()
                 AxisValueLabel(
-                    format: QuantityFormat.measurement(width: .abbreviated, usage: .asProvided),
+                    format: QuantityFormat.measurement(width: .abbreviated),
                     anchor: .top
                 )
             }

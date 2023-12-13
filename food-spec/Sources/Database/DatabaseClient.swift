@@ -6,8 +6,8 @@ import DependenciesMacros
 
 @DependencyClient
 public struct DatabaseClient {
-    public var observeFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
-    public var getRecentFoods: (_ sortedBy: Food.SortingStrategy, _ order: SortOrder) async throws -> [Food]
+    public var observeFoods: (_ sortedBy: Column, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
+    public var getRecentFoods: (_ sortedBy: Column, _ order: SortOrder) async throws -> [Food]
     public var getFood: (_ name: String) async throws -> Food?
     public var insert: (_ food: Food) async throws -> Food
     public var delete: (_ food: Food) async throws -> Void
@@ -22,16 +22,15 @@ extension DatabaseClient: DependencyKey {
                 .fetchAll(db)
         }
         return .init(
-            observeFoods: { sortedBy, order in
-                let column = sortedBy.column
+            observeFoods: { column, order in
                 let observation = ValueObservation.tracking {
-                    try fetchFoods(db: $0, sortedBy: sortedBy.column, order: order)
+                    try fetchFoods(db: $0, sortedBy: column, order: order)
                 }
                 return AsyncStream(observation.values(in: db))
             },
-            getRecentFoods: { sortedBy, order in
+            getRecentFoods: { column, order in
                 return try await db.read {
-                    try fetchFoods(db: $0, sortedBy: sortedBy.column, order: order)
+                    try fetchFoods(db: $0, sortedBy: column, order: order)
                 }
             },
             getFood: { name in

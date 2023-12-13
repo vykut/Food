@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 import Shared
 import ComposableArchitecture
+import Database
 @testable import FoodSelection
 
 @MainActor
@@ -77,7 +78,7 @@ final class FoodSelectionTests: XCTestCase {
             },
             withDependencies: {
                 $0.databaseClient.observeFoods = { strategy, order in
-                    XCTAssertEqual(strategy, .name)
+                    XCTAssertEqual(strategy.name, "name")
                     XCTAssertEqual(order, .forward)
                     return stream
                 }
@@ -114,7 +115,7 @@ final class FoodSelectionTests: XCTestCase {
             $0.foodComparison = .init(
                 foods: [eggplant, oliveOil, ribeye,],
                 comparison: .energy,
-                foodSortingStrategy: .name,
+                foodSortingStrategy: .value,
                 foodSortingOrder: .forward
             )
         }
