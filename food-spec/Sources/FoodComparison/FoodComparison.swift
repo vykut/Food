@@ -19,8 +19,6 @@ public struct FoodComparison: View {
             QuantityPicker(
                 store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
             )
-            .font(.title2)
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding([.horizontal, .bottom])
         .toolbar {

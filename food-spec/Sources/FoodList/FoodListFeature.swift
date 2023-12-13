@@ -67,7 +67,7 @@ public struct FoodListFeature {
         public init() { 
             @Dependency(\.userPreferencesClient) var userPreferencesClient
             let prefs = userPreferencesClient.getPreferences()
-            self.recentFoodsSortingStrategy = prefs.recentSearchesSortingStrategy.flatMap(SortingStrategy.init) ?? .name
+            self.recentFoodsSortingStrategy = prefs.foodSortingStrategy ?? .name
             self.recentFoodsSortingOrder = prefs.recentSearchesSortingOrder ?? .forward
         }
     }

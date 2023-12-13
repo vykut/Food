@@ -134,7 +134,6 @@ public struct FoodDetails: View {
                 store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
             )
         }
-        .font(.title2)
     }
 }
 
