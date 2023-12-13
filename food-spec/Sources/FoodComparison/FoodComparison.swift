@@ -158,7 +158,10 @@ public struct FoodComparison: View {
 #Preview {
     FoodComparison(
         store: Store(
-            initialState: FoodComparisonFeature.State(),
+            initialState: FoodComparisonFeature.State(
+                foods: [],
+                comparison: .energy
+            ),
             reducer: {
                 FoodComparisonFeature()
             }

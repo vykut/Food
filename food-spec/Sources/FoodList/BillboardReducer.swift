@@ -1,6 +1,6 @@
 import Foundation
 import ComposableArchitecture
-import Billboard
+import Ads
 
 @Reducer
 struct BillboardReducer {

@@ -1,26 +1,26 @@
 import Foundation
 import ComposableArchitecture
-import FoodList
+import TabBar
 
 @Reducer
 struct AppFeature {
     @ObservableState
     struct State: Equatable {
-        var foodList: FoodListFeature.State = .init()
+        var tabBar: TabBarFeature.State = .init()
     }
 
     @CasePathable
     enum Action {
-        case foodList(FoodListFeature.Action)
+        case tabBar(TabBarFeature.Action)
     }
 
     var body: some ReducerOf<Self> {
-        Scope(state: \.foodList, action: \.foodList) {
-            FoodListFeature()
+        Scope(state: \.tabBar, action: \.tabBar) {
+            TabBarFeature()
         }
         Reduce { state, action in
             switch action {
-                case .foodList:
+                case .tabBar:
                     return .none
             }
         }

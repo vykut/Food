@@ -16,15 +16,7 @@ let package = Package(
         .iOS(.v17)
     ],
     products: [
-        .library(name: "FoodList"),
-        .library(name: "FoodDetails"),
-        .library(name: "FoodComparison"),
-        .library(name: "Shared"),
-        .library(name: "Database"),
-        .library(name: "UserDefaults"),
-        .library(name: "Spotlight"),
-        .library(name: "API"),
-        .library(name: "Ads"),
+        .library(name: "TabBar"),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
@@ -34,27 +26,35 @@ let package = Package(
         .package(url: "https://github.com/groue/Semaphore", from: "0.0.8"),
     ],
     targets: [
-        .feature(name: "FoodList", dependencies: ["FoodDetails", "FoodComparison", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
-        .featureTests(for: "FoodList"),
+        .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection"]),
+        .feature(name: "FoodList", dependencies: ["FoodDetails", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
-        .testTarget(for: "FoodDetails"),
+        .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison"]),
         .feature(name: "FoodComparison"),
-        .featureTests(for: "FoodComparison"),
         .feature(name: "QuantityPicker"),
-        .testTarget(for: "QuantityPicker"),
+
         .client(name: "UserPreferences", dependencies: ["UserDefaults", asyncSemaphoreDependency]),
         .client(name: "UserDefaults"),
         .client(name: "API"),
-        .testTarget(for: "API"),
         .client(name: "Database", dependencies: [grdbDependency]),
         .client(name: "Ads", dependencies: [billboardDependency]),
         .client(name: "Spotlight"),
+
         .target(
             name: "Shared",
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
             ]
         ),
+
+        .featureTests(for: "TabBar"),
+        .featureTests(for: "FoodList"),
+        .featureTests(for: "FoodDetails"),
+        .featureTests(for: "FoodSelection"),
+        .featureTests(for: "FoodComparison"),
+        .featureTests(for: "QuantityPicker"),
+
+        .testTarget(for: "API"),
         .testTarget(for: "Shared"),
     ]
 )

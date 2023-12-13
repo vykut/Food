@@ -57,6 +57,20 @@
         "identifier" : "QuantityPickerTests",
         "name" : "QuantityPickerTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "FoodSelectionTests",
+        "name" : "FoodSelectionTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "TabBarTests",
+        "name" : "TabBarTests"
+      }
     }
   ],
   "version" : 1

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Quantity: Codable, Hashable {
+public struct Quantity: Codable, Hashable, Sendable {
     public var value: Double
     public var unit: Unit
 
@@ -20,7 +20,7 @@ public struct Quantity: Codable, Hashable {
         )
     }
 
-    public enum Unit: String, Codable, Hashable {
+    public enum Unit: String, Codable, Hashable, Sendable {
         case kilograms
         case grams
         case decigrams

@@ -1,21 +1,22 @@
 import SwiftUI
 import ComposableArchitecture
 import Shared
+import FoodComparison
 
 public struct FoodSelection: View {
-    @Bindable var store: StoreOf<FoodComparisonFeature>
+    @Bindable var store: StoreOf<FoodSelectionFeature>
 
-    public init(store: StoreOf<FoodComparisonFeature>) {
+    public init(store: StoreOf<FoodSelectionFeature>) {
         self.store = store
     }
 
     public var body: some View {
-        List(selection: $store.selectedFoodIds.sending(\.didChangeSelection)) {
+        List(selection: $store.selectedFoodIds.sending(\.updateSelection)) {
             recentSearchesSection
         }
         .listStyle(.sidebar)
         .searchable(
-            text: $store.filterQuery.sending(\.updateFilterQuery),
+            text: $store.filterQuery.sending(\.updateFilter),
             prompt: "Filter"
         )
         .environment(\.editMode, .constant(.active))
@@ -25,11 +26,14 @@ public struct FoodSelection: View {
             toolbar
         }
         .navigationDestination(
-            isPresented: $store.isShowingComparison.sending(\.didNavigateToComparison),
-            destination: {
+            item: $store.scope(state: \.foodComparison, action: \.foodComparison),
+            destination: { store in
                 FoodComparison(store: store)
             }
         )
+        .task {
+            await store.send(.onTask).finish()
+        }
     }
 
     private var recentSearchesSection: some View {
@@ -45,19 +49,18 @@ public struct FoodSelection: View {
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                store.send(.didTapCancel)
-            } label: {
-                Image(systemName: "xmark")
-                    .imageScale(.medium)
+        if store.shouldShowCancelButton {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Cancel") {
+                    store.send(.cancelButtonTapped)
+                }
             }
         }
         ToolbarItem(placement: .topBarTrailing) {
             Menu("Compare") {
                 ForEach(Comparison.allCases) { comparison in
                     Button(comparison.rawValue.capitalized) {
-                        store.send(.didTapCompare(comparison))
+                        store.send(.compareButtonTapped(comparison))
                     }
                 }
             }
@@ -78,16 +81,9 @@ public struct FoodSelection: View {
     NavigationStack {
         FoodSelection(
             store: .init(
-                initialState: FoodComparisonFeature.State(
-                    foods: [
-                        .init(id: 1, name: "eggplant"),
-                        .init(id: 2, name: "ribeye"),
-                        .init(id: 3, name: "strawberry"),
-                    ],
-                    selectedFoodIds: [1]
-                ),
+                initialState: FoodSelectionFeature.State(),
                 reducer: {
-                    FoodComparisonFeature()
+                    FoodSelectionFeature()
                         ._printChanges()
                 }
             )

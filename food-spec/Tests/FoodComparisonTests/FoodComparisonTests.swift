@@ -9,81 +9,28 @@ final class FoodComparisonReducerTests: XCTestCase {
 
     func testStateDefaultInitializer() async throws {
         let store = TestStore(
-            initialState: FoodComparisonFeature.State(),
+            initialState: FoodComparisonFeature.State(
+                foods: [.preview(id: 1), .preview(id: 2)],
+                comparison: .energy
+            ),
             reducer: {
                 FoodComparisonFeature()
             }
         )
 
         store.assert {
-            $0.foods = []
-            $0.selectedFoodIds = []
-            $0.comparedFoods = []
-            $0.filterQuery = ""
-            $0.isShowingComparison = false
+            $0.comparedFoods = [.preview(id: 1), .preview(id: 2)]
             $0.comparison = .energy
             $0.foodSortingStrategy = .value
             $0.foodSortingOrder = .forward
         }
     }
 
-    func testComputedProperty_filteredFoods() async throws {
-        var state = FoodComparisonFeature.State()
-        state.foods = [.ribeye, .eggplant]
-        state.filterQuery = "e"
-
-        XCTAssertNoDifference(state.filteredFoods, [.ribeye, .eggplant])
-
-        state = FoodComparisonFeature.State()
-        state.foods = [.ribeye, .eggplant]
-        state.filterQuery = "eg"
-        XCTAssertNoDifference(state.filteredFoods, [.eggplant])
-
-        state = FoodComparisonFeature.State()
-        state.foods = [.ribeye, .eggplant]
-        state.filterQuery = ""
-        XCTAssertNoDifference(state.filteredFoods, [.ribeye, .eggplant])
-    }
-
-    func testComputedProperty_isCompareButtonDisabled() async throws {
-        var state = State(
-            selectedFoodIds: [1, 2]
-        )
-        XCTAssertNoDifference(state.isCompareButtonDisabled, false)
-
-        state.selectedFoodIds = [1]
-        XCTAssertNoDifference(state.isCompareButtonDisabled, true)
-
-        state.selectedFoodIds = []
-        XCTAssertNoDifference(state.isCompareButtonDisabled, true)
-
-        state.selectedFoodIds = [1, 2, 3, 4, 5]
-        XCTAssertNoDifference(state.isCompareButtonDisabled, false)
-    }
-
-    func testIsSelectionDisabled() async throws {
-        let food = Food.eggplant
-        var state = State(
-            selectedFoodIds: []
-        )
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), false)
-
-        state.selectedFoodIds = [1, 2, 3, 4]
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), false)
-
-        state.selectedFoodIds = [nil]
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), false)
-
-        state.selectedFoodIds = [nil, 1, 2, 3, 4, 5, 6]
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), false)
-
-        state.selectedFoodIds = [1, 2, 3, 4, 5, 6, 7]
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), true)
-    }
-
     func testComputedProperty_availableSortingStrategies() async throws {
-        var state = State()
-        state.comparison = .energy
+        var state = State(
+            foods: [],
+            comparison: .energy
+        )
 
         XCTAssertNoDifference(state.availableSortingStrategies, State.SortingStrategy.allCases)
 
@@ -187,39 +134,14 @@ final class FoodComparisonReducerTests: XCTestCase {
         ribeye.id = 3
         let store = TestStore(
             initialState: FoodComparisonFeature.State(
-                foods: [eggplant, oliveOil, ribeye] + (4...10).map { .init(id: Int64($0), name: String($0)) }
+                foods: [eggplant, oliveOil, ribeye],
+                comparison: .energy
             ),
             reducer: {
                 FoodComparisonFeature()
             }
         )
-        await store.send(.didChangeSelection([1])) {
-            $0.selectedFoodIds = [1]
-        }
-        await store.send(.updateFilterQuery("e")) {
-            $0.filterQuery = "e"
-        }
-        XCTAssertNoDifference(store.state.filteredFoods, [eggplant, oliveOil, ribeye])
-        await store.send(.didChangeSelection([1, 3])) {
-            $0.selectedFoodIds = [1, 3]
-        }
-        await store.send(.updateFilterQuery("")) {
-            $0.filterQuery = ""
-        }
-        XCTAssertNoDifference(store.state.filteredFoods, store.state.foods)
-        XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
-        await store.send(.didChangeSelection([1, 3, 4, 5, 6, 7, 8])) {
-            $0.selectedFoodIds = [1, 3, 4, 5, 6, 7, 8]
-        }
-        XCTAssertNoDifference(store.state.isSelectionDisabled(for: oliveOil), true)
-        await store.send(.didChangeSelection([1, 2, 3])) {
-            $0.selectedFoodIds = [1, 2, 3]
-        }
-        await store.send(.didTapCompare(.energy)) {
-            $0.comparedFoods = [eggplant, ribeye, oliveOil]
-            $0.comparison = .energy
-            $0.isShowingComparison = true
-        }
+
         await store.send(.updateSortingStrategy(.name)) {
             $0.comparedFoods = [eggplant, oliveOil, ribeye]
             $0.foodSortingStrategy = .name
@@ -247,25 +169,7 @@ final class FoodComparisonReducerTests: XCTestCase {
     }
 }
 
-extension Food {
-    static var oliveOil: Self {
-        .init(
-            name: "olive oil",
-            energy: .kcal(869.2),
-            fatTotal: .grams(101.2),
-            fatSaturated: .grams(13.9),
-            protein: .zero,
-            sodium: .milligrams(1),
-            potassium: .zero,
-            cholesterol: .zero,
-            carbohydrate: .zero,
-            fiber: .zero,
-            sugar: .zero
-        )
-    }
-}
-
-extension Food {
+fileprivate extension Food {
     init(id: Int64, name: String) {
         self.init(
             id: id,
@@ -284,7 +188,23 @@ extension Food {
     }
 }
 
-extension Food {
+fileprivate extension Food {
+    static var oliveOil: Self {
+        .init(
+            name: "olive oil",
+            energy: .kcal(869.2),
+            fatTotal: .grams(101.2),
+            fatSaturated: .grams(13.9),
+            protein: .zero,
+            sodium: .milligrams(1),
+            potassium: .zero,
+            cholesterol: .zero,
+            carbohydrate: .zero,
+            fiber: .zero,
+            sugar: .zero
+        )
+    }
+
     static var ribeye: Self {
         .init(
             name: "ribeye",

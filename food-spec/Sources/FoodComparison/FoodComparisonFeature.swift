@@ -6,30 +6,10 @@ import Shared
 public struct FoodComparisonFeature {
     @ObservableState
     public struct State: Hashable {
-        var foods: [Food] = []
-        var selectedFoodIds: Set<Int64?> = []
         var comparedFoods: [Food] = []
-        var filterQuery: String = ""
-        var isShowingComparison: Bool = false
-        var comparison: Comparison = .energy
+        var comparison: Comparison
         var foodSortingStrategy: SortingStrategy = .value
         var foodSortingOrder: SortOrder = .forward
-
-        var filteredFoods: [Food] {
-            guard !filterQuery.isEmpty else { return foods }
-            return foods.filter {
-                $0.name.range(of: filterQuery, options: .caseInsensitive) != nil
-            }
-        }
-
-        var isCompareButtonDisabled: Bool {
-            selectedFoodIds.count < 2
-        }
-
-        func isSelectionDisabled(for food: Food) -> Bool {
-            selectedFoodIds.count >= 7 &&
-            !selectedFoodIds.contains(food.id)
-        }
 
         var availableSortingStrategies: [SortingStrategy] {
             if [Comparison.energy, .macronutrients].contains(comparison) {
@@ -49,51 +29,30 @@ public struct FoodComparisonFeature {
             public var id: Self { self }
         }
 
-        public init(foods: [Food] = [], selectedFoodIds: Set<Int64?> = []) {
-            self.foods = foods
-            self.selectedFoodIds = selectedFoodIds
+        public init(
+            foods: [Food],
+            comparison: Comparison,
+            foodSortingStrategy: SortingStrategy = .value,
+            foodSortingOrder: SortOrder = .forward
+        ) {
+            self.comparedFoods = foods
+            self.comparison = comparison
+            self.foodSortingStrategy = foodSortingStrategy
+            self.foodSortingOrder = foodSortingOrder
         }
-
-        init() { }
     }
 
     @CasePathable
     public enum Action {
-        case didTapCancel
-        case didTapCompare(Comparison)
-        case didChangeSelection(Set<Int64?>)
-        case didNavigateToComparison(Bool)
-        case updateFilterQuery(String)
         case updateSortingStrategy(State.SortingStrategy)
         case updateComparisonType(Comparison)
     }
 
     public init() { }
 
-    @Dependency(\.dismiss) private var dismiss
-
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-                case .didChangeSelection(let selection):
-                    state.selectedFoodIds = selection
-                    return .none
-
-                case .didTapCompare(let comparison):
-                    state.comparison = comparison
-                    state.comparedFoods = state.filteredFoods
-                        .filter { [selectedIds = state.selectedFoodIds] food in
-                            selectedIds.contains(food.id)
-                        }
-                    sortFoods(state: &state)
-                    state.isShowingComparison = true
-
-                    return .none
-
-                case .updateFilterQuery(let query):
-                    state.filterQuery = query
-                    return .none
-
                 case .updateSortingStrategy(let strategy):
                     if state.foodSortingStrategy == strategy {
                         state.foodSortingOrder.toggle()
@@ -105,6 +64,7 @@ public struct FoodComparisonFeature {
                     return .none
 
                 case .updateComparisonType(let comparison):
+                    guard comparison != state.comparison else { return .none }
                     state.comparison = comparison
                     let isSortingByInvalidCriteria = ![.energy, .macronutrients].contains(comparison) && [.protein, .carbohydrate, .fat].contains(state.foodSortingStrategy)
                     if isSortingByInvalidCriteria {
@@ -112,16 +72,6 @@ public struct FoodComparisonFeature {
                         state.foodSortingOrder = .forward
                     }
                     sortFoods(state: &state)
-                    return .none
-
-                case .didTapCancel:
-                    return .run { [dismiss] _ in
-                        await dismiss()
-                    }
-
-                case .didNavigateToComparison(let bool):
-                    guard bool != state.isShowingComparison else { return .none }
-                    state.isShowingComparison = bool
                     return .none
             }
         }
@@ -139,14 +89,16 @@ public struct FoodComparisonFeature {
 extension Array<Food> {
     mutating func sort(
         by strategy: FoodComparisonFeature.State.SortingStrategy,
-        comparison: Comparison,
+        comparison: Comparison?,
         order: SortOrder
     ) {
         switch strategy {
             case .name:
                 sort(using: SortDescriptor(\.name, order: order))
             case .value:
-                sort(by: comparison, order: order)
+                if let comparison {
+                    sort(by: comparison, order: order)
+                }
             case .protein:
                 sort(using: SortDescriptor(\.protein, order: order))
             case .carbohydrate:

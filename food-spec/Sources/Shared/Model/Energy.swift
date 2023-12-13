@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Energy: Codable, Hashable {
+public struct Energy: Codable, Hashable, Sendable {
     public var value: Double
     public var unit: Unit
 
@@ -20,7 +20,7 @@ public struct Energy: Codable, Hashable {
         )
     }
 
-    public enum Unit: Codable {
+    public enum Unit: Codable, Sendable {
         case kilojoules
         case joules
         case kilocalories
