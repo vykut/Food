@@ -264,6 +264,9 @@ public struct FoodListFeature {
                     return .none
             }
         }
+        .ifLet(\.inlineFood, action: \.inlineFood) {
+            FoodDetailsFeature()
+        }
         .ifLet(\.$foodDetails, action: \.foodDetails) {
             FoodDetailsFeature()
         }
