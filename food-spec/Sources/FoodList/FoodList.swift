@@ -86,7 +86,9 @@ public struct FoodList: View {
                     FoodListRow(food: item)
                 }
             }
-            .onDelete(perform: deleteItems)
+            .onDelete { offsets in
+                self.store.send(.didDeleteRecentFoods(offsets))
+            }
         } header: {
             Text("Recent Searches")
         } footer: {
@@ -141,10 +143,6 @@ public struct FoodList: View {
         }
         .menuActionDismissBehavior(.disabled)
         .disabled(store.isSortMenuDisabled)
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        self.store.send(.didDeleteRecentFoods(offsets))
     }
 }
 

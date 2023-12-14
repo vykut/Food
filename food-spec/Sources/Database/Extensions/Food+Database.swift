@@ -3,6 +3,17 @@ import Shared
 import GRDB
 
 extension Food: FetchableRecord, MutablePersistableRecord {
+    static let foodQuantities = hasMany(FoodQuantityDB.self).forKey("foodQuantities")
+    static let recipes = hasMany(RecipeDB.self, through: foodQuantities, using: FoodQuantityDB.recipe)
+
+    var foodQuantities: QueryInterfaceRequest<FoodQuantityDB> {
+        request(for: Self.foodQuantities)
+    }
+
+    var recipes: QueryInterfaceRequest<RecipeDB> {
+        request(for: Self.recipes)
+    }
+
     public mutating func didInsert(_ inserted: InsertionSuccess) {
         id = inserted.rowID
     }
@@ -21,27 +32,5 @@ extension Food {
         public static let carbohydrate = Column(Food.CodingKeys.carbohydrate)
         public static let fiber = Column(Food.CodingKeys.fiber)
         public static let sugar = Column(Food.CodingKeys.sugar)
-    }
-}
-
-extension Energy: DatabaseValueConvertible {
-    public var databaseValue: DatabaseValue {
-        converted(to: .kilocalories).value.databaseValue
-    }
-
-    public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Energy? {
-        guard let value = Double.fromDatabaseValue(dbValue) else { return nil }
-        return .init(value: value, unit: .kilocalories)
-    }
-}
-
-extension Quantity: DatabaseValueConvertible {
-    public var databaseValue: DatabaseValue {
-        converted(to: .grams).value.databaseValue
-    }
-
-    public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Quantity? {
-        guard let value = Double.fromDatabaseValue(dbValue) else { return nil }
-        return .init(value: value, unit: .grams)
     }
 }

@@ -216,7 +216,7 @@ public struct FoodListFeature {
                     }
 
                 case .didDeleteRecentFoods(let indices):
-                    return .run { [recentFoods = state.recentFoods] send in
+                    return .run { [recentFoods = state.recentFoods, databaseClient] send in
                         let foodsToDelete = indices.map { recentFoods[$0] }
                         for food in foodsToDelete {
                             try await databaseClient.delete(food: food)

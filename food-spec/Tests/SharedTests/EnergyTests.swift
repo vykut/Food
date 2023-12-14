@@ -13,5 +13,8 @@ final class EnergyTests: XCTestCase {
         energy = .init(value: 300, unit: .kilojoules)
         formattedEnergy = energy.formatted(width: .narrow)
         XCTAssertEqual(formattedEnergy, "300kJ")
+        energy = .init(value: 3000.43, unit: .kilojoules)
+        formattedEnergy = energy.formatted(width: .narrow)
+        XCTAssertEqual(formattedEnergy, "3000kJ")
     }
 }

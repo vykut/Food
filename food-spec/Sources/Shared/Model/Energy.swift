@@ -82,7 +82,7 @@ public struct EnergyFormat: FormatStyle {
         value.measurement.formatted(.measurement(
             width: width,
             usage: usage,
-            numberFormatStyle: numberFormatStyle
+            numberFormatStyle: numberFormatStyle.precision(value.value < 1000 ? .fractionLength(0...1) : .fractionLength(0))
         ))
     }
 }
@@ -96,7 +96,7 @@ extension FormatStyle where Self == EnergyFormat {
         .init(
             width: width,
             usage: usage,
-            numberFormatStyle: numberFormatStyle.precision(.fractionLength(0...1))
+            numberFormatStyle: numberFormatStyle
         )
     }
 }
@@ -107,6 +107,10 @@ extension Energy {
             value: (lhs.measurement + rhs.measurement.converted(to: lhs.unit.unit)).value,
             unit: lhs.unit
         )
+    }
+
+    public static func += (lhs: inout Self, rhs: Self) {
+        lhs = lhs + rhs
     }
 
     public static func - (lhs: Self, rhs: Self) -> Self {

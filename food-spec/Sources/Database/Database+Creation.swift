@@ -78,17 +78,18 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
     }
 
     migrator.registerMigration("createRecipe") { db in
-        try db.create(table: "recipe") { t in
+        try db.create(table: "recipeDB") { t in
             t.autoIncrementedPrimaryKey("id")
             t.column("name", .text).notNull().unique(onConflict: .replace)
             t.column("instructions")
         }
 
-        try db.create(table: "foodQuantity") { t in
+        try db.create(table: "foodQuantityDB") { t in
             t.autoIncrementedPrimaryKey("id")
-            t.belongsTo("recipe").notNull()
-            t.column("foodId", .integer).notNull().references("food")
+            t.belongsTo("recipe", inTable: "recipeDB", onDelete: .cascade).notNull()
+            t.belongsTo("food", onDelete: .cascade).notNull()
             t.column("quantity", .double).notNull()
+            t.column("unit", .integer).notNull()
         }
     }
 

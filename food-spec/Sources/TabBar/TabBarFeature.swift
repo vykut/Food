@@ -39,6 +39,9 @@ public struct TabBarFeature {
         Scope(state: \.foodList, action: \.foodList) {
             FoodListFeature()
         }
+        Scope(state: \.recipes, action: \.recipes) {
+            RecipesFeature()
+        }
         Reduce { state, action in
             switch action {
                 case .updateTab(let tab):

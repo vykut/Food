@@ -132,7 +132,7 @@ public struct QuantityFormat: FormatStyle {
         }
     }
 
-    private var volumeMeasurement: Measurement<UnitVolume>.FormatStyle {
+    private func volumeMeasurement(numberFormatStyle: FloatingPointFormatStyle<Double>) -> Measurement<UnitVolume>.FormatStyle {
         .measurement(
             width: volumeWidth,
             usage: volumeUsage,
@@ -141,13 +141,17 @@ public struct QuantityFormat: FormatStyle {
     }
 
     public func format(_ value: Quantity) -> String {
-        switch value.unit {
+        let numberFormatStyle = self.numberFormatStyle.precision(value.value < 1000 ? .fractionLength(0...1) : .fractionLength(0))
+        return switch value.unit {
             case .cups:
-                Measurement<UnitVolume>(value: value.value, unit: .cups).formatted(volumeMeasurement)
+                Measurement<UnitVolume>(value: value.value, unit: .cups)
+                    .formatted(volumeMeasurement(numberFormatStyle: numberFormatStyle))
             case .tablespoons:
-                Measurement<UnitVolume>(value: value.value, unit: .tablespoons).formatted(volumeMeasurement)
+                Measurement<UnitVolume>(value: value.value, unit: .tablespoons)
+                    .formatted(volumeMeasurement(numberFormatStyle: numberFormatStyle))
             case .teaspoons:
-                Measurement<UnitVolume>(value: value.value, unit: .teaspoons).formatted(volumeMeasurement)
+                Measurement<UnitVolume>(value: value.value, unit: .teaspoons)
+                    .formatted(volumeMeasurement(numberFormatStyle: numberFormatStyle))
             default:
                 value.measurement.formatted(.measurement(
                     width: width,
@@ -178,6 +182,10 @@ extension Quantity {
             value: (lhs.measurement + rhs.measurement.converted(to: lhs.unit.unit)).value,
             unit: lhs.unit
         )
+    }
+
+    public static func += (lhs: inout Self, rhs: Self) {
+        lhs = lhs + rhs
     }
 
     public static func - (lhs: Self, rhs: Self) -> Self {
