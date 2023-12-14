@@ -1,7 +1,7 @@
 import SwiftUI
 import FoodList
 import FoodSelection
-import Recipes
+import RecipesList
 import ComposableArchitecture
 
 public struct TabBar: View {

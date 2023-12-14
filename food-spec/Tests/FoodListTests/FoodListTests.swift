@@ -198,7 +198,7 @@ final class FoodListTests: XCTestCase {
             XCTAssertNoDifference($0, [eggplant])
         }
         store.dependencies.foodClient.getFoods = { _ in [eggplantApi] }
-        store.dependencies.databaseClient.insert = {
+        store.dependencies.databaseClient.insertFood = {
             XCTAssertNoDifference($0, .preview)
             return $0
         }
@@ -241,7 +241,7 @@ final class FoodListTests: XCTestCase {
             XCTAssertNoDifference($0, [ribeye, eggplant])
         }
         store.dependencies.foodClient.getFoods = { _ in [ribeyeApi] }
-        store.dependencies.databaseClient.insert = {
+        store.dependencies.databaseClient.insertFood = {
             XCTAssertEqual($0, ribeye)
             return $0
         }
@@ -304,7 +304,7 @@ final class FoodListTests: XCTestCase {
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [eggplant])
         }
-        store.dependencies.databaseClient.delete = {
+        store.dependencies.databaseClient.deleteFood = {
             XCTAssertNoDifference($0, ribeye)
         }
         await store.send(.didDeleteRecentFoods(.init(integer: 0)))
@@ -335,7 +335,7 @@ final class FoodListTests: XCTestCase {
                 $0.mainQueue = .immediate
             }
         )
-        store.dependencies.databaseClient.insert = {
+        store.dependencies.databaseClient.insertFood = {
             XCTAssertNoDifference($0, eggplant)
             return $0
         }
@@ -391,7 +391,7 @@ final class FoodListTests: XCTestCase {
         await store.send(.updateSearchFocus(true)) {
             $0.isSearchFocused = true
         }
-        store.dependencies.databaseClient.insert = {
+        store.dependencies.databaseClient.insertFood = {
             XCTAssertNoDifference($0, .eggplant)
             return $0
         }
@@ -415,7 +415,7 @@ final class FoodListTests: XCTestCase {
                 FoodListFeature()
             },
             withDependencies: {
-                $0.databaseClient.delete = { _ in
+                $0.databaseClient.deleteFood = { _ in
                     struct Failure: Error { }
                     throw Failure()
                 }
@@ -466,7 +466,7 @@ final class FoodListTests: XCTestCase {
             XCTAssertNoDifference($0, eggplant.name)
             return [.eggplant]
         }
-        store.dependencies.databaseClient.insert = {
+        store.dependencies.databaseClient.insertFood = {
             XCTAssertNoDifference($0, eggplant)
             return eggplant
         }

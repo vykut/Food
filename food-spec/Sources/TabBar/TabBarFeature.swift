@@ -1,7 +1,7 @@
 import Shared
 import FoodList
 import FoodSelection
-import Recipes
+import RecipesList
 import ComposableArchitecture
 
 @Reducer

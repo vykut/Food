@@ -12,7 +12,7 @@ final class QuantityTests: XCTestCase {
         XCTAssertEqual(formattedQuantity, "100.2 g")
         quantity = .grams(1000.2345143532)
         formattedQuantity = quantity.formatted(width: .abbreviated)
-        XCTAssertEqual(formattedQuantity, "1000 g")
+        XCTAssertEqual(formattedQuantity, "1,000 g")
         quantity = .init(value: 300, unit: .milligrams)
         formattedQuantity = quantity.formatted(width: .narrow)
         XCTAssertEqual(formattedQuantity, "300mg")
