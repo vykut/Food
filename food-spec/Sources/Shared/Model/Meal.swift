@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Recipe: Hashable, Sendable {
+public struct Meal: Hashable, Sendable {
     public var id: Int64?
     public var name: String
     public var ingredients: [Ingredient]

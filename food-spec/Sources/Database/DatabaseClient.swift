@@ -15,13 +15,13 @@ public struct DatabaseClient {
     @DependencyEndpoint(method: "delete")
     public var deleteFood: (_ food: Food) async throws -> Void
 
-    // MARK: Recipes
-    public var observeRecipes: () -> AsyncStream<[Recipe]> = { .finished }
-    public var getRecipes: () async throws -> [Recipe]
+    // MARK: Meals
+    public var observeMeals: () -> AsyncStream<[Meal]> = { .finished }
+    public var getMeals: () async throws -> [Meal]
     @DependencyEndpoint(method: "insert")
-    public var insertRecipe: (_ recipe: Recipe) async throws -> Recipe
+    public var insertMeal: (_ meal: Meal) async throws -> Meal
     @DependencyEndpoint(method: "delete")
-    public var deleteRecipe: (_ recipe: Recipe) async throws -> Void
+    public var deleteMeal: (_ meal: Meal) async throws -> Void
 }
 
 extension DatabaseClient: DependencyKey {
@@ -31,11 +31,11 @@ extension DatabaseClient: DependencyKey {
             let request = FoodDB.order(order == .forward ? column : column.desc)
             return try Food.fetchAll(db, request)
         }
-        @Sendable func fetchRecipes(db: Database) throws -> [Recipe] {
-            let request = RecipeDB
-                .including(all: RecipeDB.ingredients.including(required: IngredientDB.food))
+        @Sendable func fetchMeals(db: Database) throws -> [Meal] {
+            let request = MealDB
+                .including(all: MealDB.ingredients.including(required: IngredientDB.food))
                 .order(Column("name"))
-            return try Recipe.fetchAll(db, request)
+            return try Meal.fetchAll(db, request)
         }
         return .init(
             observeFoods: { column, order in
@@ -67,48 +67,48 @@ extension DatabaseClient: DependencyKey {
                     _ = try FoodDB.deleteOne($0, key: food.id)
                 }
             },
-            observeRecipes: {
+            observeMeals: {
                 let observation = ValueObservation.tracking {
-                    try fetchRecipes(db: $0)
+                    try fetchMeals(db: $0)
                 }
                 return AsyncStream(observation.values(in: db))
             },
-            getRecipes: {
+            getMeals: {
                 try await db.read {
-                    try fetchRecipes(db: $0)
+                    try fetchMeals(db: $0)
                 }
             },
-            insertRecipe: { recipe in
+            insertMeal: { meal in
                 try await db.write {
                     do {
-                        var recipeDb = RecipeDB(recipe: recipe)
-                        try recipeDb.upsert($0)
-                        guard let recipeId = recipeDb.id else {
+                        var mealDb = MealDB(meal: meal)
+                        try mealDb.upsert($0)
+                        guard let mealId = mealDb.id else {
                             struct MissingID: Error { }
                             throw MissingID()
                         }
 
                         var ingredients: [(IngredientDB, FoodDB)] = []
-                        for var ingredient in recipe.ingredients {
+                        for var ingredient in meal.ingredients {
                             var foodDB = FoodDB(food: ingredient.food)
                             try foodDB.upsert($0)
                             ingredient.food = Food(foodDb: foodDB)
 
-                            var foodQuantityDB = try IngredientDB(ingredient: ingredient, recipeId: recipeId)
+                            var foodQuantityDB = try IngredientDB(ingredient: ingredient, mealId: mealId)
                             try foodQuantityDB.upsert($0)
                             ingredients.append((foodQuantityDB, foodDB))
                         }
 
-                        return try Recipe(recipeDb: recipeDb, ingredients: ingredients)
+                        return try Meal(mealDb: mealDb, ingredients: ingredients)
                     } catch {
                         try $0.rollback()
                         throw error
                     }
                 }
             },
-            deleteRecipe: { recipe in
+            deleteMeal: { meal in
                 try await db.write {
-                    _ = try RecipeDB(id: recipe.id, name: recipe.name, instructions: recipe.instructions).delete($0)
+                    _ = try MealDB(id: meal.id, name: meal.name, instructions: meal.instructions).delete($0)
                 }
             }
         )

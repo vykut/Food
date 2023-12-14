@@ -4,10 +4,10 @@ import Database
 import ComposableArchitecture
 
 @Reducer
-public struct RecipeListFeature {
+public struct MealListFeature {
     @ObservableState
     public struct State: Hashable {
-        var recipes: [Recipe] = []
+        var meals: [Meal] = []
 
         public init() { }
     }
@@ -16,7 +16,7 @@ public struct RecipeListFeature {
     public enum Action {
         case plusButtonTapped
         case onTask
-        case onRecipesUpdate([Recipe])
+        case onMealsUpdate([Meal])
         case onDelete(IndexSet)
     }
 
@@ -31,7 +31,7 @@ public struct RecipeListFeature {
                 case .plusButtonTapped:
                     return .run { [databaseClient] send in
                         _ = try await databaseClient.insert(
-                            recipe: .init(
+                            meal: .init(
                                 name: Date().formatted(),
                                 ingredients: [
                                     .init(food: .preview, quantity: .grams(100)),
@@ -43,22 +43,22 @@ public struct RecipeListFeature {
                     }
                 case .onTask:
                     return .run { [databaseClient] send in
-                        let stream = databaseClient.observeRecipes()
-                        for await recipes in stream {
-                            await send(.onRecipesUpdate(recipes), animation: .default)
+                        let stream = databaseClient.observeMeals()
+                        for await meals in stream {
+                            await send(.onMealsUpdate(meals), animation: .default)
                         }
                     }
 
-                case .onRecipesUpdate(let recipes):
-                    state.recipes = recipes
-                    // handle empty recipes
+                case .onMealsUpdate(let meals):
+                    state.meals = meals
+                    // handle empty meals
                     return .none
 
                 case .onDelete(let indices):
-                    return .run { [recipes = state.recipes, databaseClient] send in
-                        let recipesToDelete = indices.map { recipes[$0] }
-                        for recipe in recipesToDelete {
-                            try await databaseClient.delete(recipe: recipe)
+                    return .run { [meals = state.meals, databaseClient] send in
+                        let mealsToDelete = indices.map { meals[$0] }
+                        for meal in mealsToDelete {
+                            try await databaseClient.delete(meal: meal)
                         }
                     }
             }

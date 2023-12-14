@@ -36,13 +36,13 @@ extension Ingredient: FetchableRecord {
 }
 
 extension IngredientDB {
-    init(ingredient: Ingredient, recipeId: Int64) throws {
+    init(ingredient: Ingredient, mealId: Int64) throws {
         guard let foodId = ingredient.food.id else {
             struct MissingID: Error { }
             throw MissingID()
         }
         self.init(
-            recipeId: recipeId,
+            mealId: mealId,
             foodId: foodId,
             quantity: ingredient.quantity.value,
             unit: ingredient.quantity.unit.intValue

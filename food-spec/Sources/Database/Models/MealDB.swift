@@ -2,13 +2,13 @@ import Foundation
 import GRDB
 import Shared
 
-struct RecipeDB: Hashable, Codable {
+struct MealDB: Hashable, Codable {
     var id: Int64?
     var name: String
     var instructions: String
 }
 
-extension RecipeDB: FetchableRecord, MutablePersistableRecord {
+extension MealDB: FetchableRecord, MutablePersistableRecord {
     static let ingredients = hasMany(IngredientDB.self).forKey("ingredients")
     static let foods = hasMany(FoodDB.self, through: ingredients, using: IngredientDB.food).forKey("foods") // not checked if works
 

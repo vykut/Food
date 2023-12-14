@@ -2,7 +2,7 @@ import Foundation
 import GRDB
 import Shared
 
-extension Recipe: FetchableRecord {
+extension Meal: FetchableRecord {
     public init(row: Row) throws {
         try self.init(
             id: row["id"],
@@ -12,22 +12,22 @@ extension Recipe: FetchableRecord {
         )
     }
 
-    init(recipeDb: RecipeDB, ingredients: [(IngredientDB, FoodDB)]) throws {
+    init(mealDb: MealDB, ingredients: [(IngredientDB, FoodDB)]) throws {
         try self.init(
-            id: recipeDb.id,
-            name: recipeDb.name,
+            id: mealDb.id,
+            name: mealDb.name,
             ingredients: ingredients.map(Ingredient.init),
-            instructions: recipeDb.instructions
+            instructions: mealDb.instructions
         )
     }
 }
 
-extension RecipeDB {
-    init(recipe: Recipe) {
+extension MealDB {
+    init(meal: Meal) {
         self.init(
-            id: recipe.id,
-            name: recipe.name,
-            instructions: recipe.instructions
+            id: meal.id,
+            name: meal.name,
+            instructions: meal.instructions
         )
     }
 }

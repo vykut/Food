@@ -77,8 +77,8 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
         }
     }
 
-    migrator.registerMigration("createRecipe") { db in
-        try db.create(table: "recipeDB") { t in
+    migrator.registerMigration("createMeal") { db in
+        try db.create(table: "mealDB") { t in
             t.autoIncrementedPrimaryKey("id")
             t.column("name", .text).notNull().unique(onConflict: .replace)
             t.column("instructions")
@@ -86,7 +86,7 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
 
         try db.create(table: "ingredientDB") { t in
             t.primaryKey {
-                t.belongsTo("recipe", inTable: "recipeDB", onDelete: .cascade).notNull()
+                t.belongsTo("meal", inTable: "mealDB", onDelete: .cascade).notNull()
                 t.belongsTo("food", inTable: "foodDB", onDelete: .cascade).notNull()
             }
             t.column("quantity", .double).notNull()

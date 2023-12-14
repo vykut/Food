@@ -2,17 +2,17 @@ import SwiftUI
 import Shared
 import ComposableArchitecture
 
-public struct RecipeList: View {
-    @Bindable var store: StoreOf<RecipeListFeature>
+public struct MealList: View {
+    @Bindable var store: StoreOf<MealListFeature>
 
-    public init(store: StoreOf<RecipeListFeature>) {
+    public init(store: StoreOf<MealListFeature>) {
         self.store = store
     }
 
     public var body: some View {
         List {
-            if !store.recipes.isEmpty {
-                recipesSection
+            if !store.meals.isEmpty {
+                mealsSection
             }
         }
         .toolbar {
@@ -24,18 +24,18 @@ public struct RecipeList: View {
                 }
             }
         }
-        .navigationTitle("Recipes")
+        .navigationTitle("Meals")
         .task {
             await store.send(.onTask).finish()
         }
     }
 
-    private var recipesSection: some View {
-        Section("Recipes") {
-            ForEach(store.recipes, id: \.id) { recipe in
+    private var mealsSection: some View {
+        Section {
+            ForEach(store.meals, id: \.id) { meal in
                 VStack(alignment: .leading) {
-                    let nutritionalValues = recipe.nutritionalValues
-                    Text(recipe.name.capitalized)
+                    let nutritionalValues = meal.nutritionalValues
+                    Text(meal.name.capitalized)
                     Text(nutritionalValues.food.nutritionalSummary)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -49,11 +49,11 @@ public struct RecipeList: View {
 }
 
 #Preview {
-    RecipeList(
+    MealList(
         store: .init(
-            initialState: RecipeListFeature.State(),
+            initialState: MealListFeature.State(),
             reducer: {
-                RecipeListFeature()
+                MealListFeature()
             }
         )
     )
