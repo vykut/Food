@@ -1,5 +1,6 @@
 import SwiftUI
 import Shared
+import MealForm
 import ComposableArchitecture
 
 public struct MealList: View {
@@ -28,6 +29,15 @@ public struct MealList: View {
         .task {
             await store.send(.onTask).finish()
         }
+        .sheet(
+            item: $store.scope(state: \.mealForm, action: \.mealForm),
+            content: { store in
+                NavigationStack {
+                    MealForm(store: store)
+                }
+                .interactiveDismissDisabled()
+            }
+        )
     }
 
     private var mealsSection: some View {

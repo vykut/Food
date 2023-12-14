@@ -1,6 +1,7 @@
 import Foundation
 import Shared
 import Database
+import MealForm
 import ComposableArchitecture
 
 @Reducer
@@ -8,6 +9,7 @@ public struct MealListFeature {
     @ObservableState
     public struct State: Hashable {
         var meals: [Meal] = []
+        @Presents var mealForm: MealFormFeature.State?
 
         public init() { }
     }
@@ -18,6 +20,7 @@ public struct MealListFeature {
         case onTask
         case onMealsUpdate([Meal])
         case onDelete(IndexSet)
+        case mealForm(PresentationAction<MealFormFeature.Action>)
     }
 
     public init() { }
@@ -27,21 +30,23 @@ public struct MealListFeature {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-                    // FIXME: Remove this
                 case .plusButtonTapped:
-                    return .run { [databaseClient] send in
-                        _ = try await databaseClient.insert(
-                            meal: .init(
-                                name: Date().formatted(),
-                                ingredients: [
-                                    .init(food: .preview, quantity: .grams(100)),
-                                    .init(food: .preview, quantity: .grams(200)),
-                                    .init(food: .preview, quantity: .init(value: 15, unit: .pounds)),
-                                ],
-                                servingSize: .init(value: 80, unit: .grams),
-                                instructions: "empty"
-                            ))
-                    }
+                    state.mealForm = .init()
+                    return .none
+                    // FIXME: Remove this
+//                    return .run { [databaseClient] send in
+//                        _ = try await databaseClient.insert(
+//                            meal: .init(
+//                                name: Date().formatted(),
+//                                ingredients: [
+//                                    .init(food: .preview, quantity: .grams(100)),
+//                                    .init(food: .preview, quantity: .grams(200)),
+//                                    .init(food: .preview, quantity: .init(value: 15, unit: .pounds)),
+//                                ],
+//                                servingSize: .init(value: 80, unit: .grams),
+//                                instructions: "empty"
+//                            ))
+//                    }
                 case .onTask:
                     return .run { [databaseClient] send in
                         let stream = databaseClient.observeMeals()
@@ -62,7 +67,12 @@ public struct MealListFeature {
                             try await databaseClient.delete(meal: meal)
                         }
                     }
+                case .mealForm:
+                    return .none
             }
+        }
+        .ifLet(\.$mealForm, action: \.mealForm) {
+            MealFormFeature()
         }
     }
 }

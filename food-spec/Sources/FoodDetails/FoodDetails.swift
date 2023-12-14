@@ -13,6 +13,7 @@ public struct FoodDetails: View {
     public var body: some View {
         ScrollView {
             Section {
+                quantityPicker
                 energy
                 protein
                 carbohydrates
@@ -21,8 +22,6 @@ public struct FoodDetails: View {
                 potassium
                 sodium
                 energyBreakdown
-            } header: {
-                header
             }
             .padding(.horizontal)
         }
@@ -128,12 +127,11 @@ public struct FoodDetails: View {
         }
     }
 
-    var header: some View {
-        GroupBox {
-            QuantityPicker(
-                store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
-            )
-        }
+    var quantityPicker: some View {
+        QuantityPicker(
+            store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
+        )
+        .quantityPickerStyle(.dropdownGrouped)
     }
 }
 
