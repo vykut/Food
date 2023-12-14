@@ -9,14 +9,14 @@ struct RecipeDB: Hashable, Codable {
 }
 
 extension RecipeDB: FetchableRecord, MutablePersistableRecord {
-    static let foodQuantities = hasMany(FoodQuantityDB.self).forKey("foodQuantities")
-    static let foods = hasMany(Food.self, through: foodQuantities, using: FoodQuantityDB.food)
+    static let quantities = hasMany(FoodQuantityDB.self).forKey("quantities")
+    static let foods = hasMany(FoodDB.self, through: quantities, using: FoodQuantityDB.food).forKey("foods") // not checked if works
 
-    var foodQuantities: QueryInterfaceRequest<FoodQuantityDB> {
-        request(for: Self.foodQuantities)
+    var quantities: QueryInterfaceRequest<FoodQuantityDB> {
+        request(for: Self.quantities)
     }
 
-    var foods: QueryInterfaceRequest<Food> {
+    var foods: QueryInterfaceRequest<FoodDB> {
         request(for: Self.foods)
     }
 

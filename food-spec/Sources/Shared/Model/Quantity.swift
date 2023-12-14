@@ -4,7 +4,7 @@ public struct Quantity: Codable, Hashable, Sendable {
     public var value: Double
     public var unit: Unit
 
-    public init(value: Double, unit: Unit) {
+    public init(value: Double, unit: Unit = .baseUnit) {
         self.value = value
         self.unit = unit
     }
@@ -13,12 +13,19 @@ public struct Quantity: Codable, Hashable, Sendable {
         .init(value: value, unit: unit.unit)
     }
 
+    public func convertedToBaseUnit() -> Self {
+        converted(to: .baseUnit)
+    }
+
     public func converted(to otherUnit: Unit) -> Self {
-        .init(
+        guard unit != otherUnit else { return self }
+        return .init(
             value: measurement.converted(to: otherUnit.unit).value,
             unit: otherUnit
         )
     }
+
+    public static var baseUnit: Unit { .baseUnit }
 
     public enum Unit: String, Codable, Hashable, Sendable {
         case kilograms
@@ -40,6 +47,8 @@ public struct Quantity: Codable, Hashable, Sendable {
         case cups
         case teaspoons
         case tablespoons
+
+        public static var baseUnit: Unit { .grams }
 
         var unit: UnitMass {
             switch self {

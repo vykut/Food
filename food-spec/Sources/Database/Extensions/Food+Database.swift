@@ -2,35 +2,57 @@ import Foundation
 import Shared
 import GRDB
 
-extension Food: FetchableRecord, MutablePersistableRecord {
-    static let foodQuantities = hasMany(FoodQuantityDB.self).forKey("foodQuantities")
-    static let recipes = hasMany(RecipeDB.self, through: foodQuantities, using: FoodQuantityDB.recipe)
-
-    var foodQuantities: QueryInterfaceRequest<FoodQuantityDB> {
-        request(for: Self.foodQuantities)
+extension Food: FetchableRecord {
+    public init(row: Row) throws {
+        self.init(
+            id: row["id"],
+            name: row["name"],
+            energy: .init(value: row["energy"], unit: Energy.baseUnit),
+            fatTotal: .init(value: row["fatTotal"], unit: Quantity.baseUnit),
+            fatSaturated: .init(value: row["fatSaturated"], unit: Quantity.baseUnit),
+            protein: .init(value: row["protein"], unit: Quantity.baseUnit),
+            sodium: .init(value: row["sodium"], unit: Quantity.baseUnit),
+            potassium: .init(value: row["potassium"], unit: Quantity.baseUnit),
+            cholesterol: .init(value: row["cholesterol"], unit: Quantity.baseUnit),
+            carbohydrate: .init(value: row["carbohydrate"], unit: Quantity.baseUnit),
+            fiber: .init(value: row["fiber"], unit: Quantity.baseUnit),
+            sugar: .init(value: row["sugar"], unit: Quantity.baseUnit)
+        )
     }
 
-    var recipes: QueryInterfaceRequest<RecipeDB> {
-        request(for: Self.recipes)
-    }
-
-    public mutating func didInsert(_ inserted: InsertionSuccess) {
-        id = inserted.rowID
+    init(foodDb: FoodDB) {
+        self.init(
+            id: foodDb.id,
+            name: foodDb.name,
+            energy: .init(value: foodDb.energy),
+            fatTotal: .init(value: foodDb.fatTotal),
+            fatSaturated: .init(value: foodDb.fatSaturated),
+            protein: .init(value: foodDb.protein),
+            sodium: .init(value: foodDb.sodium),
+            potassium: .init(value: foodDb.potassium),
+            cholesterol: .init(value: foodDb.cholesterol),
+            carbohydrate: .init(value: foodDb.carbohydrate),
+            fiber: .init(value: foodDb.fiber),
+            sugar: .init(value: foodDb.sugar)
+        )
     }
 }
 
-extension Food {
-    public enum Columns {
-        public static let id = Column(Food.CodingKeys.id)
-        public static let name = Column(Food.CodingKeys.name)
-        public static let energy = Column(Food.CodingKeys.energy)
-        public static let fatTotal = Column(Food.CodingKeys.fatTotal)
-        public static let protein = Column(Food.CodingKeys.protein)
-        public static let sodium = Column(Food.CodingKeys.sodium)
-        public static let potassium = Column(Food.CodingKeys.potassium)
-        public static let cholesterol = Column(Food.CodingKeys.cholesterol)
-        public static let carbohydrate = Column(Food.CodingKeys.carbohydrate)
-        public static let fiber = Column(Food.CodingKeys.fiber)
-        public static let sugar = Column(Food.CodingKeys.sugar)
+extension FoodDB {
+    init(food: Food) {
+        self.init(
+            id: food.id,
+            name: food.name,
+            energy: food.energy.convertedToBaseUnit().value,
+            fatTotal: food.fatTotal.convertedToBaseUnit().value,
+            fatSaturated: food.fatSaturated.convertedToBaseUnit().value,
+            protein: food.protein.convertedToBaseUnit().value,
+            sodium: food.sodium.convertedToBaseUnit().value,
+            potassium: food.potassium.convertedToBaseUnit().value,
+            cholesterol: food.cholesterol.convertedToBaseUnit().value,
+            carbohydrate: food.carbohydrate.convertedToBaseUnit().value,
+            fiber: food.fiber.convertedToBaseUnit().value,
+            sugar: food.sugar.convertedToBaseUnit().value
+        )
     }
 }

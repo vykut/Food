@@ -3,7 +3,6 @@ import GRDB
 import Shared
 
 struct FoodQuantityDB: Hashable, Codable {
-    var id: Int64?
     var recipeId: Int64
     var foodId: Int64
     var quantity: Double
@@ -11,18 +10,14 @@ struct FoodQuantityDB: Hashable, Codable {
 }
 
 extension FoodQuantityDB: FetchableRecord, MutablePersistableRecord {
-    static let food = belongsTo(Food.self)
-    static let recipe = belongsTo(RecipeDB.self)
+    static let food = belongsTo(FoodDB.self).forKey("food")
+    static let recipe = belongsTo(RecipeDB.self).forKey("recipe")
 
-    var food: QueryInterfaceRequest<Food> {
+    var food: QueryInterfaceRequest<FoodDB> {
         request(for: Self.food)
     }
 
     var recipe: QueryInterfaceRequest<RecipeDB> {
         request(for: Self.recipe)
-    }
-
-    mutating func didInsert(_ inserted: InsertionSuccess) {
-        id = inserted.rowID
     }
 }

@@ -1,9 +1,9 @@
 import Foundation
 
-public struct Recipe: Hashable, Codable, Sendable {
+public struct Recipe: Hashable, Sendable {
     public var id: Int64?
     public var name: String
-    public var foodQuantities: [FoodQuantity]
+    public var quantities: [FoodQuantity]
     public var instructions: String
 
     public var nutritionalValues: FoodQuantity {
@@ -23,7 +23,7 @@ public struct Recipe: Hashable, Codable, Sendable {
             ),
             quantity: .zero
         )
-        for foodQuantity in foodQuantities {
+        for foodQuantity in quantities {
             baseQuantity.quantity += foodQuantity.quantity
             let food = foodQuantity.foodWithQuantity
             baseQuantity.food.energy += food.energy
@@ -40,10 +40,10 @@ public struct Recipe: Hashable, Codable, Sendable {
         return baseQuantity
     }
 
-    public init(id: Int64? = nil, name: String, foodQuantities: [FoodQuantity], instructions: String) {
+    public init(id: Int64? = nil, name: String, quantities: [FoodQuantity], instructions: String) {
         self.id = id
         self.name = name
-        self.foodQuantities = foodQuantities
+        self.quantities = quantities
         self.instructions = instructions
     }
 }

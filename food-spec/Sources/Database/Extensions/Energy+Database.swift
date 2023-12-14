@@ -3,15 +3,18 @@ import GRDB
 import Shared
 
 extension Energy.Unit: DatabaseValueConvertible {
-    public var databaseValue: DatabaseValue {
-        let integer = switch self {
-        case .kilojoules: 1
-        case .joules: 2
-        case .kilocalories: 3
-        case .calories: 4
-        case .kilowattHours: 5
+    var intValue: Int {
+        switch self {
+            case .kilojoules: 1
+            case .joules: 2
+            case .kilocalories: 3
+            case .calories: 4
+            case .kilowattHours: 5
         }
-        return integer.databaseValue
+    }
+
+    public var databaseValue: DatabaseValue {
+        intValue.databaseValue
     }
 
     public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Energy.Unit? {

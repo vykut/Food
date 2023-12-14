@@ -2,17 +2,6 @@ import Foundation
 import Shared
 import GRDB
 
-extension Quantity: DatabaseValueConvertible {
-    public var databaseValue: DatabaseValue {
-        converted(to: .grams).value.databaseValue
-    }
-
-    public static func fromDatabaseValue(_ dbValue: DatabaseValue) -> Quantity? {
-        guard let value = Double.fromDatabaseValue(dbValue) else { return nil }
-        return .init(value: value, unit: .grams)
-    }
-}
-
 extension Quantity.Unit: DatabaseValueConvertible {
     var intValue: Int {
         switch self {

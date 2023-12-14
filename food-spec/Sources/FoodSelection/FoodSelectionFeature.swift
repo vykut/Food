@@ -58,7 +58,7 @@ public struct FoodSelectionFeature {
             switch action {
                 case .onTask:
                     return .run { [databaseClient] send in
-                        let observation = databaseClient.observeFoods(sortedBy: Food.Columns.name, order: .forward)
+                        let observation = databaseClient.observeFoods(sortedBy: Column("name"), order: .forward)
                         for await foods in observation {
                             await send(.updateFoods(foods))
                         }

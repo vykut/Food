@@ -52,16 +52,16 @@ func createAppDatabase() -> some DatabaseWriter {
 fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
     var migrator = DatabaseMigrator()
 
-//#if DEBUG
-//    // Speed up development by nuking the database when migrations change
-//    // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/migrations>
-//    migrator.eraseDatabaseOnSchemaChange = true
-//#endif
+#if DEBUG
+    // Speed up development by nuking the database when migrations change
+    // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/migrations>
+    migrator.eraseDatabaseOnSchemaChange = true
+#endif
 
     migrator.registerMigration("createFood") { db in
         // Create a table
         // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/databaseschema>
-        try db.create(table: "food") { t in
+        try db.create(table: "foodDB") { t in
             t.autoIncrementedPrimaryKey("id")
             t.column("name", .text).notNull().unique(onConflict: .replace)
             t.column("energy", .double)
@@ -85,9 +85,10 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
         }
 
         try db.create(table: "foodQuantityDB") { t in
-            t.autoIncrementedPrimaryKey("id")
-            t.belongsTo("recipe", inTable: "recipeDB", onDelete: .cascade).notNull()
-            t.belongsTo("food", onDelete: .cascade).notNull()
+            t.primaryKey {
+                t.belongsTo("recipe", inTable: "recipeDB", onDelete: .cascade).notNull()
+                t.belongsTo("food", inTable: "foodDB", onDelete: .cascade).notNull()
+            }
             t.column("quantity", .double).notNull()
             t.column("unit", .integer).notNull()
         }

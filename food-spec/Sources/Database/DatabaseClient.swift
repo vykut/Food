@@ -28,16 +28,14 @@ extension DatabaseClient: DependencyKey {
     public static var liveValue: DatabaseClient = {
         let db = createAppDatabase()
         @Sendable func fetchFoods(db: Database, sortedBy column: Column, order: SortOrder) throws -> [Food] {
-            try Food
-                .order(order == .forward ? column : column.desc)
-                .fetchAll(db)
+            let request = FoodDB.order(order == .forward ? column : column.desc)
+            return try Food.fetchAll(db, request)
         }
         @Sendable func fetchRecipes(db: Database) throws -> [Recipe] {
             let request = RecipeDB
-                .including(all: RecipeDB.foodQuantities.including(required: FoodQuantityDB.food))
+                .including(all: RecipeDB.quantities.including(required: FoodQuantityDB.food))
                 .order(Column("name"))
-            let rows = try Row.fetchAll(db, request)
-            return try rows.map(Recipe.init)
+            return try Recipe.fetchAll(db, request)
         }
         return .init(
             observeFoods: { column, order in
@@ -53,21 +51,20 @@ extension DatabaseClient: DependencyKey {
             },
             getFood: { name in
                 return try await db.read {
-                    try Food
-                        .filter(Column("name") == name)
-                        .fetchOne($0)
+                    let request = FoodDB.filter(Column("name") == name)
+                    return try Food.fetchOne($0, request)
                 }
             },
             insertFood: { food in
                 try await db.write {
-                    var food = food
-                    try food.upsert($0)
-                    return food
+                    var foodDb = FoodDB(food: food)
+                    try foodDb.upsert($0)
+                    return Food(foodDb: foodDb)
                 }
             },
             deleteFood: { food in
                 try await db.write {
-                    _ = try food.delete($0)
+                    _ = try FoodDB.deleteOne($0, key: food.id)
                 }
             },
             observeRecipes: {
@@ -84,28 +81,25 @@ extension DatabaseClient: DependencyKey {
             insertRecipe: { recipe in
                 try await db.write {
                     do {
-                        var recipeDb = RecipeDB(id: recipe.id, name: recipe.name, instructions: recipe.instructions)
+                        var recipeDb = RecipeDB(recipe: recipe)
                         try recipeDb.upsert($0)
                         guard let recipeId = recipeDb.id else {
                             struct MissingID: Error { }
                             throw MissingID()
                         }
 
-                        var foodQuantities: [FoodQuantity] = []
-                        for var foodQuantity in recipe.foodQuantities where foodQuantity.food.id != nil {
-                            var fq = FoodQuantityDB(
-                                id: foodQuantity.id,
-                                recipeId: recipeId,
-                                foodId: foodQuantity.food.id!,
-                                quantity: foodQuantity.quantity.value,
-                                unit: foodQuantity.quantity.unit.intValue
-                            )
-                            try fq.upsert($0)
-                            foodQuantity.id = fq.id
-                            foodQuantities.append(foodQuantity)
+                        var foodQuantities: [(FoodQuantityDB, FoodDB)] = []
+                        for var foodQuantity in recipe.quantities {
+                            var foodDB = FoodDB(food: foodQuantity.food)
+                            try foodDB.upsert($0)
+                            foodQuantity.food = Food(foodDb: foodDB)
+
+                            var foodQuantityDB = try FoodQuantityDB(foodQuantity: foodQuantity, recipeId: recipeId)
+                            try foodQuantityDB.upsert($0)
+                            foodQuantities.append((foodQuantityDB, foodDB))
                         }
 
-                        return Recipe(id: recipeId, name: recipeDb.name, foodQuantities: foodQuantities, instructions: recipeDb.instructions)
+                        return try Recipe(recipeDb: recipeDb, quantities: foodQuantities)
                     } catch {
                         try $0.rollback()
                         throw error

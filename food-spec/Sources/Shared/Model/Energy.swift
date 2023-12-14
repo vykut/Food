@@ -4,7 +4,7 @@ public struct Energy: Codable, Hashable, Sendable {
     public var value: Double
     public var unit: Unit
 
-    public init(value: Double, unit: Unit) {
+    public init(value: Double, unit: Unit = .baseUnit) {
         self.value = value
         self.unit = unit
     }
@@ -13,12 +13,19 @@ public struct Energy: Codable, Hashable, Sendable {
         .init(value: value, unit: unit.unit)
     }
 
+    public func convertedToBaseUnit() -> Self {
+        converted(to: .baseUnit)
+    }
+
     public func converted(to otherUnit: Unit) -> Self {
-        .init(
+        guard unit != otherUnit else { return self }
+        return .init(
             value: measurement.converted(to: otherUnit.unit).value,
             unit: otherUnit
         )
     }
+
+    public static var baseUnit: Unit { .baseUnit }
 
     public enum Unit: Codable, Sendable {
         case kilojoules
@@ -26,6 +33,8 @@ public struct Energy: Codable, Hashable, Sendable {
         case kilocalories
         case calories
         case kilowattHours
+
+        public static var baseUnit: Unit { .kilocalories }
 
         var unit: UnitEnergy {
             switch self {

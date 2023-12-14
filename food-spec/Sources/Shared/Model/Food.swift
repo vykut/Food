@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Food: Codable, Hashable, Sendable {
+public struct Food: Hashable, Sendable {
     public var id: Int64?
     public var name: String
     public var energy: Energy
@@ -40,20 +40,5 @@ public struct Food: Codable, Hashable, Sendable {
         self.carbohydrate = carbohydrate
         self.fiber = fiber
         self.sugar = sugar
-    }
-
-    public enum CodingKeys: CodingKey {
-        case id
-        case name
-        case energy
-        case fatTotal
-        case fatSaturated
-        case protein
-        case sodium
-        case potassium
-        case cholesterol
-        case carbohydrate
-        case fiber
-        case sugar
     }
 }

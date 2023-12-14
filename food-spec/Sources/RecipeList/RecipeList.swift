@@ -2,16 +2,18 @@ import SwiftUI
 import Shared
 import ComposableArchitecture
 
-public struct Recipes: View {
-    @Bindable var store: StoreOf<RecipesFeature>
+public struct RecipeList: View {
+    @Bindable var store: StoreOf<RecipeListFeature>
 
-    public init(store: StoreOf<RecipesFeature>) {
+    public init(store: StoreOf<RecipeListFeature>) {
         self.store = store
     }
 
     public var body: some View {
         List {
-            recipesSection
+            if !store.recipes.isEmpty {
+                recipesSection
+            }
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -47,11 +49,11 @@ public struct Recipes: View {
 }
 
 #Preview {
-    Recipes(
+    RecipeList(
         store: .init(
-            initialState: RecipesFeature.State(),
+            initialState: RecipeListFeature.State(),
             reducer: {
-                RecipesFeature()
+                RecipeListFeature()
             }
         )
     )

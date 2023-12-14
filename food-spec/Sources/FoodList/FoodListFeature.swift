@@ -55,11 +55,11 @@ public struct FoodListFeature {
 
             var column: Column {
                 switch self {
-                    case .name: Food.Columns.name
-                    case .energy: Food.Columns.energy
-                    case .carbohydrates: Food.Columns.carbohydrate
-                    case .protein: Food.Columns.protein
-                    case .fat: Food.Columns.fatTotal
+                    case .name: Column("name")
+                    case .energy: Column("energy")
+                    case .carbohydrates: Column("carbohydrate")
+                    case .protein: Column("protein")
+                    case .fat: Column("fatTotal")
                 }
             }
         }

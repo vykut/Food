@@ -4,7 +4,7 @@ import Database
 import ComposableArchitecture
 
 @Reducer
-public struct RecipesFeature {
+public struct RecipeListFeature {
     @ObservableState
     public struct State: Hashable {
         var recipes: [Recipe] = []
@@ -33,10 +33,10 @@ public struct RecipesFeature {
                         _ = try await databaseClient.insert(
                             recipe: .init(
                                 name: Date().formatted(),
-                                foodQuantities: [
-                                    .init(food: .preview(id: 1), quantity: .grams(100)),
-                                    .init(food: .preview(id: 2), quantity: .grams(200)),
-                                    .init(food: .preview(id: 3), quantity: .init(value: 15, unit: .pounds)),
+                                quantities: [
+                                    .init(food: .preview, quantity: .grams(100)),
+                                    .init(food: .preview, quantity: .grams(200)),
+                                    .init(food: .preview, quantity: .init(value: 15, unit: .pounds)),
                                 ],
                                 instructions: "empty"
                             ))

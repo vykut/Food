@@ -1,6 +1,6 @@
 import Foundation
 
-public struct FoodQuantity: Hashable, Codable, Sendable {
+public struct FoodQuantity: Hashable, Sendable {
     public var id: Int64?
     public var food: Food
     public var quantity: Quantity
