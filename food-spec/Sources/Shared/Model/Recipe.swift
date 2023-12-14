@@ -3,11 +3,11 @@ import Foundation
 public struct Recipe: Hashable, Sendable {
     public var id: Int64?
     public var name: String
-    public var quantities: [FoodQuantity]
+    public var ingredients: [Ingredient]
     public var instructions: String
 
-    public var nutritionalValues: FoodQuantity {
-        var baseQuantity = FoodQuantity(
+    public var nutritionalValues: Ingredient {
+        var baseIngredient = Ingredient(
             food: .init(
                 name: name,
                 energy: .zero,
@@ -23,27 +23,27 @@ public struct Recipe: Hashable, Sendable {
             ),
             quantity: .zero
         )
-        for foodQuantity in quantities {
-            baseQuantity.quantity += foodQuantity.quantity
-            let food = foodQuantity.foodWithQuantity
-            baseQuantity.food.energy += food.energy
-            baseQuantity.food.fatTotal += food.fatTotal
-            baseQuantity.food.fatSaturated += food.fatSaturated
-            baseQuantity.food.protein += food.protein
-            baseQuantity.food.sodium += food.sodium
-            baseQuantity.food.potassium += food.potassium
-            baseQuantity.food.cholesterol += food.cholesterol
-            baseQuantity.food.carbohydrate += food.carbohydrate
-            baseQuantity.food.fiber += food.fiber
-            baseQuantity.food.sugar += food.sugar
+        for ingredient in ingredients {
+            baseIngredient.quantity += ingredient.quantity
+            let food = ingredient.foodWithQuantity
+            baseIngredient.food.energy += food.energy
+            baseIngredient.food.fatTotal += food.fatTotal
+            baseIngredient.food.fatSaturated += food.fatSaturated
+            baseIngredient.food.protein += food.protein
+            baseIngredient.food.sodium += food.sodium
+            baseIngredient.food.potassium += food.potassium
+            baseIngredient.food.cholesterol += food.cholesterol
+            baseIngredient.food.carbohydrate += food.carbohydrate
+            baseIngredient.food.fiber += food.fiber
+            baseIngredient.food.sugar += food.sugar
         }
-        return baseQuantity
+        return baseIngredient
     }
 
-    public init(id: Int64? = nil, name: String, quantities: [FoodQuantity], instructions: String) {
+    public init(id: Int64? = nil, name: String, ingredients: [Ingredient], instructions: String) {
         self.id = id
         self.name = name
-        self.quantities = quantities
+        self.ingredients = ingredients
         self.instructions = instructions
     }
 }

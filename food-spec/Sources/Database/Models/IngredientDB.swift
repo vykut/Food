@@ -2,14 +2,14 @@ import Foundation
 import GRDB
 import Shared
 
-struct FoodQuantityDB: Hashable, Codable {
+struct IngredientDB: Hashable, Codable {
     var recipeId: Int64
     var foodId: Int64
     var quantity: Double
     var unit: Int
 }
 
-extension FoodQuantityDB: FetchableRecord, MutablePersistableRecord {
+extension IngredientDB: FetchableRecord, MutablePersistableRecord {
     static let food = belongsTo(FoodDB.self).forKey("food")
     static let recipe = belongsTo(RecipeDB.self).forKey("recipe")
 

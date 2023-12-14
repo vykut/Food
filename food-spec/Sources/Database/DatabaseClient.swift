@@ -33,7 +33,7 @@ extension DatabaseClient: DependencyKey {
         }
         @Sendable func fetchRecipes(db: Database) throws -> [Recipe] {
             let request = RecipeDB
-                .including(all: RecipeDB.quantities.including(required: FoodQuantityDB.food))
+                .including(all: RecipeDB.ingredients.including(required: IngredientDB.food))
                 .order(Column("name"))
             return try Recipe.fetchAll(db, request)
         }
@@ -88,18 +88,18 @@ extension DatabaseClient: DependencyKey {
                             throw MissingID()
                         }
 
-                        var foodQuantities: [(FoodQuantityDB, FoodDB)] = []
-                        for var foodQuantity in recipe.quantities {
-                            var foodDB = FoodDB(food: foodQuantity.food)
+                        var ingredients: [(IngredientDB, FoodDB)] = []
+                        for var ingredient in recipe.ingredients {
+                            var foodDB = FoodDB(food: ingredient.food)
                             try foodDB.upsert($0)
-                            foodQuantity.food = Food(foodDb: foodDB)
+                            ingredient.food = Food(foodDb: foodDB)
 
-                            var foodQuantityDB = try FoodQuantityDB(foodQuantity: foodQuantity, recipeId: recipeId)
+                            var foodQuantityDB = try IngredientDB(ingredient: ingredient, recipeId: recipeId)
                             try foodQuantityDB.upsert($0)
-                            foodQuantities.append((foodQuantityDB, foodDB))
+                            ingredients.append((foodQuantityDB, foodDB))
                         }
 
-                        return try Recipe(recipeDb: recipeDb, quantities: foodQuantities)
+                        return try Recipe(recipeDb: recipeDb, ingredients: ingredients)
                     } catch {
                         try $0.rollback()
                         throw error

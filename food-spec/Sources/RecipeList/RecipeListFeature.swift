@@ -33,7 +33,7 @@ public struct RecipeListFeature {
                         _ = try await databaseClient.insert(
                             recipe: .init(
                                 name: Date().formatted(),
-                                quantities: [
+                                ingredients: [
                                     .init(food: .preview, quantity: .grams(100)),
                                     .init(food: .preview, quantity: .grams(200)),
                                     .init(food: .preview, quantity: .init(value: 15, unit: .pounds)),

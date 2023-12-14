@@ -84,7 +84,7 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
             t.column("instructions")
         }
 
-        try db.create(table: "foodQuantityDB") { t in
+        try db.create(table: "ingredientDB") { t in
             t.primaryKey {
                 t.belongsTo("recipe", inTable: "recipeDB", onDelete: .cascade).notNull()
                 t.belongsTo("food", inTable: "foodDB", onDelete: .cascade).notNull()

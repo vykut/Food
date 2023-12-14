@@ -7,16 +7,16 @@ extension Recipe: FetchableRecord {
         try self.init(
             id: row["id"],
             name: row["name"],
-            quantities: row.prefetchedRows["quantities"]?.map(FoodQuantity.init) ?? [],
+            ingredients: row.prefetchedRows["ingredients"]?.map(Ingredient.init) ?? [],
             instructions: row["instructions"]
         )
     }
 
-    init(recipeDb: RecipeDB, quantities: [(FoodQuantityDB, FoodDB)]) throws {
+    init(recipeDb: RecipeDB, ingredients: [(IngredientDB, FoodDB)]) throws {
         try self.init(
             id: recipeDb.id,
             name: recipeDb.name,
-            quantities: quantities.map(FoodQuantity.init),
+            ingredients: ingredients.map(Ingredient.init),
             instructions: recipeDb.instructions
         )
     }
