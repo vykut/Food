@@ -5,6 +5,9 @@ import Shared
 struct MealDB: Hashable, Codable {
     var id: Int64?
     var name: String
+    /// servingSize is stored in grams
+    var servingSize: Double
+    var servingSizeUnit: Int
     var instructions: String
 }
 

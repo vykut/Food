@@ -5,6 +5,7 @@ import Shared
 struct IngredientDB: Hashable, Codable {
     var mealId: Int64
     var foodId: Int64
+    /// quantity is stored in grams
     var quantity: Double
     var unit: Int
 }

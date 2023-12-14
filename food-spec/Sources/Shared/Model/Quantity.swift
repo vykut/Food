@@ -17,6 +17,10 @@ public struct Quantity: Codable, Hashable, Sendable {
         converted(to: .baseUnit)
     }
 
+    public mutating func convert(to otherUnit: Unit) {
+        self = converted(to: otherUnit)
+    }
+
     public func converted(to otherUnit: Unit) -> Self {
         guard unit != otherUnit else { return self }
         return .init(
@@ -77,7 +81,7 @@ public struct Quantity: Codable, Hashable, Sendable {
 }
 
 public extension Quantity {
-    static var zero: Self { .zero(unit: .grams) }
+    static var zero: Self { .zero(unit: baseUnit) }
 
     static func zero(unit: Unit) -> Self {
         .init(value: .zero, unit: unit)

@@ -99,7 +99,7 @@ extension DatabaseClient: DependencyKey {
                             ingredients.append((foodQuantityDB, foodDB))
                         }
 
-                        return try Meal(mealDb: mealDb, ingredients: ingredients)
+                        return Meal(mealDb: mealDb, ingredients: ingredients)
                     } catch {
                         try $0.rollback()
                         throw error
@@ -108,7 +108,7 @@ extension DatabaseClient: DependencyKey {
             },
             deleteMeal: { meal in
                 try await db.write {
-                    _ = try MealDB(id: meal.id, name: meal.name, instructions: meal.instructions).delete($0)
+                    _ = try MealDB.deleteOne($0, key: meal.id)
                 }
             }
         )

@@ -33,12 +33,14 @@ public struct MealList: View {
     private var mealsSection: some View {
         Section {
             ForEach(store.meals, id: \.id) { meal in
-                VStack(alignment: .leading) {
-                    let nutritionalValues = meal.nutritionalValues
+                VStack(alignment: .leading, spacing: 6) {
                     Text(meal.name.capitalized)
-                    Text(nutritionalValues.food.nutritionalSummary)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                    VStack(alignment: .leading) {
+                        Text("Per serving: \(meal.nutritionalValuesPerServingSize.food.nutritionalSummary)")
+                        Text("Per total: \(meal.nutritionalValues.food.nutritionalSummary)")
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
                 }
             }
             .onDelete { offsets in

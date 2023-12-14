@@ -3,34 +3,28 @@ import GRDB
 import Shared
 
 extension Ingredient: FetchableRecord {
-    public init(row: Row) throws {
-        guard let unit = Quantity.Unit.fromDatabaseValue(row["unit"]) else {
-            struct InvalidUnit: Error { }
-            throw InvalidUnit()
+    public init(row: Row) {
+        var quantity = Quantity(value: row["quantity"])
+        if let unit = Quantity.Unit.fromDatabaseValue(row["unit"]) {
+            quantity.convert(to: unit)
         }
 
         self.init(
             id: row["id"],
             food: row["food"],
-            quantity: .init(
-                value: row["quantity"],
-                unit: unit
-            )
+            quantity: quantity
         )
     }
 
-    init(ingredient: IngredientDB, foodDb: FoodDB) throws {
-        guard let unit = Quantity.Unit.fromDatabaseValue(ingredient.unit.databaseValue) else {
-            struct InvalidUnit: Error { }
-            throw InvalidUnit()
+    init(ingredient: IngredientDB, foodDb: FoodDB) {
+        var quantity = Quantity(value: ingredient.quantity)
+        if let unit = Quantity.Unit.fromDatabaseValue(ingredient.unit.databaseValue) {
+            quantity.convert(to: unit)
         }
 
         self.init(
             food: .init(foodDb: foodDb),
-            quantity: .init(
-                value: ingredient.quantity,
-                unit: unit
-            )
+            quantity: quantity
         )
     }
 }
@@ -44,7 +38,7 @@ extension IngredientDB {
         self.init(
             mealId: mealId,
             foodId: foodId,
-            quantity: ingredient.quantity.value,
+            quantity: ingredient.quantity.convertedToBaseUnit().value,
             unit: ingredient.quantity.unit.intValue
         )
     }

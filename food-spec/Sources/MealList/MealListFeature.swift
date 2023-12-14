@@ -38,6 +38,7 @@ public struct MealListFeature {
                                     .init(food: .preview, quantity: .grams(200)),
                                     .init(food: .preview, quantity: .init(value: 15, unit: .pounds)),
                                 ],
+                                servingSize: .init(value: 80, unit: .grams),
                                 instructions: "empty"
                             ))
                     }
