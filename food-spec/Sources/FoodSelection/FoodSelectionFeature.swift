@@ -40,7 +40,7 @@ public struct FoodSelectionFeature {
 
     @CasePathable
     public enum Action {
-        case onTask
+        case onFirstAppear
         case updateFoods([Food])
         case updateSelection(Set<Int64?>)
         case updateFilter(String)
@@ -56,7 +56,7 @@ public struct FoodSelectionFeature {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-                case .onTask:
+                case .onFirstAppear:
                     return .run { [databaseClient] send in
                         let observation = databaseClient.observeFoods(sortedBy: Column("name"), order: .forward)
                         for await foods in observation {

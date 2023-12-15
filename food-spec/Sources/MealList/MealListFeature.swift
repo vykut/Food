@@ -17,7 +17,7 @@ public struct MealListFeature {
     @CasePathable
     public enum Action {
         case plusButtonTapped
-        case onTask
+        case onFirstAppear
         case onMealsUpdate([Meal])
         case onDelete(IndexSet)
         case mealForm(PresentationAction<MealFormFeature.Action>)
@@ -30,24 +30,7 @@ public struct MealListFeature {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-                case .plusButtonTapped:
-                    state.mealForm = .init()
-                    return .none
-                    // FIXME: Remove this
-//                    return .run { [databaseClient] send in
-//                        _ = try await databaseClient.insert(
-//                            meal: .init(
-//                                name: Date().formatted(),
-//                                ingredients: [
-//                                    .init(food: .preview, quantity: .grams(100)),
-//                                    .init(food: .preview, quantity: .grams(200)),
-//                                    .init(food: .preview, quantity: .init(value: 15, unit: .pounds)),
-//                                ],
-//                                servingSize: .init(value: 80, unit: .grams),
-//                                instructions: "empty"
-//                            ))
-//                    }
-                case .onTask:
+                case .onFirstAppear:
                     return .run { [databaseClient] send in
                         let stream = databaseClient.observeMeals()
                         for await meals in stream {
@@ -60,6 +43,10 @@ public struct MealListFeature {
                     // handle empty meals
                     return .none
 
+                case .plusButtonTapped:
+                    state.mealForm = .init()
+                    return .none
+
                 case .onDelete(let indices):
                     return .run { [meals = state.meals, databaseClient] send in
                         let mealsToDelete = indices.map { meals[$0] }
@@ -67,6 +54,7 @@ public struct MealListFeature {
                             try await databaseClient.delete(meal: meal)
                         }
                     }
+
                 case .mealForm:
                     return .none
             }

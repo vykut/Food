@@ -15,3 +15,12 @@ public struct Ingredient: Hashable, Sendable {
         self.quantity = quantity
     }
 }
+
+public extension Ingredient {
+    static var preview: Self {
+        .init(
+            food: .preview,
+            quantity: .grams(100)
+        )
+    }
+}

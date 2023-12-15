@@ -5,6 +5,7 @@ import Shared
 public struct QuantityPicker: View {
     @Bindable var store: StoreOf<QuantityPickerFeature>
     @Environment(\.quantityPickerStyle) var quantityPickerStyle
+    @Environment(\.focusState) var focusState
 
     private let formatter: NumberFormatter = {
         let n = NumberFormatter()
@@ -63,6 +64,7 @@ public struct QuantityPicker: View {
                     TextField("Value", value: $store.quantity.value.sending(\.updateValue), formatter: formatter)
                         .textFieldStyle(.roundedBorder)
                         .keyboardType(.decimalPad)
+                        .focused(focusState, equals: "quantity")
                     Stepper("Value") {
                         store.send(.incrementButtonTapped)
                     } onDecrement: {

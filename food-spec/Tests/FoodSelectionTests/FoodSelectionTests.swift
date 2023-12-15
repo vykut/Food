@@ -84,7 +84,7 @@ final class FoodSelectionTests: XCTestCase {
                 }
             }
         )
-        await store.send(.onTask)
+        await store.send(.onFirstAppear)
         continuation.yield([eggplant, oliveOil, ribeye])
         await store.receive(\.updateFoods) {
             $0.foods = [eggplant, oliveOil, ribeye]

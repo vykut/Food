@@ -74,7 +74,7 @@ public struct FoodListFeature {
 
     @CasePathable
     public enum Action {
-        case onTask
+        case onFirstAppear
         case startObservingRecentFoods
         case onRecentFoodsChange([Food])
         case onUserPreferencesChange(UserPreferences)
@@ -115,7 +115,7 @@ public struct FoodListFeature {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-                case .onTask:
+                case .onFirstAppear:
                     return .run { send in
                         await send(.startObservingRecentFoods)
                     }.merge(with: .run { [userPreferencesClient] send in

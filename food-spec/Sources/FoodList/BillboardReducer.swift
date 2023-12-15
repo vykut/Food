@@ -11,7 +11,7 @@ struct BillboardReducer {
 
     func reduce(into state: inout FoodListFeature.State, action: FoodListFeature.Action) -> Effect<FoodListFeature.Action> {
         switch action {
-            case .onTask:
+            case .onFirstAppear:
                 return .run { [billboardClient] send in
                     do {
                         let stream = try await billboardClient.getRandomBanners()

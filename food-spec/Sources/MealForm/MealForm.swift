@@ -1,6 +1,7 @@
 import SwiftUI
 import Shared
 import QuantityPicker
+import AddIngredients
 import ComposableArchitecture
 
 public struct MealForm: View {
@@ -13,62 +14,94 @@ public struct MealForm: View {
 
     public var body: some View {
         Form {
-            Section("Name") {
-                TextField("Name", text: $store.meal.sending(\.updateMeal).name)
-                    .submitLabel(.done)
-                    .focused($focusedField, equals: "name")
-            }
-
-            Section("Ingredients") {
-                ForEach(store.meal.ingredients, id: \.food) { ingredient in
-                    VStack(alignment: .leading) {
-                        Text(ingredient.food.name)
-                        Text(ingredient.quantity.formatted(width: .wide))
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .onDelete { offsets in
-                    self.store.send(.onDeleteIngredients(offsets))
-                }
-            }
-
-            Section("Serving size") {
-                QuantityPicker(
-                    store: store.scope(state: \.quantity, action: \.quantityPicker)
-                )
-            }
-
-            Section("Notes / Instructions") {
-                TextEditor(
-                    text: $store.meal.sending(\.updateMeal).instructions
-                )
-                .focused($focusedField, equals: "instructions")
-                .frame(minHeight: 100)
-            }
+            nameSection
+            ingredientsSection
+            servingSizeSection
+            notesSection
         }
         .formStyle(.grouped)
         .scrollDismissesKeyboard(.immediately)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Cancel") {
-                    self.store.send(.cancelButtonTapped)
+        .environment(\.focusState, $focusedField)
+        .toolbar { toolbar }
+        .navigationTitle("New Meal")
+        .navigationDestination(
+            item: self.$store.scope(state: \.addIngredients, action: \.addIngredients),
+            destination: { store in
+                AddIngredients(store: store)
+            }
+        )
+    }
+
+    private var nameSection: some View {
+        Section("Name") {
+            TextField("Name", text: self.$store.meal.sending(\.updateMeal).name)
+                .submitLabel(.done)
+                .focused($focusedField, equals: "name")
+        }
+    }
+
+    private var ingredientsSection: some View {
+        Section("Ingredients") {
+            Button("Add ingredient") {
+                self.store.send(.addIngredientButtonTapped)
+                focusedField = nil
+            }
+            ForEach(self.store.shownIngredients, id: \.food) { ingredient in
+                VStack(alignment: .leading) {
+                    Text(ingredient.food.name)
+                    Text(ingredient.quantity.formatted(width: .wide))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Save") {
-                    self.store.send(.saveButtonTapped)
-                }
-                .disabled(self.store.isSaveButtonDisabled)
+            .onDelete { offsets in
+                self.store.send(.onDeleteIngredients(offsets))
             }
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button("Done") {
-                    self.focusedField = nil
+            if self.store.shouldShowShowAllIngredientsButton {
+                Button("Show all") {
+                    self.store.send(.showAllIngredientsButtonTapped)
                 }
             }
         }
-        .navigationTitle("New Meal")
+    }
+
+    private var servingSizeSection: some View {
+        Section("Serving size") {
+            QuantityPicker(
+                store: self.store.scope(state: \.quantity, action: \.quantityPicker)
+            )
+        }
+    }
+
+    private var notesSection: some View {
+        Section("Notes") {
+            TextEditor(
+                text: self.$store.meal.sending(\.updateMeal).instructions
+            )
+            .focused(self.$focusedField, equals: "notes")
+            .frame(minHeight: 100)
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Cancel") {
+                self.store.send(.cancelButtonTapped)
+            }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Save") {
+                self.store.send(.saveButtonTapped)
+            }
+            .disabled(self.store.isSaveButtonDisabled)
+        }
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer()
+            Button("Done") {
+                self.focusedField = nil
+            }
+        }
     }
 }
 

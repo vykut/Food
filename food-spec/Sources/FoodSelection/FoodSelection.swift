@@ -31,8 +31,8 @@ public struct FoodSelection: View {
                 FoodComparison(store: store)
             }
         )
-        .task {
-            await store.send(.onTask).finish()
+        .onFirstAppear {
+            store.send(.onFirstAppear)
         }
     }
 

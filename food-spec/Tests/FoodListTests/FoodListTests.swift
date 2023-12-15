@@ -67,7 +67,7 @@ final class FoodListTests: XCTestCase {
             return stream
         }
 
-        await store.send(.onTask)
+        await store.send(.onFirstAppear)
         await store.receive(\.startObservingRecentFoods)
         continuation.yield([])
         await store.receive(\.onRecentFoodsChange) {
@@ -118,7 +118,7 @@ final class FoodListTests: XCTestCase {
             return stream
         }
 
-        await store.send(.onTask)
+        await store.send(.onFirstAppear)
         await store.receive(\.startObservingRecentFoods)
         continuation.yield([food])
         await store.receive(\.onRecentFoodsChange) {
@@ -179,7 +179,7 @@ final class FoodListTests: XCTestCase {
             return stream
         }
 
-        await store.send(.onTask)
+        await store.send(.onFirstAppear)
         await store.receive(\.startObservingRecentFoods)
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = .preview
@@ -534,7 +534,7 @@ final class FoodListTests: XCTestCase {
                 $0.finish()
             }
         }
-        await store.send(.onTask)
+        await store.send(.onFirstAppear)
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = firstAd
         }

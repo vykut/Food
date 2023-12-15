@@ -26,8 +26,8 @@ public struct MealList: View {
             }
         }
         .navigationTitle("Meals")
-        .task {
-            await store.send(.onTask).finish()
+        .onFirstAppear {
+            store.send(.onFirstAppear)
         }
         .sheet(
             item: $store.scope(state: \.mealForm, action: \.mealForm),

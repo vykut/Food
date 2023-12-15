@@ -37,8 +37,8 @@ public struct FoodList: View {
             }
             .navigationTitle("Search")
         .alert($store.scope(state: \.alert, action: \.alert))
-        .task {
-            await self.store.send(.onTask).finish()
+        .onFirstAppear {
+            self.store.send(.onFirstAppear)
         }
         .onContinueUserActivity(CSSearchableItemActionType) { activity in
             store.send(.spotlight(.handleSelectedFood(activity)))
