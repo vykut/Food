@@ -23,12 +23,15 @@ public struct MealDetailsFeature {
     public enum Action {
         case editButtonTapped
         case nutritionalInfoPerServingSizeButtonTapped
+        case nutritionalInfoButtonTapped
         case ingredientComparisonButtonTapped
         case ingredientTapped(Ingredient)
         case mealForm(PresentationAction<MealFormFeature.Action>)
         case foodDetails(PresentationAction<FoodDetailsFeature.Action>)
         case foodComparison(PresentationAction<FoodComparisonFeature.Action>)
     }
+
+    private let calculator = NutritionalValuesCalculator()
 
     public init() { }
 
@@ -38,13 +41,23 @@ public struct MealDetailsFeature {
                 case .editButtonTapped:
                     state.mealForm = .init(meal: state.meal)
                     return .none
+
                 case .nutritionalInfoPerServingSizeButtonTapped:
-                    let nutritionalInfoPerServingSize = state.meal.nutritionalValuesPerServingSize
+                    let nutritionalInfoPerServingSize = self.calculator.nutritionalValuesPerServingSize(for: state.meal)
                     state.foodDetails = .init(
                         food: nutritionalInfoPerServingSize.food,
                         quantity: nutritionalInfoPerServingSize.quantity
                     )
                     return .none
+
+                case .nutritionalInfoButtonTapped:
+                    let nutritionalValues = self.calculator.nutritionalValues(for: state.meal)
+                    state.foodDetails = .init(
+                        food: nutritionalValues.food,
+                        quantity: nutritionalValues.quantity
+                    )
+                    return .none
+
                 case .ingredientComparisonButtonTapped:
                     let foods = state.meal.ingredients.map(\.foodWithQuantity)
                     state.foodComparison = .init(
@@ -61,10 +74,8 @@ public struct MealDetailsFeature {
                     )
                     return .none
 
-                case .mealForm(.dismiss):
-                    if let meal = state.mealForm?.meal {
-                        state.meal = meal
-                    }
+                case .mealForm(.presented(.delegate(.mealSaved(let meal)))):
+                    state.meal = meal
                     return .none
 
                 case .mealForm:

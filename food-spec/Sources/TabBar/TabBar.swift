@@ -22,7 +22,6 @@ public struct TabBar: View {
                 mealList
             }
         )
-        .tint(.primary)
     }
 
     @MainActor
@@ -32,7 +31,6 @@ public struct TabBar: View {
                 store: store.scope(state: \.foodList, action: \.foodList)
             )
         }
-        .tint(Color.blue)
         .tabItem {
             Label("Search", systemImage: "magnifyingglass")
         }
@@ -46,7 +44,6 @@ public struct TabBar: View {
                 store: store.scope(state: \.foodSelection, action: \.foodSelection)
             )
         }
-        .tint(Color.blue)
         .tabItem {
             Label("Food Comparison", systemImage: "shuffle")
         }
@@ -60,7 +57,6 @@ public struct TabBar: View {
                 store: store.scope(state: \.mealList, action: \.mealList)
             )
         }
-        .tint(Color.blue)
         .tabItem {
             Label("Meals", systemImage: "fork.knife")
         }

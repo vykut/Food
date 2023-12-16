@@ -67,7 +67,6 @@ public struct FoodList: View {
                     ContentUnavailableView.search(text: self.store.searchQuery)
                 }
             }
-            .foregroundStyle(.primary)
             .overlay {
                 if self.store.isSearching {
                     ProgressView()

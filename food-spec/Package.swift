@@ -43,7 +43,7 @@ let package = Package(
         .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),
         .feature(name: "MealList", dependencies: ["Database", "MealForm", "MealDetails"]),
-        .feature(name: "MealForm", dependencies: ["Database", "QuantityPicker", "AddIngredients"]),
+        .feature(name: "MealForm", dependencies: ["Database", "AddIngredients"]),
         .feature(name: "MealDetails", dependencies: ["FoodDetails", "FoodComparison", "MealForm"]),
         .feature(name: "AddIngredients", dependencies: ["Database", "IngredientPicker"]),
         .feature(name: "IngredientPicker", dependencies: ["QuantityPicker"]),

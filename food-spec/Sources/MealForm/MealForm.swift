@@ -42,21 +42,26 @@ public struct MealForm: View {
 
     private var ingredientsSection: some View {
         Section("Ingredients") {
-            Button("Add ingredient") {
-                self.store.send(.addIngredientButtonTapped)
+            Button("Add ingredients") {
+                self.store.send(.addIngredientsButtonTapped, animation: .default)
                 focusedField = nil
             }
-            ForEach(self.store.shownIngredients, id: \.food) { ingredient in
-                VStack(alignment: .leading) {
-                    Text(ingredient.food.name.capitalized)
-                    Text(ingredient.quantity.formatted(width: .wide))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+
+            ForEach(self.store.shownIngredients, id: \.food.id) { ingredient in
+                ListButton {
+                    self.store.send(.ingredientTapped(ingredient))
+                } label: {
+                    LabeledListRow(
+                        title: ingredient.food.name.capitalized,
+                        footnote: ingredient.quantity.formatted(width: .wide)
+                    )
                 }
             }
             .onDelete { offsets in
                 self.store.send(.onDeleteIngredients(offsets))
             }
+            .animation(.default, value: self.store.shownIngredients)
+
             if self.store.shouldShowShowAllIngredientsButton {
                 Button("Show all") {
                     self.store.send(.showAllIngredientsButtonTapped)
@@ -65,11 +70,21 @@ public struct MealForm: View {
         }
     }
 
+    private let formatter: NumberFormatter = {
+        let n = NumberFormatter()
+        n.numberStyle = .decimal
+        n.maximumFractionDigits = 1
+        n.maximumIntegerDigits = 2
+        return n
+    }()
+
     private var servingSizeSection: some View {
-        Section("Serving size") {
-            QuantityPicker(
-                store: self.store.scope(state: \.quantity, action: \.quantityPicker)
-            )
+        Section("Servings") {
+            Stepper(self.store.meal.servings.formatted(.number.precision(.fractionLength(0...1)))) {
+                self.store.send(.servingsIncrementButtonTapped)
+            } onDecrement: {
+                self.store.send(.servingsDecrementButtonTapped)
+            }
         }
     }
 
@@ -126,7 +141,7 @@ public struct MealForm: View {
                                 quantity: .grams(230)
                             ),
                         ],
-                        servingSize: .grams(250),
+                        servings: 3,
                         instructions: "instructions"
                     )
                 ),

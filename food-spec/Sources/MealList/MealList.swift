@@ -6,6 +6,7 @@ import ComposableArchitecture
 
 public struct MealList: View {
     @Bindable var store: StoreOf<MealListFeature>
+    let calculator = NutritionalValuesCalculator()
 
     public init(store: StoreOf<MealListFeature>) {
         self.store = store
@@ -15,9 +16,14 @@ public struct MealList: View {
         List {
             if !store.meals.isEmpty {
                 mealsSection
+            } else {
+                ContentUnavailableView(
+                    "Your meals will be shown here.",
+                    systemImage: "fork.knife",
+                    description: Text("You can add a meal by tapping the \"+\" icon.")
+                )
             }
         }
-        .foregroundStyle(.primary)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -54,9 +60,14 @@ public struct MealList: View {
                 ListButton {
                     self.store.send(.mealTapped(meal))
                 } label: {
+                    let nutritionalValuesPerServingSize = calculator.nutritionalValuesPerServingSize(for: meal)
+                    let footnotePerServingSize = "Per serving: \(nutritionalValuesPerServingSize.foodWithQuantity.nutritionalSummary)"
+                    let nutritionalValuesPerTotal = calculator.nutritionalValues(for: meal)
+                    let footnotePerTotal = nutritionalValuesPerTotal.food.nutritionalSummary
+                    let footnote = meal.servings != 1 ? footnotePerServingSize : footnotePerTotal
                     LabeledListRow(
                         title: meal.name.capitalized,
-                        footnote: "Per serving: \(meal.nutritionalValuesPerServingSize.food.nutritionalSummary)"
+                        footnote: footnote
                     )
                 }
             }

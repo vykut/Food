@@ -139,4 +139,19 @@ extension Energy {
             unit: lhs.unit
         )
     }
+
+    public static func *= (lhs: inout Self, rhs: Double) {
+        lhs = lhs * rhs
+    }
+
+    public static func / (lhs: Self, rhs: Double) -> Self {
+        .init(
+            value: lhs.value / rhs,
+            unit: lhs.unit
+        )
+    }
+
+    public static func /= (lhs: inout Self, rhs: Double) {
+        lhs = lhs / rhs
+    }
 }

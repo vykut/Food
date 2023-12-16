@@ -1,6 +1,8 @@
 import SwiftUI
 
 public struct ListButton<Content: View>: View {
+    @Environment(\.isEnabled) var isEnabled
+
     let action: () -> Void
     let label: () -> Content
 
@@ -24,6 +26,7 @@ public struct ListButton<Content: View>: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .foregroundStyle(isEnabled ? .primary : .secondary)
     }
 }
 

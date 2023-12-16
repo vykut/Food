@@ -1,7 +1,6 @@
 import Foundation
 import Shared
 import Database
-import QuantityPicker
 import AddIngredients
 import ComposableArchitecture
 
@@ -21,15 +20,6 @@ public struct MealFormFeature {
                 meal.ingredients
             } else {
                 Array(meal.ingredients[0...2])
-            }
-        }
-
-        var quantity: QuantityPickerFeature.State {
-            get {
-                .init(quantity: meal.servingSize)
-            }
-            set {
-                meal.servingSize = newValue.quantity
             }
         }
 
@@ -62,12 +52,20 @@ public struct MealFormFeature {
     public enum Action {
         case cancelButtonTapped
         case saveButtonTapped
-        case addIngredientButtonTapped
+        case addIngredientsButtonTapped
         case updateMeal(Meal)
-        case quantityPicker(QuantityPickerFeature.Action)
+        case servingsIncrementButtonTapped
+        case servingsDecrementButtonTapped
+        case ingredientTapped(Ingredient)
         case onDeleteIngredients(IndexSet)
         case showAllIngredientsButtonTapped
         case addIngredients(PresentationAction<AddIngredientsFeature.Action>)
+        case delegate(Delegate)
+
+        @CasePathable
+        public enum Delegate {
+            case mealSaved(Meal)
+        }
     }
 
     public init() { }
@@ -76,9 +74,6 @@ public struct MealFormFeature {
     @Dependency(\.databaseClient) private var databaseClient
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.quantity, action: \.quantityPicker) {
-            QuantityPickerFeature()
-        }
         Reduce { state, action in
             switch action {
                 case .cancelButtonTapped:
@@ -87,12 +82,17 @@ public struct MealFormFeature {
                     }
 
                 case .saveButtonTapped:
-                    return .run { [databaseClient, dismiss, meal = state.meal] _ in
+                    return .run { [databaseClient, dismiss, meal = state.meal] send in
                         try await databaseClient.insert(meal: meal)
+                        await send(.delegate(.mealSaved(meal)))
                         await dismiss()
                     }
 
-                case .addIngredientButtonTapped:
+                case .addIngredientsButtonTapped:
+                    state.addIngredients = .init(ingredients: state.meal.ingredients)
+                    return .none
+
+                case .ingredientTapped(let ingredient):
                     state.addIngredients = .init(ingredients: state.meal.ingredients)
                     return .none
 
@@ -100,7 +100,13 @@ public struct MealFormFeature {
                     state.meal = meal
                     return .none
 
-                case .quantityPicker:
+                case .servingsIncrementButtonTapped:
+                    state.meal.servings += 0.5
+                    return .none
+
+                case .servingsDecrementButtonTapped:
+                    guard state.meal.servings > 0.5 else { return .none }
+                    state.meal.servings -= 0.5
                     return .none
 
                 case .onDeleteIngredients(let indices):
@@ -111,13 +117,15 @@ public struct MealFormFeature {
                     state.showsAllIngredients = true
                     return .none
 
-
                 case .addIngredients(.dismiss):
                     guard let addIngredients = state.addIngredients else { return .none }
                     state.meal.ingredients = addIngredients.selectedIngredients
                     return .none
 
                 case .addIngredients:
+                    return .none
+
+                case .delegate:
                     return .none
             }
         }
@@ -132,7 +140,7 @@ fileprivate extension Meal {
         .init(
             name: "",
             ingredients: [],
-            servingSize: .grams(100),
+            servings: 1,
             instructions: ""
         )
     }

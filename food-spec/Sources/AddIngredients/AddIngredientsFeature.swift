@@ -21,6 +21,13 @@ public struct AddIngredientsFeature {
 
         public init(ingredients: [Ingredient] = []) {
             self.initialIngredients = ingredients
+            for ingredient in ingredients {
+                ingredientPickers.append(.init(
+                    food: ingredient.food,
+                    quantity: ingredient.quantity,
+                    isSelected: true
+                ))
+            }
         }
     }
 
@@ -57,11 +64,11 @@ public struct AddIngredientsFeature {
                             quantity: alreadySelectedIngredient?.quantity ?? .grams(100),
                             isSelected: alreadySelectedIngredient != nil
                         )
-                        state.ingredientPickers.append(ingredientPicker)
+                        state.ingredientPickers.updateOrAppend(ingredientPicker)
                     }
                     return .none
 
-                case .ingredientPickers(.element(id: let foodId, action: let action)):
+                case .ingredientPickers:
                     return .none
 
                 case .doneButtonTapped:
