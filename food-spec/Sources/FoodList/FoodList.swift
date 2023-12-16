@@ -67,7 +67,7 @@ public struct FoodList: View {
                     ContentUnavailableView.search(text: self.store.searchQuery)
                 }
             }
-            .listStyle(.sidebar)
+            .foregroundStyle(.primary)
             .overlay {
                 if self.store.isSearching {
                     ProgressView()
@@ -80,7 +80,7 @@ public struct FoodList: View {
     private var recentSearches: some View {
         Section {
             ForEach(self.store.recentFoods, id: \.id) { item in
-                Button {
+                ListButton {
                     self.store.send(.didSelectRecentFood(item))
                 } label: {
                     FoodListRow(food: item)
@@ -100,7 +100,7 @@ public struct FoodList: View {
     private var searchResultsList: some View {
         Section {
             ForEach(self.store.searchResults, id: \.self) { item in
-                Button {
+                ListButton {
                     self.store.send(.didSelectSearchResult(item))
                 } label: {
                     FoodListRow(food: item)

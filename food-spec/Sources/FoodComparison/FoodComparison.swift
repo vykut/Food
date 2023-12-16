@@ -16,10 +16,12 @@ public struct FoodComparison: View {
         Section {
             chart
         } header: {
-            QuantityPicker(
-                store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
-            )
-            .quantityPickerStyle(.dropdown)
+            if let store = self.store.scope(state: \.quantityPicker, action: \.quantityPicker) {
+                QuantityPicker(
+                    store: store
+                )
+                .quantityPickerStyle(.dropdown)
+            }
         }
         .padding([.horizontal, .bottom])
         .toolbar {

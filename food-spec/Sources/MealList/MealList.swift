@@ -1,6 +1,7 @@
 import SwiftUI
 import Shared
 import MealForm
+import MealDetails
 import ComposableArchitecture
 
 public struct MealList: View {
@@ -16,6 +17,7 @@ public struct MealList: View {
                 mealsSection
             }
         }
+        .foregroundStyle(.primary)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -29,6 +31,12 @@ public struct MealList: View {
         .onFirstAppear {
             store.send(.onFirstAppear)
         }
+        .navigationDestination(
+            item: self.$store.scope(state: \.mealDetails, action: \.mealDetails),
+            destination: { store in
+                MealDetails(store: store)
+            }
+        )
         .sheet(
             item: $store.scope(state: \.mealForm, action: \.mealForm),
             content: { store in
@@ -43,14 +51,13 @@ public struct MealList: View {
     private var mealsSection: some View {
         Section {
             ForEach(store.meals, id: \.id) { meal in
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(meal.name.capitalized)
-                    VStack(alignment: .leading) {
-                        Text("Per serving: \(meal.nutritionalValuesPerServingSize.food.nutritionalSummary)")
-                        Text("Per total: \(meal.nutritionalValues.food.nutritionalSummary)")
-                    }
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                ListButton {
+                    self.store.send(.mealTapped(meal))
+                } label: {
+                    LabeledListRow(
+                        title: meal.name.capitalized,
+                        footnote: "Per serving: \(meal.nutritionalValuesPerServingSize.food.nutritionalSummary)"
+                    )
                 }
             }
             .onDelete { offsets in

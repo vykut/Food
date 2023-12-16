@@ -81,8 +81,8 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
         try db.create(table: "mealDB") { t in
             t.autoIncrementedPrimaryKey("id")
             t.column("name", .text).notNull().unique(onConflict: .replace)
-            t.column("servingSize").notNull()
-            t.column("servingSizeUnit").notNull()
+            t.column("servingSize")
+            t.column("servingSizeUnit")
             t.column("instructions")
         }
 

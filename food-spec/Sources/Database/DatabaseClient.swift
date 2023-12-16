@@ -33,7 +33,13 @@ extension DatabaseClient: DependencyKey {
         }
         @Sendable func fetchMeals(db: Database) throws -> [Meal] {
             let request = MealDB
-                .including(all: MealDB.ingredients.including(required: IngredientDB.food))
+                .including(
+                    all: MealDB.ingredients
+                        .including(
+                            required: IngredientDB.food
+                                .order(Column("name"))
+                        )
+                )
                 .order(Column("name"))
             return try Meal.fetchAll(db, request)
         }

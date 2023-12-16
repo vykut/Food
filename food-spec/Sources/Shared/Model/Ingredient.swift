@@ -1,7 +1,6 @@
 import Foundation
 
 public struct Ingredient: Hashable, Sendable {
-    public var id: Int64?
     public var food: Food
     public var quantity: Quantity
 
@@ -9,8 +8,7 @@ public struct Ingredient: Hashable, Sendable {
         food.changingServingSize(to: quantity)
     }
 
-    public init(id: Int64? = nil, food: Food, quantity: Quantity) {
-        self.id = id
+    public init(food: Food, quantity: Quantity) {
         self.food = food
         self.quantity = quantity
     }

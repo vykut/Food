@@ -11,7 +11,7 @@ public struct FoodComparisonFeature {
         var comparison: Comparison
         var foodSortingStrategy: SortingStrategy = .value
         var foodSortingOrder: SortOrder = .forward
-        var quantityPicker: QuantityPickerFeature.State = .init()
+        var quantityPicker: QuantityPickerFeature.State?
 
         var availableSortingStrategies: [SortingStrategy] {
             if [Comparison.energy, .macronutrients].contains(comparison) {
@@ -22,15 +22,24 @@ public struct FoodComparisonFeature {
         }
 
         var comparedFoods: [Food] {
-            originalFoods
-                .map {
-                    $0.changingServingSize(to: quantityPicker.quantity)
-                }
-                .sorted(
-                    by: foodSortingStrategy,
-                    comparison: comparison,
-                    order: foodSortingOrder
-                )
+            if let quantity = quantityPicker?.quantity {
+                originalFoods
+                    .map {
+                        $0.changingServingSize(to: quantity)
+                    }
+                    .sorted(
+                        by: foodSortingStrategy,
+                        comparison: comparison,
+                        order: foodSortingOrder
+                    )
+            } else {
+                originalFoods
+                    .sorted(
+                        by: foodSortingStrategy,
+                        comparison: comparison,
+                        order: foodSortingOrder
+                    )
+            }
         }
 
         public enum SortingStrategy: String, Identifiable, Hashable, CaseIterable {
@@ -47,12 +56,16 @@ public struct FoodComparisonFeature {
             foods: [Food],
             comparison: Comparison,
             foodSortingStrategy: SortingStrategy = .value,
-            foodSortingOrder: SortOrder = .forward
+            foodSortingOrder: SortOrder = .forward,
+            canChangeQuantity: Bool = true
         ) {
             self.originalFoods = foods
             self.comparison = comparison
             self.foodSortingStrategy = foodSortingStrategy
             self.foodSortingOrder = foodSortingOrder
+            if canChangeQuantity {
+                quantityPicker = .init()
+            }
         }
     }
 
@@ -66,9 +79,6 @@ public struct FoodComparisonFeature {
     public init() { }
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.quantityPicker, action: \.quantityPicker) {
-            QuantityPickerFeature()
-        }
         Reduce { state, action in
             switch action {
                 case .updateSortingStrategy(let strategy):
@@ -93,6 +103,9 @@ public struct FoodComparisonFeature {
                 case .quantityPicker(let action):
                     return reduce(state: &state, action: action)
             }
+        }
+        .ifLet(\.quantityPicker, action: \.quantityPicker) {
+            QuantityPickerFeature()
         }
     }
 

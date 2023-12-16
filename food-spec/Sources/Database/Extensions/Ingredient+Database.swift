@@ -10,7 +10,6 @@ extension Ingredient: FetchableRecord {
         }
 
         self.init(
-            id: row["id"],
             food: row["food"],
             quantity: quantity
         )

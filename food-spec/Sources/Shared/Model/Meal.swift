@@ -7,6 +7,14 @@ public struct Meal: Hashable, Sendable {
     public var servingSize: Quantity
     public var instructions: String
 
+    public var numberOfServings: Double {
+        servingSize.convertedToBaseUnit().value / totalQuantity.value
+    }
+
+    public var totalQuantity: Quantity {
+        ingredients.reduce(.zero) { $0 + $1.quantity }
+    }
+
     public var nutritionalValues: Ingredient {
         var baseIngredient = Ingredient(
             food: .init(
@@ -77,6 +85,19 @@ public struct Meal: Hashable, Sendable {
         self.ingredients = ingredients
         self.servingSize = servingSize
         self.instructions = instructions
+    }
+}
+
+public extension Meal {
+    static var preview: Self {
+        .init(
+            name: "Preview",
+            ingredients: [
+                .preview
+            ],
+            servingSize: .grams(100),
+            instructions: "Some notes"
+        )
     }
 }
 

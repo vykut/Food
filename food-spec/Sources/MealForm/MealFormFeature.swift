@@ -9,8 +9,9 @@ import ComposableArchitecture
 public struct MealFormFeature {
     @ObservableState
     public struct State: Hashable {
-        var meal: Meal
+        public var meal: Meal
         var showsAllIngredients: Bool = false
+        var isEdit: Bool
         @Presents var addIngredients: AddIngredientsFeature.State?
 
         var shownIngredients: [Ingredient] {
@@ -48,10 +49,12 @@ public struct MealFormFeature {
 
         public init() {
             self.meal = .empty
+            self.isEdit = false
         }
 
         public init(meal: Meal) {
             self.meal = meal
+            self.isEdit = true
         }
     }
 

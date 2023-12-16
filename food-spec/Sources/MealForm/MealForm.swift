@@ -23,7 +23,7 @@ public struct MealForm: View {
         .scrollDismissesKeyboard(.immediately)
         .environment(\.focusState, $focusedField)
         .toolbar { toolbar }
-        .navigationTitle("New Meal")
+        .navigationTitle(self.store.isEdit ? "Edit Meal" : "New Meal")
         .navigationDestination(
             item: self.$store.scope(state: \.addIngredients, action: \.addIngredients),
             destination: { store in
@@ -48,7 +48,7 @@ public struct MealForm: View {
             }
             ForEach(self.store.shownIngredients, id: \.food) { ingredient in
                 VStack(alignment: .leading) {
-                    Text(ingredient.food.name)
+                    Text(ingredient.food.name.capitalized)
                     Text(ingredient.quantity.formatted(width: .wide))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
