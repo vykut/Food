@@ -63,7 +63,7 @@ final class FoodSelectionTests: XCTestCase {
         XCTAssertNoDifference(state.isSelectionDisabled(for: food), true)
     }
 
-    func testIntegrationWithFoodComparison() async throws {
+    func testFullFlow() async throws {
         var eggplant = Food.eggplant
         eggplant.id = 1
         var oliveOil = Food.oliveOil
@@ -84,7 +84,8 @@ final class FoodSelectionTests: XCTestCase {
                 }
             }
         )
-        await store.send(.onTask)
+        XCTAssertEqual(store.state.shouldShowCancelButton, false)
+        await store.send(.onFirstAppear)
         continuation.yield([eggplant, oliveOil, ribeye])
         await store.receive(\.updateFoods) {
             $0.foods = [eggplant, oliveOil, ribeye]
@@ -92,6 +93,7 @@ final class FoodSelectionTests: XCTestCase {
         await store.send(.updateSelection([1])) {
             $0.selectedFoodIds = [1]
         }
+        XCTAssertEqual(store.state.shouldShowCancelButton, true)
         await store.send(.updateFilter("e")) {
             $0.filterQuery = "e"
         }
@@ -119,9 +121,15 @@ final class FoodSelectionTests: XCTestCase {
                 foodSortingOrder: .forward
             )
         }
+        await store.send(.foodComparison(.dismiss)) {
+            $0.foodComparison = nil
+        }
         continuation.yield([eggplant, oliveOil, ribeye, .preview(id: 10)])
         await store.receive(\.updateFoods) {
             $0.foods = [eggplant, oliveOil, ribeye, .preview(id: 10)]
+        }
+        await store.send(.cancelButtonTapped) {
+            $0.selectedFoodIds = []
         }
         continuation.finish()
         await store.finish()

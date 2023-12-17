@@ -61,7 +61,7 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
     migrator.registerMigration("createFood") { db in
         // Create a table
         // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/databaseschema>
-        try db.create(table: "food") { t in
+        try db.create(table: "foodDB") { t in
             t.autoIncrementedPrimaryKey("id")
             t.column("name", .text).notNull().unique(onConflict: .replace)
             t.column("energy", .double)
@@ -76,6 +76,25 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
             t.column("sugar", .double)
         }
     }
+
+    migrator.registerMigration("createMeal") { db in
+        try db.create(table: "mealDB") { t in
+            t.autoIncrementedPrimaryKey("id")
+            t.column("name", .text).notNull().unique(onConflict: .replace)
+            t.column("servings", .double).notNull()
+            t.column("instructions")
+        }
+
+        try db.create(table: "ingredientDB") { t in
+            t.primaryKey {
+                t.belongsTo("meal", inTable: "mealDB", onDelete: .cascade).notNull()
+                t.belongsTo("food", inTable: "foodDB", onDelete: .cascade).notNull()
+            }
+            t.column("quantity", .double).notNull()
+            t.column("unit", .integer).notNull()
+        }
+    }
+
 
     // Migrations for future application versions will be inserted here:
     // migrator.registerMigration(...) { db in

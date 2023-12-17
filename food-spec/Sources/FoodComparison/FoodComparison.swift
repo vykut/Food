@@ -16,15 +16,18 @@ public struct FoodComparison: View {
         Section {
             chart
         } header: {
-            QuantityPicker(
-                store: store.scope(state: \.quantityPicker, action: \.quantityPicker)
-            )
+            if let store = self.store.scope(state: \.quantityPicker, action: \.quantityPicker) {
+                QuantityPicker(
+                    store: store
+                )
+                .quantityPickerStyle(.dropdown)
+            }
         }
         .padding([.horizontal, .bottom])
         .toolbar {
             toolbar
         }
-        .navigationTitle("\(store.comparison.rawValue.capitalized) comparison")
+        .navigationTitle(store.comparison.rawValue.capitalized)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarTitleMenu {
             comparisonMenu

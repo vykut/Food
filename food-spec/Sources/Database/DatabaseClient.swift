@@ -6,20 +6,42 @@ import DependenciesMacros
 
 @DependencyClient
 public struct DatabaseClient {
+    // MARK: Foods
     public var observeFoods: (_ sortedBy: Column, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
     public var getRecentFoods: (_ sortedBy: Column, _ order: SortOrder) async throws -> [Food]
     public var getFood: (_ name: String) async throws -> Food?
-    public var insert: (_ food: Food) async throws -> Food
-    public var delete: (_ food: Food) async throws -> Void
+    @DependencyEndpoint(method: "insert")
+    public var insertFood: (_ food: Food) async throws -> Food
+    @DependencyEndpoint(method: "delete")
+    public var deleteFood: (_ food: Food) async throws -> Void
+
+    // MARK: Meals
+    public var observeMeals: () -> AsyncStream<[Meal]> = { .finished }
+    public var getMeals: () async throws -> [Meal]
+    @DependencyEndpoint(method: "insert")
+    public var insertMeal: (_ meal: Meal) async throws -> Meal
+    @DependencyEndpoint(method: "delete")
+    public var deleteMeal: (_ meal: Meal) async throws -> Void
 }
 
 extension DatabaseClient: DependencyKey {
     public static var liveValue: DatabaseClient = {
         let db = createAppDatabase()
         @Sendable func fetchFoods(db: Database, sortedBy column: Column, order: SortOrder) throws -> [Food] {
-            try Food
-                .order(order == .forward ? column : column.desc)
-                .fetchAll(db)
+            let request = FoodDB.order(order == .forward ? column : column.desc)
+            return try Food.fetchAll(db, request)
+        }
+        @Sendable func fetchMeals(db: Database) throws -> [Meal] {
+            let request = MealDB
+                .including(
+                    all: MealDB.ingredients
+                        .including(
+                            required: IngredientDB.food
+                                .order(Column("name"))
+                        )
+                )
+                .order(Column("name"))
+            return try Meal.fetchAll(db, request)
         }
         return .init(
             observeFoods: { column, order in
@@ -35,19 +57,64 @@ extension DatabaseClient: DependencyKey {
             },
             getFood: { name in
                 return try await db.read {
-                    try Food
-                        .filter(Column("name") == name)
-                        .fetchOne($0)
+                    let request = FoodDB.filter(Column("name") == name)
+                    return try Food.fetchOne($0, request)
                 }
             },
-            insert: { food in
+            insertFood: { food in
                 try await db.write {
-                    try food.inserted($0)
+                    var foodDb = FoodDB(food: food)
+                    try foodDb.upsert($0)
+                    return Food(foodDb: foodDb)
                 }
             },
-            delete: { food in
+            deleteFood: { food in
                 try await db.write {
-                    _ = try food.delete($0)
+                    _ = try FoodDB.deleteOne($0, key: food.id)
+                }
+            },
+            observeMeals: {
+                let observation = ValueObservation.tracking {
+                    try fetchMeals(db: $0)
+                }
+                return AsyncStream(observation.values(in: db))
+            },
+            getMeals: {
+                try await db.read {
+                    try fetchMeals(db: $0)
+                }
+            },
+            insertMeal: { meal in
+                try await db.write {
+                    do {
+                        var mealDb = MealDB(meal: meal)
+                        try mealDb.upsert($0)
+                        guard let mealId = mealDb.id else {
+                            struct MissingID: Error { }
+                            throw MissingID()
+                        }
+
+                        var ingredients: [(IngredientDB, FoodDB)] = []
+                        for var ingredient in meal.ingredients {
+                            var foodDB = FoodDB(food: ingredient.food)
+                            try foodDB.upsert($0)
+                            ingredient.food = Food(foodDb: foodDB)
+
+                            var foodQuantityDB = try IngredientDB(ingredient: ingredient, mealId: mealId)
+                            try foodQuantityDB.upsert($0)
+                            ingredients.append((foodQuantityDB, foodDB))
+                        }
+
+                        return Meal(mealDb: mealDb, ingredients: ingredients)
+                    } catch {
+                        try $0.rollback()
+                        throw error
+                    }
+                }
+            },
+            deleteMeal: { meal in
+                try await db.write {
+                    _ = try MealDB.deleteOne($0, key: meal.id)
                 }
             }
         )

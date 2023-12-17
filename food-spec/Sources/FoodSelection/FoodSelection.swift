@@ -12,7 +12,9 @@ public struct FoodSelection: View {
 
     public var body: some View {
         List(selection: $store.selectedFoodIds.sending(\.updateSelection)) {
-            recentSearchesSection
+            if !self.store.filteredFoods.isEmpty {
+                recentSearchesSection
+            }
         }
         .listStyle(.sidebar)
         .searchable(
@@ -31,15 +33,15 @@ public struct FoodSelection: View {
                 FoodComparison(store: store)
             }
         )
-        .task {
-            await store.send(.onTask).finish()
+        .onFirstAppear {
+            store.send(.onFirstAppear)
         }
     }
 
     private var recentSearchesSection: some View {
         Section {
             ForEach(store.filteredFoods, id: \.id) { item in
-                Text(item.name.capitalized)
+                LabeledListRow(title: item.name.capitalized)
                     .selectionDisabled(store.state.isSelectionDisabled(for: item))
             }
         } header: {

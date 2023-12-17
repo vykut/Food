@@ -11,9 +11,13 @@ public struct FoodDetailsFeature {
         var food: Food
         var quantityPicker: QuantityPickerFeature.State = .init()
 
-        public init(food: Food) {
+        public init(food: Food, quantity: Quantity? = nil) {
             self.originalFood = food
             self.food = food
+            if let quantity {
+                self.quantityPicker = .init(quantity: quantity)
+                self.food = food.changingServingSize(to: quantity)
+            }
         }
     }
 

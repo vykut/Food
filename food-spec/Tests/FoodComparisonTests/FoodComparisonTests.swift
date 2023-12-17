@@ -167,7 +167,7 @@ final class FoodComparisonReducerTests: XCTestCase {
         }
         XCTAssertNoDifference(store.state.comparedFoods, [eggplant, ribeye, oliveOil])
         await store.send(.quantityPicker(.incrementButtonTapped)) {
-            $0.quantityPicker.quantity.value = 110
+            $0.quantityPicker?.quantity.value = 110
         }
     }
 
@@ -183,7 +183,7 @@ final class FoodComparisonReducerTests: XCTestCase {
         )
 
         await store.send(.quantityPicker(.updateValue(200))) {
-            $0.quantityPicker.quantity.value = 200
+            $0.quantityPicker?.quantity.value = 200
         }
         XCTAssertNoDifference(
             store.state.comparedFoods,
@@ -204,7 +204,7 @@ final class FoodComparisonReducerTests: XCTestCase {
             ]
         )
         await store.send(.quantityPicker(.updateUnit(.pounds))) {
-            $0.quantityPicker.quantity = .init(value: 1, unit: .pounds)
+            $0.quantityPicker?.quantity = .init(value: 1, unit: .pounds)
         }
     }
 }

@@ -31,21 +31,21 @@ public struct FoodList: View {
                 }
             }
             .navigationDestination(
-                item: $store.scope(state: \.foodDetails, action: \.foodDetails)
+                item: $store.scope(state: \.destination?.foodDetails, action: \.destination.foodDetails)
             ) { store in
                 FoodDetails(store: store)
             }
             .navigationTitle("Search")
-        .alert($store.scope(state: \.alert, action: \.alert))
-        .task {
-            await self.store.send(.onTask).finish()
-        }
-        .onContinueUserActivity(CSSearchableItemActionType) { activity in
-            store.send(.spotlight(.handleSelectedFood(activity)))
-        }
-        .onContinueUserActivity(CSQueryContinuationActionType) { activity in
-            store.send(.spotlight(.handleSearchInApp(activity)))
-        }
+            .alert($store.scope(state: \.destination?.alert, action: \.destination.alert))
+            .onFirstAppear {
+                self.store.send(.onFirstAppear)
+            }
+            .onContinueUserActivity(CSSearchableItemActionType) { activity in
+                store.send(.spotlight(.handleSelectedFood(activity)))
+            }
+            .onContinueUserActivity(CSQueryContinuationActionType) { activity in
+                store.send(.spotlight(.handleSearchInApp(activity)))
+            }
     }
 
     @MainActor @ViewBuilder
@@ -67,7 +67,6 @@ public struct FoodList: View {
                     ContentUnavailableView.search(text: self.store.searchQuery)
                 }
             }
-            .listStyle(.sidebar)
             .overlay {
                 if self.store.isSearching {
                     ProgressView()
@@ -80,13 +79,15 @@ public struct FoodList: View {
     private var recentSearches: some View {
         Section {
             ForEach(self.store.recentFoods, id: \.id) { item in
-                Button {
+                ListButton {
                     self.store.send(.didSelectRecentFood(item))
                 } label: {
                     FoodListRow(food: item)
                 }
             }
-            .onDelete(perform: deleteItems)
+            .onDelete { offsets in
+                self.store.send(.didDeleteRecentFoods(offsets))
+            }
         } header: {
             Text("Recent Searches")
         } footer: {
@@ -98,7 +99,7 @@ public struct FoodList: View {
     private var searchResultsList: some View {
         Section {
             ForEach(self.store.searchResults, id: \.self) { item in
-                Button {
+                ListButton {
                     self.store.send(.didSelectSearchResult(item))
                 } label: {
                     FoodListRow(food: item)
@@ -141,10 +142,6 @@ public struct FoodList: View {
         }
         .menuActionDismissBehavior(.disabled)
         .disabled(store.isSortMenuDisabled)
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        self.store.send(.didDeleteRecentFoods(offsets))
     }
 }
 

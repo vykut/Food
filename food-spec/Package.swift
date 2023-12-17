@@ -21,7 +21,13 @@ let package = Package(
         .library(name: "FoodDetails"),
         .library(name: "FoodSelection"),
         .library(name: "FoodComparison"),
+        .library(name: "MealList"),
+        .library(name: "MealForm"),
+        .library(name: "MealDetails"),
+        .library(name: "AddIngredients"),
+        .library(name: "IngredientPicker"),
         .library(name: "QuantityPicker"),
+        .library(name: "Shared"),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
@@ -31,11 +37,16 @@ let package = Package(
         .package(url: "https://github.com/groue/Semaphore", from: "0.0.8"),
     ],
     targets: [
-        .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection"]),
+        .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection", "MealList"]),
         .feature(name: "FoodList", dependencies: ["FoodDetails", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
         .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),
+        .feature(name: "MealList", dependencies: ["Database", "MealForm", "MealDetails"]),
+        .feature(name: "MealDetails", dependencies: ["FoodDetails", "FoodComparison", "MealForm"]),
+        .feature(name: "MealForm", dependencies: ["Database", "AddIngredients"]),
+        .feature(name: "AddIngredients", dependencies: ["Database", "IngredientPicker"]),
+        .feature(name: "IngredientPicker", dependencies: ["QuantityPicker"]),
         .feature(name: "QuantityPicker"),
 
         .client(name: "UserPreferences", dependencies: ["UserDefaults", asyncSemaphoreDependency]),
@@ -47,6 +58,10 @@ let package = Package(
 
         .target(
             name: "Shared",
+            dependencies: [
+                tcaDIDependency,
+                tcaDIMacroDependency
+            ],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
             ]
@@ -57,6 +72,11 @@ let package = Package(
         .featureTests(for: "FoodDetails"),
         .featureTests(for: "FoodSelection"),
         .featureTests(for: "FoodComparison"),
+        .featureTests(for: "MealList"),
+        .featureTests(for: "MealDetails"),
+        .featureTests(for: "MealForm"),
+        .featureTests(for: "AddIngredients"),
+        .featureTests(for: "IngredientPicker"),
         .featureTests(for: "QuantityPicker"),
 
         .testTarget(for: "API"),

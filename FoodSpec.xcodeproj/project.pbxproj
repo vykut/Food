@@ -43,8 +43,8 @@
 		EC43E54D2B175A140007CD40 = {
 			isa = PBXGroup;
 			children = (
-				EC47C9502B272C1E00D30381 /* food-spec */,
 				EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */,
+				EC47C9502B272C1E00D30381 /* food-spec */,
 				EC43E5582B175A140007CD40 /* FoodSpec */,
 				EC47C9512B27323B00D30381 /* Frameworks */,
 				EC43E5572B175A140007CD40 /* Products */,

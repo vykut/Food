@@ -71,6 +71,41 @@
         "identifier" : "TabBarTests",
         "name" : "TabBarTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "IngredientPickerTests",
+        "name" : "IngredientPickerTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "AddIngredientsTests",
+        "name" : "AddIngredientsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "MealFormTests",
+        "name" : "MealFormTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "MealDetailsTests",
+        "name" : "MealDetailsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "MealListTests",
+        "name" : "MealListTests"
+      }
     }
   ],
   "version" : 1

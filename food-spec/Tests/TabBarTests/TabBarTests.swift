@@ -18,5 +18,8 @@ final class TabBarTests: XCTestCase {
         await store.send(.updateTab(.foodList)) {
             $0.tab = .foodList
         }
+        await store.send(.updateTab(.mealList)) {
+            $0.tab = .mealList
+        }
     }
 }

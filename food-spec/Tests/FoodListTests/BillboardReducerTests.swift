@@ -20,7 +20,7 @@ final class BillboardReducerTests: XCTestCase {
                 $0.finish()
             }
         }
-        await store.send(.onTask)
+        await store.send(.onFirstAppear)
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = .preview
         }
@@ -45,7 +45,7 @@ final class BillboardReducerTests: XCTestCase {
                 $0.finish(throwing: Failure())
             }
         }
-        await store.send(.onTask)
+        await store.send(.onFirstAppear)
     }
 
     func testShowBanner() async throws {

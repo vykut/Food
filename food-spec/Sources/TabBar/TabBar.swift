@@ -1,6 +1,7 @@
 import SwiftUI
 import FoodList
 import FoodSelection
+import MealList
 import ComposableArchitecture
 
 public struct TabBar: View {
@@ -18,9 +19,9 @@ public struct TabBar: View {
             content: {
                 foodList
                 foodSelection
+                mealList
             }
         )
-        .tint(.primary)
     }
 
     @MainActor
@@ -30,7 +31,6 @@ public struct TabBar: View {
                 store: store.scope(state: \.foodList, action: \.foodList)
             )
         }
-        .tint(Color.blue)
         .tabItem {
             Label("Search", systemImage: "magnifyingglass")
         }
@@ -44,11 +44,23 @@ public struct TabBar: View {
                 store: store.scope(state: \.foodSelection, action: \.foodSelection)
             )
         }
-        .tint(Color.blue)
         .tabItem {
             Label("Food Comparison", systemImage: "shuffle")
         }
         .tag(Tab.foodSelection)
+    }
+
+    @MainActor
+    private var mealList: some View {
+        NavigationStack {
+            MealList(
+                store: store.scope(state: \.mealList, action: \.mealList)
+            )
+        }
+        .tabItem {
+            Label("Meals", systemImage: "fork.knife")
+        }
+        .tag(Tab.mealList)
     }
 }
 
