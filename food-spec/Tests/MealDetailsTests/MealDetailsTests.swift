@@ -41,7 +41,7 @@ final class MealDetailsTests: XCTestCase {
             }
         )
         await store.send(.editButtonTapped) {
-            $0.mealForm = .init(meal: .chimichurri)
+            $0.destination = .mealForm(.init(meal: .chimichurri))
         }
     }
 
@@ -56,10 +56,10 @@ final class MealDetailsTests: XCTestCase {
             }
         )
         await store.send(.nutritionalInfoPerServingButtonTapped) {
-            $0.foodDetails = .init(
+            $0.destination = .foodDetails(.init(
                 food: .zero,
                 quantity: .zero
-            )
+            ))
         }
     }
 
@@ -74,10 +74,10 @@ final class MealDetailsTests: XCTestCase {
             }
         )
         await store.send(.nutritionalInfoButtonTapped) {
-            $0.foodDetails = .init(
+            $0.destination = .foodDetails(.init(
                 food: .zero,
                 quantity: .zero
-            )
+            ))
         }
     }
 
@@ -92,7 +92,7 @@ final class MealDetailsTests: XCTestCase {
             }
         )
         await store.send(.ingredientComparisonButtonTapped) {
-            $0.foodComparison = .init(
+            $0.destination = .foodComparison(.init(
                 foods: [
                     .chiliPepper.changingServingSize(to: .init(value: 3, unit: .tablespoons)),
                     .coriander.changingServingSize(to: .grams(100)),
@@ -104,7 +104,7 @@ final class MealDetailsTests: XCTestCase {
                 ],
                 comparison: .energy,
                 canChangeQuantity: false
-            )
+            ))
         }
     }
 
@@ -123,10 +123,10 @@ final class MealDetailsTests: XCTestCase {
             quantity: .grams(100)
         )
         await store.send(.ingredientTapped(ingredient)) {
-            $0.foodDetails = .init(
+            $0.destination = .foodDetails(.init(
                 food: .coriander,
                 quantity: .grams(100)
-            )
+            ))
         }
     }
 
@@ -145,9 +145,9 @@ final class MealDetailsTests: XCTestCase {
         meal.servings = 2
         meal.ingredients = Array(meal.ingredients[1...3])
         await store.send(.editButtonTapped) {
-            $0.mealForm = .init(meal: .chimichurri)
+            $0.destination = .mealForm(.init(meal: .chimichurri))
         }
-        await store.send(.mealForm(.presented(.delegate(.mealSaved(meal))))) {
+        await store.send(.destination(.presented(.mealForm(.delegate(.mealSaved(meal)))))) {
             $0.meal = meal
             $0.nutritionalValuesPerTotal = .zero
             $0.nutritionalValuesPerServing = .zero
@@ -165,16 +165,16 @@ final class MealDetailsTests: XCTestCase {
             }
         )
         await store.send(.nutritionalInfoButtonTapped) {
-            $0.foodDetails = .init(
+            $0.destination = .foodDetails(.init(
                 food: .zero,
                 quantity: .zero
-            )
+            ))
         }
-        await store.send(.foodDetails(.dismiss)) {
-            $0.foodDetails = nil
+        await store.send(.destination(.dismiss)) {
+            $0.destination = nil
         }
         await store.send(.editButtonTapped) {
-            $0.mealForm = .init(meal: .chimichurri)
+            $0.destination = .mealForm(.init(meal: .chimichurri))
         }
         var meal = Meal.chimichurri
         meal.name = "something else"
@@ -186,36 +186,36 @@ final class MealDetailsTests: XCTestCase {
                     quantity: .grams(100)
                 )
         }
-        await store.send(.mealForm(.presented(.delegate(.mealSaved(meal))))) {
+        await store.send(.destination(.presented(.mealForm(.delegate(.mealSaved(meal)))))) {
             $0.meal = meal
             $0.nutritionalValuesPerServing = .init(
                 food: .coriander,
                 quantity: .grams(100)
             )
         }
-        await store.send(.mealForm(.dismiss)) {
-            $0.mealForm = nil
+        await store.send(.destination(.dismiss)) {
+            $0.destination = nil
         }
         await store.send(.nutritionalInfoPerServingButtonTapped) {
-            $0.foodDetails = .init(
+            $0.destination = .foodDetails(.init(
                 food: .coriander,
                 quantity: .grams(100)
-            )
+            ))
         }
-        await store.send(.foodDetails(.dismiss)) {
-            $0.foodDetails = nil
+        await store.send(.destination(.dismiss)) {
+            $0.destination = nil
         }
         await store.send(.ingredientTapped(.init(food: .chiliPepper, quantity: .grams(30)))) {
-            $0.foodDetails = .init(
+            $0.destination = .foodDetails(.init(
                 food: .chiliPepper,
                 quantity: .grams(30)
-            )
+            ))
         }
-        await store.send(.foodDetails(.dismiss)) {
-            $0.foodDetails = nil
+        await store.send(.destination(.dismiss)) {
+            $0.destination = nil
         }
         await store.send(.ingredientComparisonButtonTapped) {
-            $0.foodComparison = .init(
+            $0.destination = .foodComparison(.init(
                 foods: [
                     .coriander.changingServingSize(to: .grams(100)),
                     .garlic.changingServingSize(to: .init(value: 0.25, unit: .cups)),
@@ -223,10 +223,10 @@ final class MealDetailsTests: XCTestCase {
                 ],
                 comparison: .energy,
                 canChangeQuantity: false
-            )
+            ))
         }
-        await store.send(.foodComparison(.dismiss)) {
-            $0.foodComparison = nil
+        await store.send(.destination(.dismiss)) {
+            $0.destination = nil
         }
     }
 }

@@ -15,8 +15,7 @@ final class MealListTests: XCTestCase {
         )
         store.assert {
             $0.mealsWithNutritionalValues = []
-            $0.mealDetails = nil
-            $0.mealForm = nil
+            $0.destination = nil
         }
         XCTAssertEqual(store.state.showsAddMealPrompt, true)
     }
@@ -60,7 +59,7 @@ final class MealListTests: XCTestCase {
             }
         )
         await store.send(.plusButtonTapped) {
-            $0.mealForm = .init()
+            $0.destination = .mealForm(.init())
         }
     }
 
@@ -72,7 +71,7 @@ final class MealListTests: XCTestCase {
             }
         )
         await store.send(.mealTapped(.chimichurri)) {
-            $0.mealDetails = .init(meal: .chimichurri)
+            $0.destination = .mealDetails(.init(meal: .chimichurri))
         }
     }
 
@@ -130,10 +129,10 @@ final class MealListTests: XCTestCase {
         await store.receive(\.onMealsUpdate)
         XCTAssertEqual(store.state.showsAddMealPrompt, true)
         await store.send(.plusButtonTapped) {
-            $0.mealForm = .init()
+            $0.destination = .mealForm(.init())
         }
-        await store.send(.mealForm(.dismiss)) {
-            $0.mealForm = nil
+        await store.send(.destination(.dismiss)) {
+            $0.destination = nil
         }
         continuation.yield([.chimichurri])
         await store.receive(\.onMealsUpdate) {
@@ -143,10 +142,10 @@ final class MealListTests: XCTestCase {
         }
         XCTAssertEqual(store.state.showsAddMealPrompt, false)
         await store.send(.mealTapped(.chimichurri)) {
-            $0.mealDetails = .init(meal: .chimichurri)
+            $0.destination = .mealDetails(.init(meal: .chimichurri))
         }
-        await store.send(.mealDetails(.dismiss)) {
-            $0.mealDetails = nil
+        await store.send(.destination(.dismiss)) {
+            $0.destination = nil
         }
         await store.send(.onDelete(.init(integer: 0)))
         continuation.yield([])

@@ -27,19 +27,19 @@ public struct MealDetails: View {
         }
         .navigationTitle(self.store.meal.name.capitalized)
         .navigationDestination(
-            item: self.$store.scope(state: \.foodDetails, action: \.foodDetails),
+            item: self.$store.scope(state: \.destination?.foodDetails, action: \.destination.foodDetails),
             destination: { store in
                 FoodDetails(store: store)
             }
         )
         .navigationDestination(
-            item: self.$store.scope(state: \.foodComparison, action: \.foodComparison),
+            item: self.$store.scope(state: \.destination?.foodComparison, action: \.destination.foodComparison),
             destination: { store in
                 FoodComparison(store: store)
             }
         )
         .sheet(
-            item: self.$store.scope(state: \.mealForm, action: \.mealForm),
+            item: self.$store.scope(state: \.destination?.mealForm, action: \.destination.mealForm),
             content: { store in
                 NavigationStack {
                     MealForm(store: store)
@@ -57,7 +57,7 @@ public struct MealDetails: View {
             LabeledContent("Fat", value: nutritionFacts.fatTotal.formatted(width: .wide))
             LabeledContent("Servings", value: self.store.meal.servings, format: .number)
 
-            ListButton("Nutritional values per serving size") {
+            ListButton("Nutritional values per serving") {
                 self.store.send(.nutritionalInfoPerServingButtonTapped)
             }
             .disabled(self.store.meal.servings == 1)

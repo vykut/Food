@@ -10,8 +10,7 @@ public struct MealListFeature {
     @ObservableState
     public struct State: Hashable {
         var mealsWithNutritionalValues: [MealWithNutritionalValues] = []
-        @Presents var mealDetails: MealDetailsFeature.State?
-        @Presents var mealForm: MealFormFeature.State?
+        @Presents var destination: Destination.State?
 
         var showsAddMealPrompt: Bool {
             mealsWithNutritionalValues.isEmpty
@@ -33,8 +32,7 @@ public struct MealListFeature {
         case onMealsUpdate([Meal])
         case mealTapped(Meal)
         case onDelete(IndexSet)
-        case mealDetails(PresentationAction<MealDetailsFeature.Action>)
-        case mealForm(PresentationAction<MealFormFeature.Action>)
+        case destination(PresentationAction<Destination.Action>)
     }
 
     public init() { }
@@ -64,11 +62,11 @@ public struct MealListFeature {
                     return .none
 
                 case .plusButtonTapped:
-                    state.mealForm = .init()
+                    state.destination = .mealForm(.init())
                     return .none
 
                 case .mealTapped(let meal):
-                    state.mealDetails = .init(meal: meal)
+                    state.destination = .mealDetails(.init(meal: meal))
                     return .none
 
                 case .onDelete(let indices):
@@ -79,18 +77,36 @@ public struct MealListFeature {
                         }
                     }
 
-                case .mealDetails:
-                    return .none
-
-                case .mealForm:
+                case .destination:
                     return .none
             }
         }
-        .ifLet(\.$mealDetails, action: \.mealDetails) {
-            MealDetailsFeature()
+        .ifLet(\.$destination, action: \.destination) {
+            Destination()
         }
-        .ifLet(\.$mealForm, action: \.mealForm) {
-            MealFormFeature()
+    }
+
+    @Reducer
+    public struct Destination {
+        @ObservableState
+        public enum State: Hashable {
+            case mealDetails(MealDetailsFeature.State)
+            case mealForm(MealFormFeature.State)
+        }
+
+        @CasePathable
+        public enum Action {
+            case mealDetails(MealDetailsFeature.Action)
+            case mealForm(MealFormFeature.Action)
+        }
+
+        public var body: some ReducerOf<Self> {
+            Scope(state: \.mealDetails, action: \.mealDetails) {
+                MealDetailsFeature()
+            }
+            Scope(state: \.mealForm, action: \.mealForm) {
+                MealFormFeature()
+            }
         }
     }
 }

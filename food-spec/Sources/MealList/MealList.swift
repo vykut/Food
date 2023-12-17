@@ -14,13 +14,13 @@ public struct MealList: View {
     public var body: some View {
         List {
             if store.showsAddMealPrompt {
-                mealsSection
-            } else {
                 ContentUnavailableView(
                     "Your meals will be shown here.",
                     systemImage: "fork.knife",
                     description: Text("You can add a meal by tapping the \"+\" icon.")
                 )
+            } else {
+                mealsSection
             }
         }
         .toolbar {
@@ -37,13 +37,19 @@ public struct MealList: View {
             store.send(.onFirstAppear)
         }
         .navigationDestination(
-            item: self.$store.scope(state: \.mealDetails, action: \.mealDetails),
+            item: self.$store.scope(
+                state: \.destination?.mealDetails,
+                action: \.destination.mealDetails
+            ),
             destination: { store in
                 MealDetails(store: store)
             }
         )
         .sheet(
-            item: $store.scope(state: \.mealForm, action: \.mealForm),
+            item: $store.scope(
+                state: \.destination?.mealForm,
+                action: \.destination.mealForm
+            ),
             content: { store in
                 NavigationStack {
                     MealForm(store: store)

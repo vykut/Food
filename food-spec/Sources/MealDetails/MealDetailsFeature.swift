@@ -12,9 +12,7 @@ public struct MealDetailsFeature {
         var meal: Meal
         var nutritionalValuesPerTotal: Ingredient
         var nutritionalValuesPerServing: Ingredient
-        @Presents var mealForm: MealFormFeature.State?
-        @Presents var foodDetails: FoodDetailsFeature.State?
-        @Presents var foodComparison: FoodComparisonFeature.State?
+        @Presents var destination: Destination.State?
 
         public init(meal: Meal) {
             @Dependency(\.nutritionalValuesCalculator) var calculator
@@ -31,9 +29,7 @@ public struct MealDetailsFeature {
         case nutritionalInfoButtonTapped
         case ingredientComparisonButtonTapped
         case ingredientTapped(Ingredient)
-        case mealForm(PresentationAction<MealFormFeature.Action>)
-        case foodDetails(PresentationAction<FoodDetailsFeature.Action>)
-        case foodComparison(PresentationAction<FoodComparisonFeature.Action>)
+        case destination(PresentationAction<Destination.Action>)
     }
 
     public init() { }
@@ -44,50 +40,44 @@ public struct MealDetailsFeature {
         Reduce { state, action in
             switch action {
                 case .editButtonTapped:
-                    state.mealForm = .init(meal: state.meal)
+                    state.destination = .mealForm(.init(meal: state.meal))
                     return .none
 
                 case .nutritionalInfoPerServingButtonTapped:
-                    state.foodDetails = .init(
+                    state.destination = .foodDetails(.init(
                         food: state.nutritionalValuesPerServing.food,
                         quantity: state.nutritionalValuesPerServing.quantity
-                    )
+                    ))
                     return .none
 
                 case .nutritionalInfoButtonTapped:
-                    state.foodDetails = .init(
+                    state.destination = .foodDetails(.init(
                         food: state.nutritionalValuesPerTotal.food,
                         quantity: state.nutritionalValuesPerTotal.quantity
-                    )
+                    ))
                     return .none
 
                 case .ingredientComparisonButtonTapped:
                     let foods = state.meal.ingredients.map(\.foodWithQuantity)
-                    state.foodComparison = .init(
+                    state.destination = .foodComparison(.init(
                         foods: foods,
                         comparison: .energy,
                         canChangeQuantity: false
-                    )
+                    ))
                     return .none
 
                 case .ingredientTapped(let ingredient):
-                    state.foodDetails = .init(
+                    state.destination = .foodDetails(.init(
                         food: ingredient.food,
                         quantity: ingredient.quantity
-                    )
+                    ))
                     return .none
 
-                case .mealForm(.presented(.delegate(.mealSaved(let meal)))):
+                case .destination(.presented(.mealForm(.delegate(.mealSaved(let meal))))):
                     state.meal = meal
                     return .none
 
-                case .mealForm:
-                    return .none
-
-                case .foodDetails:
-                    return .none
-
-                case .foodComparison:
+                case .destination:
                     return .none
             }
         }
@@ -98,14 +88,37 @@ public struct MealDetailsFeature {
                 return .none
             }
         }
-        .ifLet(\.$mealForm, action: \.mealForm) {
-            MealFormFeature()
+        .ifLet(\.$destination, action: \.destination) {
+            Destination()
         }
-        .ifLet(\.$foodDetails, action: \.foodDetails) {
-            FoodDetailsFeature()
+    }
+
+    @Reducer
+    public struct Destination {
+        @ObservableState
+        public enum State: Hashable {
+            case mealForm(MealFormFeature.State)
+            case foodDetails(FoodDetailsFeature.State)
+            case foodComparison(FoodComparisonFeature.State)
         }
-        .ifLet(\.$foodComparison, action: \.foodComparison) {
-            FoodComparisonFeature()
+
+        @CasePathable
+        public enum Action {
+            case mealForm(MealFormFeature.Action)
+            case foodDetails(FoodDetailsFeature.Action)
+            case foodComparison(FoodComparisonFeature.Action)
+        }
+
+        public var body: some ReducerOf<Self> {
+            Scope(state: \.mealForm, action: \.mealForm) {
+                MealFormFeature()
+            }
+            Scope(state: \.foodDetails, action: \.foodDetails) {
+                FoodDetailsFeature()
+            }
+            Scope(state: \.foodComparison, action: \.foodComparison) {
+                FoodComparisonFeature()
+            }
         }
     }
 }
