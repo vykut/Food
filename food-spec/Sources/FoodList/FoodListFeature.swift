@@ -47,7 +47,7 @@ public struct FoodListFeature {
         public enum SortingStrategy: String, Codable, Identifiable, Hashable, CaseIterable, Sendable {
             case name
             case energy
-            case carbohydrates
+            case carbohydrate
             case protein
             case fat
 
@@ -57,7 +57,7 @@ public struct FoodListFeature {
                 switch self {
                     case .name: Column("name")
                     case .energy: Column("energy")
-                    case .carbohydrates: Column("carbohydrate")
+                    case .carbohydrate: Column("carbohydrate")
                     case .protein: Column("protein")
                     case .fat: Column("fatTotal")
                 }

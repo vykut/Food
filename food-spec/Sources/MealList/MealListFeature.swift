@@ -13,6 +13,10 @@ public struct MealListFeature {
         @Presents var mealDetails: MealDetailsFeature.State?
         @Presents var mealForm: MealFormFeature.State?
 
+        var showsAddMealPrompt: Bool {
+            mealsWithNutritionalValues.isEmpty
+        }
+
         struct MealWithNutritionalValues: Hashable {
             let meal: Meal
             let perTotal: Ingredient
@@ -24,8 +28,8 @@ public struct MealListFeature {
 
     @CasePathable
     public enum Action {
-        case plusButtonTapped
         case onFirstAppear
+        case plusButtonTapped
         case onMealsUpdate([Meal])
         case mealTapped(Meal)
         case onDelete(IndexSet)
@@ -57,7 +61,6 @@ public struct MealListFeature {
                             perServing: calculator.nutritionalValuesPerServing(meal: $0)
                         )
                     }
-                    // handle empty meals
                     return .none
 
                 case .plusButtonTapped:

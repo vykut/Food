@@ -71,14 +71,14 @@ extension NutritionalValuesCalculator: DependencyKey {
             nutritionalValuesPerServing: { meal in
                 guard meal.servings != 1 else { return nutritionalValues(meal: meal) }
 
-                let servingSize = meal.servingSize
+                let servingQuantity = meal.servingQuantity
                 var baseIngredient = Ingredient(
                     food: .zero(name: meal.name),
-                    quantity: servingSize
+                    quantity: servingQuantity
                 )
 
                 let total = meal.ingredients.reduce(Quantity.zero) { $0 + $1.quantity }
-                let servingSizePercentageOfTotal = servingSize.convertedToBaseUnit().value / total.value
+                let servingSizePercentageOfTotal = servingQuantity.convertedToBaseUnit().value / total.value
 
                 for ingredient in meal.ingredients {
                     let ingredientPercentageOfTotal = ingredient.quantity.convertedToBaseUnit().value / total.value
@@ -98,25 +98,25 @@ extension NutritionalValuesCalculator: DependencyKey {
                     baseIngredient.food.sugar += ingredientInServingSize.sugar
                 }
 
-                baseIngredient.food.energy /= servingSize.value
+                baseIngredient.food.energy /= servingQuantity.value
                 baseIngredient.food.energy *= 100
-                baseIngredient.food.fatTotal /= servingSize.value
+                baseIngredient.food.fatTotal /= servingQuantity.value
                 baseIngredient.food.fatTotal *= 100
-                baseIngredient.food.fatSaturated /= servingSize.value
+                baseIngredient.food.fatSaturated /= servingQuantity.value
                 baseIngredient.food.fatSaturated *= 100
-                baseIngredient.food.protein /= servingSize.value
+                baseIngredient.food.protein /= servingQuantity.value
                 baseIngredient.food.protein *= 100
-                baseIngredient.food.sodium /= servingSize.value
+                baseIngredient.food.sodium /= servingQuantity.value
                 baseIngredient.food.sodium *= 100
-                baseIngredient.food.potassium /= servingSize.value
+                baseIngredient.food.potassium /= servingQuantity.value
                 baseIngredient.food.potassium *= 100
-                baseIngredient.food.cholesterol /= servingSize.value
+                baseIngredient.food.cholesterol /= servingQuantity.value
                 baseIngredient.food.cholesterol *= 100
-                baseIngredient.food.carbohydrate /= servingSize.value
+                baseIngredient.food.carbohydrate /= servingQuantity.value
                 baseIngredient.food.carbohydrate *= 100
-                baseIngredient.food.fiber /= servingSize.value
+                baseIngredient.food.fiber /= servingQuantity.value
                 baseIngredient.food.fiber *= 100
-                baseIngredient.food.sugar /= servingSize.value
+                baseIngredient.food.sugar /= servingQuantity.value
                 baseIngredient.food.sugar *= 100
 
                 return baseIngredient

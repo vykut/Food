@@ -13,7 +13,7 @@ public struct MealList: View {
 
     public var body: some View {
         List {
-            if !store.mealsWithNutritionalValues.isEmpty {
+            if store.showsAddMealPrompt {
                 mealsSection
             } else {
                 ContentUnavailableView(

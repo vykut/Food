@@ -27,7 +27,7 @@ public struct MealDetailsFeature {
     @CasePathable
     public enum Action {
         case editButtonTapped
-        case nutritionalInfoPerServingSizeButtonTapped
+        case nutritionalInfoPerServingButtonTapped
         case nutritionalInfoButtonTapped
         case ingredientComparisonButtonTapped
         case ingredientTapped(Ingredient)
@@ -47,7 +47,7 @@ public struct MealDetailsFeature {
                     state.mealForm = .init(meal: state.meal)
                     return .none
 
-                case .nutritionalInfoPerServingSizeButtonTapped:
+                case .nutritionalInfoPerServingButtonTapped:
                     state.foodDetails = .init(
                         food: state.nutritionalValuesPerServing.food,
                         quantity: state.nutritionalValuesPerServing.quantity

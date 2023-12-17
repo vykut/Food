@@ -58,7 +58,7 @@ public struct MealDetails: View {
             LabeledContent("Servings", value: self.store.meal.servings, format: .number)
 
             ListButton("Nutritional values per serving size") {
-                self.store.send(.nutritionalInfoPerServingSizeButtonTapped)
+                self.store.send(.nutritionalInfoPerServingButtonTapped)
             }
             .disabled(self.store.meal.servings == 1)
 

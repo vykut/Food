@@ -7,7 +7,7 @@ public struct Meal: Hashable, Sendable {
     public var servings: Double
     public var instructions: String
 
-    public var servingSize: Quantity {
+    public var servingQuantity: Quantity {
         totalQuantity / servings
     }
 

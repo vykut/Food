@@ -271,8 +271,13 @@ final class FoodListTests: XCTestCase {
             XCTAssertEqual(order, .forward)
             return stream
         }
-        await store.send(.updateRecentFoodsSortingStrategy(.carbohydrates)) {
-            $0.recentFoodsSortingStrategy = .carbohydrates
+        store.dependencies.userPreferencesClient.setPreferences = { modify in
+            var prefs = UserPreferences()
+            modify(&prefs)
+            XCTAssertNoDifference(prefs, .init(recentSearchesSortingStrategy: "carbohydrate", recentSearchesSortingOrder: .forward))
+        }
+        await store.send(.updateRecentFoodsSortingStrategy(.carbohydrate)) {
+            $0.recentFoodsSortingStrategy = .carbohydrate
             $0.recentFoodsSortingOrder = .forward
         }
         await store.receive(\.startObservingRecentFoods)
@@ -291,8 +296,13 @@ final class FoodListTests: XCTestCase {
             XCTAssertEqual(order, .reverse)
             return stream
         }
-        await store.send(.updateRecentFoodsSortingStrategy(.carbohydrates)) {
-            $0.recentFoodsSortingStrategy = .carbohydrates
+        store.dependencies.userPreferencesClient.setPreferences = { modify in
+            var prefs = UserPreferences()
+            modify(&prefs)
+            XCTAssertNoDifference(prefs, .init(recentSearchesSortingStrategy: "carbohydrate", recentSearchesSortingOrder: .reverse))
+        }
+        await store.send(.updateRecentFoodsSortingStrategy(.carbohydrate)) {
+            $0.recentFoodsSortingStrategy = .carbohydrate
             $0.recentFoodsSortingOrder = .reverse
         }
         await store.receive(\.startObservingRecentFoods)
