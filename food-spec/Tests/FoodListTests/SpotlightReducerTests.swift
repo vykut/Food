@@ -60,7 +60,7 @@ final class SpotlightReducerTests: XCTestCase {
         let store = TestStore(
             initialState: {
                 var state = FoodListFeature.State()
-                state.foodDetails = .init(food: eggplant)
+                state.destination = .foodDetails(.init(food: eggplant))
                 return state
             }(),
             reducer: {
@@ -70,7 +70,7 @@ final class SpotlightReducerTests: XCTestCase {
         let activity = NSUserActivity(activityType: "mock")
         activity.userInfo?[CSSearchQueryString] = eggplant.name
         await store.send(.spotlight(.handleSearchInApp(activity)))
-        await store.receive(\.foodDetails.dismiss)
+        await store.receive(\.destination.dismiss)
         await store.receive(\.updateSearchFocus)
         await store.receive(\.updateSearchQuery)
     }

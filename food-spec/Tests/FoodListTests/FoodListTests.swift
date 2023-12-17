@@ -25,9 +25,8 @@ final class FoodListTests: XCTestCase {
             state.recentFoods = []
             state.searchResults = []
             state.shouldShowNoResults = false
-            state.foodDetails = nil
+            state.destination = nil
             state.billboard = .init(banner: nil)
-            state.alert = nil
         }
     }
 
@@ -324,7 +323,7 @@ final class FoodListTests: XCTestCase {
         XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
 
         await store.send(.didSelectRecentFood(eggplant)) {
-            $0.foodDetails = .init(food: eggplant)
+            $0.destination = .foodDetails(.init(food: eggplant))
         }
 
         continuation.finish()
@@ -353,7 +352,7 @@ final class FoodListTests: XCTestCase {
             $0.searchResults = [eggplant, ribeye]
         }
         await store.send(.didSelectSearchResult(eggplant)) {
-            $0.foodDetails = .init(food: eggplant)
+            $0.destination = .foodDetails(.init(food: eggplant))
         }
     }
 
@@ -382,9 +381,9 @@ final class FoodListTests: XCTestCase {
             $0.isSearching = false
         }
         await store.receive(\.showGenericAlert) {
-            $0.alert = .init {
+            $0.destination = .alert(.init {
                 TextState("Something went wrong. Please try again later.")
-            }
+            })
         }
     }
 
@@ -433,9 +432,9 @@ final class FoodListTests: XCTestCase {
         )
         await store.send(.didDeleteRecentFoods(.init(integer: 0)))
         await store.receive(\.showGenericAlert) {
-            $0.alert = .init {
+            $0.destination = .alert(.init {
                 TextState("Something went wrong. Please try again later.")
-            }
+            })
         }
     }
 
@@ -455,7 +454,7 @@ final class FoodListTests: XCTestCase {
         activity.userInfo?[CSSearchableItemActivityIdentifier] = eggplant.name
         await store.send(.spotlight(.handleSelectedFood(activity)))
         await store.receive(\.didSelectRecentFood) {
-            $0.foodDetails = .init(food: eggplant)
+            $0.destination = .foodDetails(.init(food: eggplant))
         }
     }
 
@@ -464,7 +463,7 @@ final class FoodListTests: XCTestCase {
         let store = TestStore(
             initialState: {
                 var state = FoodListFeature.State()
-                state.foodDetails = .init(food: eggplant)
+                state.destination = .foodDetails(.init(food: eggplant))
                 return state
             }(),
             reducer: {
@@ -483,8 +482,8 @@ final class FoodListTests: XCTestCase {
         let activity = NSUserActivity(activityType: "mock")
         activity.userInfo?[CSSearchQueryString] = eggplant.name
         await store.send(.spotlight(.handleSearchInApp(activity)))
-        await store.receive(\.foodDetails.dismiss) {
-            $0.foodDetails = nil
+        await store.receive(\.destination.dismiss) {
+            $0.destination = nil
         }
         await store.receive(\.updateSearchFocus) {
             $0.isSearchFocused = true

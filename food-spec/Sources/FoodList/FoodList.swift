@@ -31,21 +31,21 @@ public struct FoodList: View {
                 }
             }
             .navigationDestination(
-                item: $store.scope(state: \.foodDetails, action: \.foodDetails)
+                item: $store.scope(state: \.destination?.foodDetails, action: \.destination.foodDetails)
             ) { store in
                 FoodDetails(store: store)
             }
             .navigationTitle("Search")
-        .alert($store.scope(state: \.alert, action: \.alert))
-        .onFirstAppear {
-            self.store.send(.onFirstAppear)
-        }
-        .onContinueUserActivity(CSSearchableItemActionType) { activity in
-            store.send(.spotlight(.handleSelectedFood(activity)))
-        }
-        .onContinueUserActivity(CSQueryContinuationActionType) { activity in
-            store.send(.spotlight(.handleSearchInApp(activity)))
-        }
+            .alert($store.scope(state: \.destination?.alert, action: \.destination.alert))
+            .onFirstAppear {
+                self.store.send(.onFirstAppear)
+            }
+            .onContinueUserActivity(CSSearchableItemActionType) { activity in
+                store.send(.spotlight(.handleSelectedFood(activity)))
+            }
+            .onContinueUserActivity(CSQueryContinuationActionType) { activity in
+                store.send(.spotlight(.handleSearchInApp(activity)))
+            }
     }
 
     @MainActor @ViewBuilder

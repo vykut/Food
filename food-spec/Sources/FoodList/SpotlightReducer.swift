@@ -40,9 +40,9 @@ struct SpotlightReducer {
 
             case .handleSearchInApp(let activity):
                 guard let searchString = activity.userInfo?[CSSearchQueryString] as? String else { return .none }
-                return .run { [foodDetails = state.foodDetails, isSearchFocused = state.isSearchFocused] send in
-                    if foodDetails != nil {
-                        await send(.foodDetails(.dismiss))
+                return .run { [destination = state.destination, isSearchFocused = state.isSearchFocused] send in
+                    if destination != nil {
+                        await send(.destination(.dismiss))
                     }
                     if !isSearchFocused {
                         await send(.updateSearchFocus(true))

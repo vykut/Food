@@ -21,8 +21,7 @@ public struct FoodListFeature {
         var shouldShowNoResults: Bool = false
         var inlineFood: FoodDetailsFeature.State?
         var billboard: Billboard = .init()
-        @Presents var foodDetails: FoodDetailsFeature.State?
-        @Presents var alert: AlertState<Action.Alert>?
+        @Presents var destination: Destination.State?
 
         var shouldShowRecentSearches: Bool {
             searchQuery.isEmpty && !recentFoods.isEmpty
@@ -85,18 +84,12 @@ public struct FoodListFeature {
         case didDeleteRecentFoods(IndexSet)
         case startSearching
         case didReceiveSearchFoods([FoodApiModel])
-        case foodDetails(PresentationAction<FoodDetailsFeature.Action>)
         case inlineFood(FoodDetailsFeature.Action)
         case updateRecentFoodsSortingStrategy(State.SortingStrategy)
         case billboard(Billboard)
         case spotlight(Spotlight)
         case showGenericAlert
-        case alert(PresentationAction<Alert>)
-
-        @CasePathable
-        public enum Alert: Equatable {
-            case showGenericAlert
-        }
+        case destination(PresentationAction<Destination.Action>)
     }
 
     enum CancelID {
@@ -206,11 +199,11 @@ public struct FoodListFeature {
                     return .none
 
                 case .didSelectRecentFood(let food):
-                    state.foodDetails = .init(food: food)
+                    state.destination = .foodDetails(.init(food: food))
                     return .none
 
                 case .didSelectSearchResult(let food):
-                    state.foodDetails = .init(food: food)
+                    state.destination = .foodDetails(.init(food: food))
                     return .run { send in
                         _ = try await databaseClient.insert(food: food)
                     }
@@ -224,9 +217,6 @@ public struct FoodListFeature {
                     } catch: { error, send in
                         await send(.showGenericAlert)
                     }
-
-                case .foodDetails:
-                    return .none
 
                 case .inlineFood:
                     return .none
@@ -247,9 +237,9 @@ public struct FoodListFeature {
                     }
 
                 case .showGenericAlert:
-                    state.alert =  .init {
+                    state.destination = .alert(.init {
                         TextState("Something went wrong. Please try again later.")
-                    }
+                    })
                     return .none
 
                 case .billboard:
@@ -260,19 +250,42 @@ public struct FoodListFeature {
                     // handled in SpotlightReducer
                     return .none
 
-                case .alert:
+                case .destination:
                     return .none
             }
         }
         .ifLet(\.inlineFood, action: \.inlineFood) {
             FoodDetailsFeature()
         }
-        .ifLet(\.$foodDetails, action: \.foodDetails) {
-            FoodDetailsFeature()
+        .ifLet(\.$destination, action: \.destination) {
+            Destination()
         }
-        .ifLet(\.$alert, action: \.alert)
         SpotlightReducer()
         BillboardReducer()
+    }
+
+    @Reducer
+    public struct Destination {
+        @ObservableState
+        public enum State: Hashable {
+            case foodDetails(FoodDetailsFeature.State)
+            case alert(AlertState<Action.Alert>)
+        }
+
+        @CasePathable
+        public enum Action {
+            case foodDetails(FoodDetailsFeature.Action)
+            case alert(Alert)
+
+            @CasePathable
+            public enum Alert: Hashable { }
+        }
+
+        public var body: some ReducerOf<Self> {
+            Scope(state: \.foodDetails, action: \.foodDetails) {
+                FoodDetailsFeature()
+            }
+        }
     }
 }
 
