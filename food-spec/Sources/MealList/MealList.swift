@@ -6,7 +6,6 @@ import ComposableArchitecture
 
 public struct MealList: View {
     @Bindable var store: StoreOf<MealListFeature>
-    let calculator = NutritionalValuesCalculator()
 
     public init(store: StoreOf<MealListFeature>) {
         self.store = store
@@ -14,7 +13,7 @@ public struct MealList: View {
 
     public var body: some View {
         List {
-            if !store.meals.isEmpty {
+            if !store.mealsWithNutritionalValues.isEmpty {
                 mealsSection
             } else {
                 ContentUnavailableView(
@@ -56,17 +55,15 @@ public struct MealList: View {
 
     private var mealsSection: some View {
         Section {
-            ForEach(store.meals, id: \.id) { meal in
+            ForEach(store.mealsWithNutritionalValues, id: \.meal.id) { nutritionalValue in
                 ListButton {
-                    self.store.send(.mealTapped(meal))
+                    self.store.send(.mealTapped(nutritionalValue.meal))
                 } label: {
-                    let nutritionalValuesPerServingSize = calculator.nutritionalValuesPerServingSize(for: meal)
-                    let footnotePerServingSize = "Per serving: \(nutritionalValuesPerServingSize.foodWithQuantity.nutritionalSummary)"
-                    let nutritionalValuesPerTotal = calculator.nutritionalValues(for: meal)
-                    let footnotePerTotal = nutritionalValuesPerTotal.food.nutritionalSummary
-                    let footnote = meal.servings != 1 ? footnotePerServingSize : footnotePerTotal
+                    let footnotePerServingSize = "Per serving: \(nutritionalValue.perServing.foodWithQuantity.nutritionalSummary)"
+                    let footnotePerTotal = nutritionalValue.perTotal.foodWithQuantity.nutritionalSummary
+                    let footnote = nutritionalValue.meal.servings != 1 ? footnotePerServingSize : footnotePerTotal
                     LabeledListRow(
-                        title: meal.name.capitalized,
+                        title: nutritionalValue.meal.name.capitalized,
                         footnote: footnote
                     )
                 }

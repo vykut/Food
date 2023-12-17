@@ -32,7 +32,7 @@ public struct MealFormFeature {
             !isMealValid
         }
 
-        private var isMealValid: Bool {
+        var isMealValid: Bool {
             !meal.name.isEmpty &&
             !meal.ingredients.isEmpty
         }
@@ -86,6 +86,9 @@ public struct MealFormFeature {
                         try await databaseClient.insert(meal: meal)
                         await send(.delegate(.mealSaved(meal)))
                         await dismiss()
+                    } catch: { error, send in
+                        // TODO: Show alert in case of failed insert
+                        dump(error)
                     }
 
                 case .addIngredientsButtonTapped:

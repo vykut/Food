@@ -27,7 +27,7 @@ public struct FoodComparison: View {
         .toolbar {
             toolbar
         }
-        .navigationTitle("\(store.comparison.rawValue.capitalized) comparison")
+        .navigationTitle(store.comparison.rawValue.capitalized)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarTitleMenu {
             comparisonMenu

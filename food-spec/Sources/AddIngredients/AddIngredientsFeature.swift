@@ -24,8 +24,7 @@ public struct AddIngredientsFeature {
             for ingredient in ingredients {
                 ingredientPickers.append(.init(
                     food: ingredient.food,
-                    quantity: ingredient.quantity,
-                    isSelected: true
+                    quantity: ingredient.quantity
                 ))
             }
         }
@@ -58,13 +57,15 @@ public struct AddIngredientsFeature {
 
                 case .updateFoods(let foods):
                     for food in foods {
-                        let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id })
-                        let ingredientPicker = IngredientPickerFeature.State(
-                            food: food,
-                            quantity: alreadySelectedIngredient?.quantity ?? .grams(100),
-                            isSelected: alreadySelectedIngredient != nil
-                        )
-                        state.ingredientPickers.updateOrAppend(ingredientPicker)
+                        if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
+                            let ingredientPicker = IngredientPickerFeature.State(
+                                food: food,
+                                quantity: alreadySelectedIngredient.quantity
+                            )
+                            state.ingredientPickers.updateOrAppend(ingredientPicker)
+                        } else {
+                            state.ingredientPickers.updateOrAppend(.init(food: food))
+                        }
                     }
                     return .none
 

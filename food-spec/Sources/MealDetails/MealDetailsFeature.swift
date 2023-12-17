@@ -10,12 +10,17 @@ public struct MealDetailsFeature {
     @ObservableState
     public struct State: Hashable {
         var meal: Meal
+        var nutritionalValuesPerTotal: Ingredient
+        var nutritionalValuesPerServing: Ingredient
         @Presents var mealForm: MealFormFeature.State?
         @Presents var foodDetails: FoodDetailsFeature.State?
         @Presents var foodComparison: FoodComparisonFeature.State?
 
         public init(meal: Meal) {
+            @Dependency(\.nutritionalValuesCalculator) var calculator
             self.meal = meal
+            self.nutritionalValuesPerTotal = calculator.nutritionalValues(meal: meal)
+            self.nutritionalValuesPerServing = calculator.nutritionalValuesPerServing(meal: meal)
         }
     }
 
@@ -31,9 +36,9 @@ public struct MealDetailsFeature {
         case foodComparison(PresentationAction<FoodComparisonFeature.Action>)
     }
 
-    private let calculator = NutritionalValuesCalculator()
-
     public init() { }
+
+    @Dependency(\.nutritionalValuesCalculator) private var calculator
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -43,18 +48,16 @@ public struct MealDetailsFeature {
                     return .none
 
                 case .nutritionalInfoPerServingSizeButtonTapped:
-                    let nutritionalInfoPerServingSize = self.calculator.nutritionalValuesPerServingSize(for: state.meal)
                     state.foodDetails = .init(
-                        food: nutritionalInfoPerServingSize.food,
-                        quantity: nutritionalInfoPerServingSize.quantity
+                        food: state.nutritionalValuesPerServing.food,
+                        quantity: state.nutritionalValuesPerServing.quantity
                     )
                     return .none
 
                 case .nutritionalInfoButtonTapped:
-                    let nutritionalValues = self.calculator.nutritionalValues(for: state.meal)
                     state.foodDetails = .init(
-                        food: nutritionalValues.food,
-                        quantity: nutritionalValues.quantity
+                        food: state.nutritionalValuesPerTotal.food,
+                        quantity: state.nutritionalValuesPerTotal.quantity
                     )
                     return .none
 
@@ -86,6 +89,13 @@ public struct MealDetailsFeature {
 
                 case .foodComparison:
                     return .none
+            }
+        }
+        .onChange(of: \.meal) { _, newMeal in
+            Reduce { state, _ in
+                state.nutritionalValuesPerTotal = calculator.nutritionalValues(meal: newMeal)
+                state.nutritionalValuesPerServing = calculator.nutritionalValuesPerServing(meal: newMeal)
+                return .none
             }
         }
         .ifLet(\.$mealForm, action: \.mealForm) {

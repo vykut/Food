@@ -37,5 +37,17 @@ final class QuantityTests: XCTestCase {
         XCTAssertEqual(formattedQuantity, "2 tsp")
         formattedQuantity = quantity.formatted(width: .narrow)
         XCTAssertEqual(formattedQuantity, "2tsp")
+        quantity = .init(value: 2.25, unit: .cups)
+        formattedQuantity = quantity.formatted(width: .wide, fractionLength: 0...2)
+        XCTAssertEqual(formattedQuantity, "2.25 cups")
+    }
+
+    func testConversion() async throws {
+        var energy = Quantity(value: 453.592, unit: .grams)
+        var convertedEnergy = energy.converted(to: .pounds)
+        XCTAssertEqual(convertedEnergy, .init(value: 1, unit: .pounds))
+        energy = Quantity(value: 1, unit: .ounces)
+        convertedEnergy = energy.convertedToBaseUnit()
+        XCTAssertEqual(convertedEnergy, .init(value: 28.3495, unit: .grams))
     }
 }

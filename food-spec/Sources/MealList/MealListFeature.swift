@@ -9,9 +9,15 @@ import ComposableArchitecture
 public struct MealListFeature {
     @ObservableState
     public struct State: Hashable {
-        var meals: [Meal] = []
+        var mealsWithNutritionalValues: [MealWithNutritionalValues] = []
         @Presents var mealDetails: MealDetailsFeature.State?
         @Presents var mealForm: MealFormFeature.State?
+
+        struct MealWithNutritionalValues: Hashable {
+            let meal: Meal
+            let perTotal: Ingredient
+            let perServing: Ingredient
+        }
 
         public init() { }
     }
@@ -30,6 +36,7 @@ public struct MealListFeature {
     public init() { }
 
     @Dependency(\.databaseClient) private var databaseClient
+    @Dependency(\.nutritionalValuesCalculator) private var calculator
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -43,7 +50,13 @@ public struct MealListFeature {
                     }
 
                 case .onMealsUpdate(let meals):
-                    state.meals = meals
+                    state.mealsWithNutritionalValues = meals.map {
+                        .init(
+                            meal: $0,
+                            perTotal: calculator.nutritionalValues(meal: $0),
+                            perServing: calculator.nutritionalValuesPerServing(meal: $0)
+                        )
+                    }
                     // handle empty meals
                     return .none
 
@@ -56,8 +69,8 @@ public struct MealListFeature {
                     return .none
 
                 case .onDelete(let indices):
-                    return .run { [meals = state.meals, databaseClient] send in
-                        let mealsToDelete = indices.map { meals[$0] }
+                    return .run { [nutritionalValues = state.mealsWithNutritionalValues, databaseClient] send in
+                        let mealsToDelete = indices.map { nutritionalValues[$0].meal }
                         for meal in mealsToDelete {
                             try await databaseClient.delete(meal: meal)
                         }

@@ -16,5 +16,17 @@ final class EnergyTests: XCTestCase {
         energy = .init(value: 3000.43, unit: .kilojoules)
         formattedEnergy = energy.formatted(width: .narrow)
         XCTAssertEqual(formattedEnergy, "3,000kJ")
+        energy = .kcal(23.45)
+        formattedEnergy = energy.formatted(width: .wide, fractionLength: 0...2)
+        XCTAssertEqual(formattedEnergy, "23.45 kilocalories")
+    }
+
+    func testConversion() async throws {
+        var energy = Energy(value: 340, unit: .kilocalories)
+        var convertedEnergy = energy.converted(to: .calories)
+        XCTAssertEqual(convertedEnergy, .init(value: 340_000, unit: .calories))
+        energy = Energy(value: 418.4, unit: .kilojoules)
+        convertedEnergy = energy.convertedToBaseUnit()
+        XCTAssertEqual(convertedEnergy, .init(value: 100, unit: .kilocalories))
     }
 }

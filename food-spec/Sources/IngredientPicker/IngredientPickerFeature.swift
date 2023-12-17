@@ -26,12 +26,11 @@ public struct IngredientPickerFeature {
 
         public init(
             food: Food,
-            quantity: Quantity,
-            isSelected: Bool
+            quantity: Quantity
         ) {
             self.food = food
             self.quantityPicker = .init(quantity: quantity)
-            self.isSelected = isSelected
+            self.isSelected = true
         }
     }
 

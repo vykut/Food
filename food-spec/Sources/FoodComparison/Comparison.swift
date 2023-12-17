@@ -2,6 +2,7 @@ import Foundation
 
 public enum Comparison: String, Identifiable, Hashable, CaseIterable {
     case energy
+    case macronutrients
     case protein
     case carbohydrate
     case fiber
@@ -11,7 +12,6 @@ public enum Comparison: String, Identifiable, Hashable, CaseIterable {
     case cholesterol
     case potassium
     case sodium
-    case macronutrients
 
     public var id: Self { self }
 }

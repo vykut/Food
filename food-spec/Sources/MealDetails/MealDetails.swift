@@ -7,7 +7,6 @@ import ComposableArchitecture
 
 public struct MealDetails: View {
     @Bindable var store: StoreOf<MealDetailsFeature>
-    let calculator = NutritionalValuesCalculator()
 
     public init(store: StoreOf<MealDetailsFeature>) {
         self.store = store
@@ -51,11 +50,11 @@ public struct MealDetails: View {
 
     private var summarySection: some View {
         Section("Summary") {
-            let nutritionFacts = self.calculator.nutritionalValues(for: self.store.meal).foodWithQuantity
-            LabeledContent("Energy", value: nutritionFacts.energy, format: .measurement(width: .wide))
-            LabeledContent("Protein", value: nutritionFacts.protein, format: .measurement(width: .wide))
-            LabeledContent("Carbohydrate", value: nutritionFacts.carbohydrate, format: .measurement(width: .wide))
-            LabeledContent("Fat", value: nutritionFacts.fatTotal, format: .measurement(width: .wide))
+            let nutritionFacts = self.store.nutritionalValuesPerTotal.foodWithQuantity
+            LabeledContent("Energy", value: nutritionFacts.energy.formatted(width: .wide))
+            LabeledContent("Protein", value: nutritionFacts.protein.formatted(width: .wide))
+            LabeledContent("Carbohydrate", value: nutritionFacts.carbohydrate.formatted(width: .wide))
+            LabeledContent("Fat", value: nutritionFacts.fatTotal.formatted(width: .wide))
             LabeledContent("Servings", value: self.store.meal.servings, format: .number)
 
             ListButton("Nutritional values per serving size") {
@@ -81,7 +80,7 @@ public struct MealDetails: View {
                     self.store.send(.ingredientTapped(ingredient))
                 } label: {
                     LabeledListRow(
-                        title: "\(ingredient.food.name.capitalized) \(ingredient.quantity.formatted(width: .wide))",
+                        title: "\(ingredient.food.name.capitalized) \(ingredient.quantity.formatted(width: .wide, fractionLength: 0...2))",
                         footnote: ingredient.foodWithQuantity.nutritionalSummary
                     )
                 }

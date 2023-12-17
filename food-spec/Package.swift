@@ -43,8 +43,8 @@ let package = Package(
         .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),
         .feature(name: "MealList", dependencies: ["Database", "MealForm", "MealDetails"]),
-        .feature(name: "MealForm", dependencies: ["Database", "AddIngredients"]),
         .feature(name: "MealDetails", dependencies: ["FoodDetails", "FoodComparison", "MealForm"]),
+        .feature(name: "MealForm", dependencies: ["Database", "AddIngredients"]),
         .feature(name: "AddIngredients", dependencies: ["Database", "IngredientPicker"]),
         .feature(name: "IngredientPicker", dependencies: ["QuantityPicker"]),
         .feature(name: "QuantityPicker"),
@@ -58,6 +58,10 @@ let package = Package(
 
         .target(
             name: "Shared",
+            dependencies: [
+                tcaDIDependency,
+                tcaDIMacroDependency
+            ],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
             ]
@@ -68,6 +72,11 @@ let package = Package(
         .featureTests(for: "FoodDetails"),
         .featureTests(for: "FoodSelection"),
         .featureTests(for: "FoodComparison"),
+        .featureTests(for: "MealList"),
+        .featureTests(for: "MealDetails"),
+        .featureTests(for: "MealForm"),
+        .featureTests(for: "AddIngredients"),
+        .featureTests(for: "IngredientPicker"),
         .featureTests(for: "QuantityPicker"),
 
         .testTarget(for: "API"),

@@ -36,11 +36,11 @@ public struct AddIngredients: View {
         }
     }
 
-    private var navigationTitle: String {
+    private var navigationTitle: LocalizedStringKey {
         if self.store.selectedIngredients.isEmpty {
             "Select ingredients"
         } else {
-            "\(self.store.selectedIngredients.count) ingredients selected"
+            "^[\(self.store.selectedIngredients.count) ingredient](inflect: true) selected"
         }
     }
 }

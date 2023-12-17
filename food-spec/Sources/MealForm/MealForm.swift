@@ -41,7 +41,7 @@ public struct MealForm: View {
     }
 
     private var ingredientsSection: some View {
-        Section("Ingredients") {
+        Section("^[\(self.store.meal.ingredients.count) Ingredient](inflect: true)") {
             Button("Add ingredients") {
                 self.store.send(.addIngredientsButtonTapped, animation: .default)
                 focusedField = nil
@@ -53,7 +53,7 @@ public struct MealForm: View {
                 } label: {
                     LabeledListRow(
                         title: ingredient.food.name.capitalized,
-                        footnote: ingredient.quantity.formatted(width: .wide)
+                        footnote: ingredient.quantity.formatted(width: .wide, fractionLength: 0...2)
                     )
                 }
             }
