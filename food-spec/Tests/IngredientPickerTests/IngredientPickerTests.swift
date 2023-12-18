@@ -14,7 +14,7 @@ final class IngredientPickerTests: XCTestCase {
         )
         store.assert { state in
             state.food = .preview
-            state.quantityPicker = .init()
+            state.quantityPicker = .init(id: nil)
             state.isSelected = false
         }
         XCTAssertNoDifference(
@@ -33,7 +33,7 @@ final class IngredientPickerTests: XCTestCase {
         )
         store.assert { state in
             state.food = .preview
-            state.quantityPicker = .init(quantity: .init(value: 5.5, unit: .ounces))
+            state.quantityPicker = .init(id: nil, quantity: .init(value: 5.5, unit: .ounces))
             state.isSelected = true
         }
         XCTAssertNoDifference(

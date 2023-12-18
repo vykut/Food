@@ -77,6 +77,10 @@ public struct MealList {
                         }
                     }
 
+                case .destination(.presented(.mealForm(.delegate(.mealSaved(let meal))))):
+                    state.destination = .mealDetails(.init(meal: meal))
+                    return .none
+
                 case .destination:
                     return .none
             }

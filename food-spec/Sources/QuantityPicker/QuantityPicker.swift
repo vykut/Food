@@ -6,13 +6,16 @@ import Shared
 public struct QuantityPicker {
     @ObservableState
     public struct State: Hashable {
+        let id: Food.ID
         public var quantity: Quantity
         public var options: [Quantity.Unit]
 
         public init(
+            id: Food.ID,
             quantity: Quantity = .grams(100),
             options: [Quantity.Unit] = [.grams, .pounds, .ounces, .cups, .tablespoons, .teaspoons]
         ) {
+            self.id = id
             self.quantity = quantity
             self.options = options
         }

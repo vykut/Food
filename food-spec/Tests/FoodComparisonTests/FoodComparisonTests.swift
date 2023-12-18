@@ -174,7 +174,7 @@ final class FoodComparisonReducerTests: XCTestCase {
     func testIntegration_withQuantityPicker() async throws {
         let store = TestStore(
             initialState: FoodComparison.State(
-                foods: [.preview],
+                foods: [.oliveOil],
                 comparison: .energy
             ),
             reducer: {
@@ -189,17 +189,18 @@ final class FoodComparisonReducerTests: XCTestCase {
             store.state.comparedFoods,
             [
                 .init(
-                    name: "eggplant",
-                    energy: .kcal(69.4),
-                    fatTotal: .grams(0.4),
-                    fatSaturated: .zero,
-                    protein: .grams(1.6),
-                    sodium: .milligrams(0),
-                    potassium: .milligrams(30),
-                    cholesterol: .milligrams(0),
-                    carbohydrate: .grams(17.4),
-                    fiber: .grams(5),
-                    sugar: .grams(6.4)
+                    id: 1,
+                    name: "olive oil",
+                    energy: .kcal(1738.4),
+                    fatTotal: .grams(202.4),
+                    fatSaturated: .grams(27.8),
+                    protein: .zero,
+                    sodium: .milligrams(2),
+                    potassium: .zero,
+                    cholesterol: .zero,
+                    carbohydrate: .zero,
+                    fiber: .zero,
+                    sugar: .zero
                 )
             ]
         )
@@ -231,6 +232,7 @@ fileprivate extension Food {
 fileprivate extension Food {
     static var oliveOil: Self {
         .init(
+            id: 1,
             name: "olive oil",
             energy: .kcal(869.2),
             fatTotal: .grams(101.2),
@@ -247,6 +249,7 @@ fileprivate extension Food {
 
     static var ribeye: Self {
         .init(
+            id: 2,
             name: "ribeye",
             energy: .kcal(274.1),
             fatTotal: .grams(18.9),
@@ -263,6 +266,7 @@ fileprivate extension Food {
 
     static var eggplant: Self {
         .init(
+            id: 3,
             name: "eggplant",
             energy: .kcal(34.7),
             fatTotal: .grams(0.2),

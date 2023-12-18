@@ -130,6 +130,21 @@ final class MealDetailsTests: XCTestCase {
         }
     }
 
+    func testAddNotesButtonTapped() async throws {
+        let store = TestStore(
+            initialState: MealDetails.State(meal: .chimichurri),
+            reducer: {
+                MealDetails()
+            },
+            withDependencies: {
+                $0.nutritionalValuesCalculator = .zero
+            }
+        )
+        await store.send(.addNotesButtonTapped) {
+            $0.destination = .mealForm(.init(meal: .chimichurri))
+        }
+    }
+
     func testMealForm() async throws {
         let store = TestStore(
             initialState: MealDetails.State(meal: .chimichurri),

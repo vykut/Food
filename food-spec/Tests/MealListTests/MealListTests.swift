@@ -109,6 +109,21 @@ final class MealListTests: XCTestCase {
         await store.finish()
     }
 
+    func testMealSaved() async throws {
+        let store = TestStore(
+            initialState: MealList.State(),
+            reducer: {
+                MealList()
+            }
+        )
+        await store.send(.plusButtonTapped) {
+            $0.destination = .mealForm(.init())
+        }
+        await store.send(.destination(.presented(.mealForm(.delegate(.mealSaved(.chimichurri)))))) {
+            $0.destination = .mealDetails(.init(meal: .chimichurri))
+        }
+    }
+
     func testFullFlow() async throws {
         let (stream, continuation) = AsyncStream.makeStream(of: [Meal].self)
         let store = TestStore(
@@ -131,8 +146,8 @@ final class MealListTests: XCTestCase {
         await store.send(.plusButtonTapped) {
             $0.destination = .mealForm(.init())
         }
-        await store.send(.destination(.dismiss)) {
-            $0.destination = nil
+        await store.send(.destination(.presented(.mealForm(.delegate(.mealSaved(.chimichurri)))))) {
+            $0.destination = .mealDetails(.init(meal: .chimichurri))
         }
         continuation.yield([.chimichurri])
         await store.receive(\.onMealsUpdate) {
@@ -141,6 +156,9 @@ final class MealListTests: XCTestCase {
             ]
         }
         XCTAssertEqual(store.state.showsAddMealPrompt, false)
+        await store.send(.destination(.dismiss)) {
+            $0.destination = nil
+        }
         await store.send(.mealTapped(.chimichurri)) {
             $0.destination = .mealDetails(.init(meal: .chimichurri))
         }

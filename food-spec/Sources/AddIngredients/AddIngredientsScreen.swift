@@ -6,6 +6,7 @@ import ComposableArchitecture
 
 public struct AddIngredientsScreen: View {
     @Bindable var store: StoreOf<AddIngredients>
+    @FocusState private var focusedField: String?
 
     public init(store: StoreOf<AddIngredients>) {
         self.store = store
@@ -23,13 +24,16 @@ public struct AddIngredientsScreen: View {
                 }
             }
         }
+        .scrollDismissesKeyboard(.immediately)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") {
                     self.store.send(.doneButtonTapped)
                 }
             }
+            DefaultKeyboardToolbar()
         }
+        .environment(\.focusState, $focusedField)
         .navigationTitle(navigationTitle)
         .onFirstAppear {
             self.store.send(.onFirstAppear)
@@ -41,6 +45,21 @@ public struct AddIngredientsScreen: View {
             "Select ingredients"
         } else {
             "^[\(self.store.selectedIngredients.count) ingredient](inflect: true) selected"
+        }
+    }
+}
+
+public struct DefaultKeyboardToolbar: ToolbarContent {
+    @Environment(\.focusState) var focusState
+
+    public init() { }
+
+    public var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer()
+            Button("Done") {
+                focusState.wrappedValue = nil
+            }
         }
     }
 }

@@ -64,7 +64,7 @@ public struct QuantityPickerView: View {
                     TextField("Value", value: $store.quantity.value.sending(\.updateValue), formatter: formatter)
                         .textFieldStyle(.roundedBorder)
                         .keyboardType(.decimalPad)
-                        .focused(focusState, equals: "quantity")
+                        .focused(focusState, equals: "quantity_\(self.store.id ?? 0)")
                     Stepper("Value") {
                         store.send(.incrementButtonTapped)
                     } onDecrement: {
@@ -90,7 +90,7 @@ public struct QuantityPickerView: View {
 #Preview {
     QuantityPickerView(
         store: .init(
-            initialState: QuantityPicker.State(),
+            initialState: QuantityPicker.State(id: nil),
             reducer: {
                 QuantityPicker()
             }
