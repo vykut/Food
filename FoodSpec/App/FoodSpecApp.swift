@@ -14,7 +14,7 @@ struct FoodSpecApp: App {
 
     var body: some Scene {
         WindowGroup {
-            TabBar(
+            TabBarScreen(
                 store: store.scope(state: \.tabBar, action: \.tabBar)
             )
         }

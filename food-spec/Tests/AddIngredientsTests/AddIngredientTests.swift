@@ -8,9 +8,9 @@ import ComposableArchitecture
 final class AddIngredientTests: XCTestCase {
     func testStateInitializers() async throws {
         var store = TestStore(
-            initialState: AddIngredientsFeature.State(ingredients: []),
+            initialState: AddIngredients.State(ingredients: []),
             reducer: {
-                AddIngredientsFeature()
+                AddIngredients()
             }
         )
         store.assert { state in
@@ -21,9 +21,9 @@ final class AddIngredientTests: XCTestCase {
 
         let ingredients = Meal.chimichurri.ingredients
         store = TestStore(
-            initialState: AddIngredientsFeature.State(ingredients: ingredients),
+            initialState: AddIngredients.State(ingredients: ingredients),
             reducer: {
-                AddIngredientsFeature()
+                AddIngredients()
             }
         )
         store.assert { state in
@@ -40,9 +40,9 @@ final class AddIngredientTests: XCTestCase {
 
     func testOnFirstAppear() async throws {
         var store = TestStore(
-            initialState: AddIngredientsFeature.State(ingredients: []),
+            initialState: AddIngredients.State(ingredients: []),
             reducer: {
-                AddIngredientsFeature()
+                AddIngredients()
             },
             withDependencies: {
                 $0.databaseClient.getRecentFoods = { sortedBy, order in
@@ -65,7 +65,7 @@ final class AddIngredientTests: XCTestCase {
         XCTAssertNoDifference(store.state.selectedIngredients, [])
 
         store = TestStore(
-            initialState: AddIngredientsFeature.State(
+            initialState: AddIngredients.State(
                 ingredients: [
                     .init(
                         food: .oliveOil,
@@ -78,7 +78,7 @@ final class AddIngredientTests: XCTestCase {
                 ]
             ),
             reducer: {
-                AddIngredientsFeature()
+                AddIngredients()
             },
             withDependencies: {
                 $0.databaseClient.getRecentFoods = { sortedBy, order in
@@ -125,9 +125,9 @@ final class AddIngredientTests: XCTestCase {
 
     func testDoneButton() async throws {
         let store = TestStore(
-            initialState: AddIngredientsFeature.State(ingredients: []),
+            initialState: AddIngredients.State(ingredients: []),
             reducer: {
-                AddIngredientsFeature()
+                AddIngredients()
             },
             withDependencies: {
                 $0.dismiss = .init {
@@ -140,7 +140,7 @@ final class AddIngredientTests: XCTestCase {
 
     func testIntegrationWithIngredientPickers() async throws {
         let store = TestStore(
-            initialState: AddIngredientsFeature.State(
+            initialState: AddIngredients.State(
                 ingredients: [
                     .init(
                         food: .oliveOil,
@@ -153,7 +153,7 @@ final class AddIngredientTests: XCTestCase {
                 ]
             ),
             reducer: {
-                AddIngredientsFeature()
+                AddIngredients()
             },
             withDependencies: {
                 $0.databaseClient.getRecentFoods = { sortedBy, order in
@@ -224,7 +224,7 @@ final class AddIngredientTests: XCTestCase {
 
     func testFullFlow() async throws {
         let store = TestStore(
-            initialState: AddIngredientsFeature.State(
+            initialState: AddIngredients.State(
                 ingredients: [
                     .init(
                         food: .oliveOil,
@@ -237,7 +237,7 @@ final class AddIngredientTests: XCTestCase {
                 ]
             ),
             reducer: {
-                AddIngredientsFeature()
+                AddIngredients()
             },
             withDependencies: {
                 $0.databaseClient.getRecentFoods = { sortedBy, order in

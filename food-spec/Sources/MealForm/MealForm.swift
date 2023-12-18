@@ -1,154 +1,150 @@
-import SwiftUI
+import Foundation
 import Shared
-import QuantityPicker
+import Database
 import AddIngredients
 import ComposableArchitecture
 
-public struct MealForm: View {
-    @Bindable var store: StoreOf<MealFormFeature>
-    @FocusState var focusedField: String?
+@Reducer
+public struct MealForm {
+    @ObservableState
+    public struct State: Hashable {
+        public var meal: Meal
+        var showsAllIngredients: Bool = false
+        var isEdit: Bool
+        @Presents var addIngredients: AddIngredients.State?
 
-    public init(store: StoreOf<MealFormFeature>) {
-        self.store = store
-    }
-
-    public var body: some View {
-        Form {
-            nameSection
-            ingredientsSection
-            servingSizeSection
-            notesSection
+        var shownIngredients: [Ingredient] {
+            if showsAllIngredients {
+                meal.ingredients
+            } else if meal.ingredients.count <= 5 {
+                meal.ingredients
+            } else {
+                Array(meal.ingredients[0...2])
+            }
         }
-        .formStyle(.grouped)
-        .scrollDismissesKeyboard(.immediately)
-        .environment(\.focusState, $focusedField)
-        .toolbar { toolbar }
-        .navigationTitle(self.store.isEdit ? "Edit Meal" : "New Meal")
-        .navigationDestination(
-            item: self.$store.scope(state: \.addIngredients, action: \.addIngredients),
-            destination: { store in
-                AddIngredients(store: store)
-            }
-        )
-    }
 
-    private var nameSection: some View {
-        Section("Name") {
-            TextField("Name", text: self.$store.meal.sending(\.updateMeal).name)
-                .submitLabel(.done)
-                .focused($focusedField, equals: "name")
+        var shouldShowShowAllIngredientsButton: Bool {
+            !showsAllIngredients &&
+            meal.ingredients.count > 5
         }
-    }
 
-    private var ingredientsSection: some View {
-        Section("^[\(self.store.meal.ingredients.count) Ingredient](inflect: true)") {
-            Button("Add ingredients") {
-                self.store.send(.addIngredientsButtonTapped, animation: .default)
-                focusedField = nil
-            }
+        var isSaveButtonDisabled: Bool {
+            !isMealValid
+        }
 
-            ForEach(self.store.shownIngredients, id: \.food.id) { ingredient in
-                ListButton {
-                    self.store.send(.ingredientTapped(ingredient))
-                } label: {
-                    LabeledListRow(
-                        title: ingredient.food.name.capitalized,
-                        footnote: ingredient.quantity.formatted(width: .wide, fractionLength: 0...2)
-                    )
-                }
-            }
-            .onDelete { offsets in
-                self.store.send(.onDeleteIngredients(offsets))
-            }
-            .animation(.default, value: self.store.shownIngredients)
+        var isMealValid: Bool {
+            !meal.name.isEmpty &&
+            !meal.ingredients.isEmpty
+        }
 
-            if self.store.shouldShowShowAllIngredientsButton {
-                Button("Show all") {
-                    self.store.send(.showAllIngredientsButtonTapped)
-                }
-            }
+        public init() {
+            self.meal = .empty
+            self.isEdit = false
+        }
+
+        public init(meal: Meal) {
+            self.meal = meal
+            self.isEdit = true
         }
     }
 
-    private let formatter: NumberFormatter = {
-        let n = NumberFormatter()
-        n.numberStyle = .decimal
-        n.maximumFractionDigits = 1
-        n.maximumIntegerDigits = 2
-        return n
-    }()
+    @CasePathable
+    public enum Action {
+        case cancelButtonTapped
+        case saveButtonTapped
+        case addIngredientsButtonTapped
+        case updateMeal(Meal)
+        case servingsIncrementButtonTapped
+        case servingsDecrementButtonTapped
+        case ingredientTapped(Ingredient)
+        case onDeleteIngredients(IndexSet)
+        case showAllIngredientsButtonTapped
+        case addIngredients(PresentationAction<AddIngredients.Action>)
+        case delegate(Delegate)
 
-    private var servingSizeSection: some View {
-        Section("Servings") {
-            Stepper(self.store.meal.servings.formatted(.number.precision(.fractionLength(0...1)))) {
-                self.store.send(.servingsIncrementButtonTapped)
-            } onDecrement: {
-                self.store.send(.servingsDecrementButtonTapped)
-            }
+        @CasePathable
+        public enum Delegate {
+            case mealSaved(Meal)
         }
     }
 
-    private var notesSection: some View {
-        Section("Notes") {
-            TextEditor(
-                text: self.$store.meal.sending(\.updateMeal).instructions
-            )
-            .focused(self.$focusedField, equals: "notes")
-            .frame(minHeight: 100)
-        }
-    }
+    public init() { }
 
-    @ToolbarContentBuilder
-    private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button("Cancel") {
-                self.store.send(.cancelButtonTapped)
+    @Dependency(\.dismiss) private var dismiss
+    @Dependency(\.databaseClient) private var databaseClient
+
+    public var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+                case .cancelButtonTapped:
+                    return .run { [dismiss] _ in
+                        await dismiss()
+                    }
+
+                case .saveButtonTapped:
+                    return .run { [databaseClient, dismiss, meal = state.meal] send in
+                        try await databaseClient.insert(meal: meal)
+                        await send(.delegate(.mealSaved(meal)))
+                        await dismiss()
+                    } catch: { error, send in
+                        // TODO: Show alert in case of failed insert
+                        dump(error)
+                    }
+
+                case .addIngredientsButtonTapped:
+                    state.addIngredients = .init(ingredients: state.meal.ingredients)
+                    return .none
+
+                case .ingredientTapped(let ingredient):
+                    state.addIngredients = .init(ingredients: state.meal.ingredients)
+                    return .none
+
+                case .updateMeal(let meal):
+                    state.meal = meal
+                    return .none
+
+                case .servingsIncrementButtonTapped:
+                    state.meal.servings += 0.5
+                    return .none
+
+                case .servingsDecrementButtonTapped:
+                    guard state.meal.servings > 0.5 else { return .none }
+                    state.meal.servings -= 0.5
+                    return .none
+
+                case .onDeleteIngredients(let indices):
+                    state.meal.ingredients.remove(atOffsets: indices)
+                    return .none
+
+                case .showAllIngredientsButtonTapped:
+                    state.showsAllIngredients = true
+                    return .none
+
+                case .addIngredients(.dismiss):
+                    guard let addIngredients = state.addIngredients else { return .none }
+                    state.meal.ingredients = addIngredients.selectedIngredients
+                    return .none
+
+                case .addIngredients:
+                    return .none
+
+                case .delegate:
+                    return .none
             }
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            Button("Save") {
-                self.store.send(.saveButtonTapped)
-            }
-            .disabled(self.store.isSaveButtonDisabled)
-        }
-        ToolbarItemGroup(placement: .keyboard) {
-            Spacer()
-            Button("Done") {
-                self.focusedField = nil
-            }
+        .ifLet(\.$addIngredients, action: \.addIngredients) {
+            AddIngredients()
         }
     }
 }
 
-#Preview {
-    NavigationStack {
-        MealForm(
-            store: .init(
-                initialState: MealFormFeature.State(
-                    meal: .init(
-                        name: "name",
-                        ingredients: [
-                            .init(
-                                food: .preview(id: 1),
-                                quantity: .grams(100)
-                            ),
-                            .init(
-                                food: .preview(id: 2),
-                                quantity: .grams(150)
-                            ),
-                            .init(
-                                food: .preview(id: 3),
-                                quantity: .grams(230)
-                            ),
-                        ],
-                        servings: 3,
-                        instructions: "instructions"
-                    )
-                ),
-                reducer: {
-                    MealFormFeature()
-                }
-            )
+fileprivate extension Meal {
+    static var empty: Self {
+        .init(
+            name: "",
+            ingredients: [],
+            servings: 1,
+            instructions: ""
         )
     }
 }

@@ -8,9 +8,9 @@ import ComposableArchitecture
 final class QuantityPickerTests: XCTestCase {
     func testFullFlow() async throws {
         let store = TestStore(
-            initialState: QuantityPickerFeature.State(),
+            initialState: QuantityPicker.State(),
             reducer: {
-                QuantityPickerFeature()
+                QuantityPicker()
             }
         )
 

@@ -7,10 +7,10 @@ import Database
 
 @MainActor
 final class FoodSelectionTests: XCTestCase {
-    typealias State = FoodSelectionFeature.State
+    typealias State = FoodSelection.State
 
     func testComputedProperty_filteredFoods() async throws {
-        var state = FoodSelectionFeature.State()
+        var state = FoodSelection.State()
         state.foods = [.ribeye, .eggplant]
         state.filterQuery = "e"
 
@@ -72,9 +72,9 @@ final class FoodSelectionTests: XCTestCase {
         ribeye.id = 3
         let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         let store = TestStore(
-            initialState: FoodSelectionFeature.State(),
+            initialState: FoodSelection.State(),
             reducer: {
-                FoodSelectionFeature()
+                FoodSelection()
             },
             withDependencies: {
                 $0.databaseClient.observeFoods = { strategy, order in

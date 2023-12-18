@@ -7,9 +7,9 @@ import ComposableArchitecture
 final class TabBarTests: XCTestCase {
     func testUpdateTab() async throws {
         let store = TestStore(
-            initialState: TabBarFeature.State(),
+            initialState: TabBar.State(),
             reducer: {
-                TabBarFeature()
+                TabBar()
             }
         )
         await store.send(.updateTab(.foodSelection)) {

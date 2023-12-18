@@ -1,100 +1,69 @@
-import SwiftUI
+import Foundation
 import ComposableArchitecture
 import Shared
 
-public struct QuantityPicker: View {
-    @Bindable var store: StoreOf<QuantityPickerFeature>
-    @Environment(\.quantityPickerStyle) var quantityPickerStyle
-    @Environment(\.focusState) var focusState
+@Reducer
+public struct QuantityPicker {
+    @ObservableState
+    public struct State: Hashable {
+        public var quantity: Quantity
+        public var options: [Quantity.Unit]
 
-    private let formatter: NumberFormatter = {
-        let n = NumberFormatter()
-        n.numberStyle = .decimal
-        n.maximumFractionDigits = 2
-        n.minimum = 0.01
-        return n
-    }()
-
-    public init(store: StoreOf<QuantityPickerFeature>) {
-        self.store = store
-    }
-
-    public var body: some View {
-        Group {
-            switch quantityPickerStyle {
-                case .default:
-                    quantityPicker
-                case .dropdown:
-                    quantityPickerWithDropdown
-                case .dropdownGrouped:
-                    quantityPickerWithDropdownGrouped
-            }
-        }
-        .tint(.primary)
-    }
-
-    private var quantityPickerWithDropdownGrouped: some View {
-        GroupBox {
-            quantityPickerWithDropdown
+        public init(
+            quantity: Quantity = .grams(100),
+            options: [Quantity.Unit] = [.grams, .pounds, .ounces, .cups, .tablespoons, .teaspoons]
+        ) {
+            self.quantity = quantity
+            self.options = options
         }
     }
 
-    private var quantityPickerWithDropdown: some View {
-        DisclosureGroup {
-            quantityPicker
-                .padding(.top)
-        } label: {
-            ViewThatFits {
-                Text(
-                    "Nutritional values per \(store.quantity.formatted(width: .wide))"
+    @CasePathable
+    public enum Action {
+        case updateValue(Double)
+        case updateUnit(Quantity.Unit)
+        case incrementButtonTapped
+        case decrementButtonTapped
+    }
+
+    public init() { }
+
+    public func reduce(into state: inout State, action: Action) -> Effect<Action> {
+        switch action {
+            case .updateValue(let value):
+                guard value > 0 && value <= 1000 else { return .none }
+                state.quantity.value = value
+                return .none
+
+            case .updateUnit(let unit):
+                guard unit != state.quantity.unit else { return .none }
+                state.quantity = Quantity(
+                    value: unit == .grams ? 100 : 1,
+                    unit: unit
                 )
-                Text(
-                    "Nutritional values per \(store.quantity.formatted(width: .abbreviated))"
-                )
-            }
-            .font(.title2)
-            .lineLimit(1)
+                return .none
+
+            case .incrementButtonTapped:
+                let stride = incrementStride(for: state.quantity.unit)
+                state.quantity.value = min(state.quantity.value + stride, 1000)
+                return .none
+
+            case .decrementButtonTapped:
+                let stride = incrementStride(for: state.quantity.unit)
+                state.quantity.value = max(state.quantity.value - stride, stride)
+                return .none
         }
     }
 
-    private var quantityPicker: some View {
-        VStack {
-            LabeledContent("Value") {
-                HStack {
-                    TextField("Value", value: $store.quantity.value.sending(\.updateValue), formatter: formatter)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.decimalPad)
-                        .focused(focusState, equals: "quantity")
-                    Stepper("Value") {
-                        store.send(.incrementButtonTapped)
-                    } onDecrement: {
-                        store.send(.decrementButtonTapped)
-                    }
-                    .labelsHidden()
-
-                }
-            }
-            LabeledContent("Unit") {
-                Picker("Unit", selection: $store.quantity.unit.sending(\.updateUnit)) {
-                    ForEach(store.options, id: \.self) { unit in
-                        Text(unit.rawValue.capitalized)
-                            .tag(unit)
-                    }
-                }
-                .labelsHidden()
-            }
+    private func incrementStride(for unit: Quantity.Unit) -> Double {
+        switch unit {
+            case .grams: 10
+            case .pounds: 0.5
+            case .ounces: 0.5
+            case .cups: 0.25
+            case .tablespoons: 0.5
+            case .teaspoons: 0.5
+            default: 1
         }
     }
-}
-
-#Preview {
-    QuantityPicker(
-        store: .init(
-            initialState: QuantityPickerFeature.State(),
-            reducer: {
-                QuantityPickerFeature()
-            }
-        )
-    )
-    .padding()
 }

@@ -1,178 +1,187 @@
-import SwiftUI
-import Shared
+import Foundation
 import ComposableArchitecture
+import Shared
 import QuantityPicker
 
-public struct FoodComparison: View {
-    typealias SortingStrategy = FoodComparisonFeature.State.SortingStrategy
+@Reducer
+public struct FoodComparison {
+    @ObservableState
+    public struct State: Hashable {
+        var originalFoods: [Food]
+        var comparison: Comparison
+        var foodSortingStrategy: SortingStrategy = .value
+        var foodSortingOrder: SortOrder = .forward
+        var quantityPicker: QuantityPicker.State?
 
-    @Bindable var store: StoreOf<FoodComparisonFeature>
-
-    public init(store: StoreOf<FoodComparisonFeature>) {
-        self.store = store
-    }
-
-    public var body: some View {
-        Section {
-            chart
-        } header: {
-            if let store = self.store.scope(state: \.quantityPicker, action: \.quantityPicker) {
-                QuantityPicker(
-                    store: store
-                )
-                .quantityPickerStyle(.dropdown)
+        var availableSortingStrategies: [SortingStrategy] {
+            if [Comparison.energy, .macronutrients].contains(comparison) {
+                SortingStrategy.allCases
+            } else {
+                [.name, .value]
             }
         }
-        .padding([.horizontal, .bottom])
-        .toolbar {
-            toolbar
-        }
-        .navigationTitle(store.comparison.rawValue.capitalized)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarTitleMenu {
-            comparisonMenu
-        }
-    }
 
-    @ViewBuilder
-    private var chart: some View {
-        switch store.comparison {
-            case .energy:
-                EnergyBreakdownComparisonChart(
-                    foods: store.comparedFoods
-                )
-            case .protein:
-                QuantityComparisonChart(
-                    foods: store.comparedFoods,
-                    keyPath: \.protein,
-                    name: "Protein",
-                    color: .red
-                )
-            case .carbohydrate:
-                QuantityComparisonChart(
-                    foods: store.comparedFoods,
-                    keyPath: \.carbohydrate,
-                    name: "Carbohydrate",
-                    color: .yellow
-                )
-            case .sugar:
-                QuantityComparisonChart(
-                    foods: store.comparedFoods,
-                    keyPath: \.sugar,
-                    name: "Sugar",
-                    color: .teal
-                )
-            case .fiber:
-                QuantityComparisonChart(
-                    foods: store.comparedFoods,
-                    keyPath: \.fiber,
-                    name: "Fiber",
-                    color: .green
-                )
-            case .fat:
-                QuantityComparisonChart(
-                    foods: store.comparedFoods,
-                    keyPath: \.fatTotal,
-                    name: "Fat",
-                    color: .brown
-                )
-            case .saturatedFat:
-                QuantityComparisonChart(
-                    foods: store.comparedFoods,
-                    keyPath: \.fatSaturated,
-                    name: "Saturated Fat",
-                    color: .gray
-                )
-            case .cholesterol:
-                QuantityComparisonChart(
-                    foods: store.comparedFoods,
-                    keyPath: \.cholesterol.convertedToMilligrams,
-                    name: "Cholesterol",
-                    color: .orange
-                )
-            case .potassium:
-                QuantityComparisonChart(
-                    foods: store.comparedFoods,
-                    keyPath: \.potassium.convertedToMilligrams,
-                    name: "Potassium",
-                    color: .purple
-                )
-            case .sodium:
-                QuantityComparisonChart(
-                    foods: store.comparedFoods,
-                    keyPath: \.sodium.convertedToMilligrams,
-                    name: "Sodium",
-                    color: .mint
-                )
-            case .macronutrients:
-                MacronutrientsComparisonChart(
-                    foods: store.comparedFoods
-                )
-        }
-    }
-
-    private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            sortMenu
-        }
-    }
-
-    private var comparisonMenu: some View {
-        Picker(
-            "Comparison Type",
-            selection: self.$store.comparison.sending(\.updateComparisonType)
-        ) {
-            ForEach(Comparison.allCases) { comparison in
-                Text(comparison.rawValue.capitalized)
-                    .tag(comparison)
-            }
-        }
-    }
-
-    private var sortMenu: some View {
-        Menu {
-            Picker(
-                "Sort by",
-                selection: self.$store.foodSortingStrategy.sending(\.updateSortingStrategy)
-            ) {
-                ForEach(self.store.availableSortingStrategies) { strategy in
-                    let text = strategy.rawValue.capitalized
-                    ZStack {
-                        if strategy == self.store.foodSortingStrategy {
-                            let systemImageName = self.store.foodSortingOrder == .forward ? "chevron.up" : "chevron.down"
-                            Label(text, systemImage: systemImageName)
-                                .imageScale(.small)
-                        } else {
-                            Text(text)
-                        }
+        var comparedFoods: [Food] {
+            if let quantity = quantityPicker?.quantity {
+                originalFoods
+                    .map {
+                        $0.changingServingSize(to: quantity)
                     }
-                    .tag(strategy)
-                }
+                    .sorted(
+                        by: foodSortingStrategy,
+                        comparison: comparison,
+                        order: foodSortingOrder
+                    )
+            } else {
+                originalFoods
+                    .sorted(
+                        by: foodSortingStrategy,
+                        comparison: comparison,
+                        order: foodSortingOrder
+                    )
             }
-        } label: {
-            Image(systemName: "arrow.up.arrow.down")
-                .imageScale(.medium)
         }
-        .menuActionDismissBehavior(.disabled)
+
+        public enum SortingStrategy: String, Identifiable, Hashable, CaseIterable {
+            case name
+            case value
+            case protein
+            case carbohydrate
+            case fat
+
+            public var id: Self { self }
+        }
+
+        public init(
+            foods: [Food],
+            comparison: Comparison,
+            foodSortingStrategy: SortingStrategy = .value,
+            foodSortingOrder: SortOrder = .forward,
+            canChangeQuantity: Bool = true
+        ) {
+            self.originalFoods = foods
+            self.comparison = comparison
+            self.foodSortingStrategy = foodSortingStrategy
+            self.foodSortingOrder = foodSortingOrder
+            if canChangeQuantity {
+                quantityPicker = .init()
+            }
+        }
+    }
+
+    @CasePathable
+    public enum Action {
+        case updateSortingStrategy(State.SortingStrategy)
+        case updateComparisonType(Comparison)
+        case quantityPicker(QuantityPicker.Action)
+    }
+
+    public init() { }
+
+    public var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+                case .updateSortingStrategy(let strategy):
+                    if state.foodSortingStrategy == strategy {
+                        state.foodSortingOrder.toggle()
+                    } else {
+                        state.foodSortingStrategy = strategy
+                        state.foodSortingOrder = .forward
+                    }
+                    return .none
+
+                case .updateComparisonType(let comparison):
+                    guard comparison != state.comparison else { return .none }
+                    state.comparison = comparison
+                    let isSortingByInvalidCriteria = ![.energy, .macronutrients].contains(comparison) && [.protein, .carbohydrate, .fat].contains(state.foodSortingStrategy)
+                    if isSortingByInvalidCriteria {
+                        state.foodSortingStrategy = .value
+                        state.foodSortingOrder = .forward
+                    }
+                    return .none
+
+                case .quantityPicker(let action):
+                    return reduce(state: &state, action: action)
+            }
+        }
+        .ifLet(\.quantityPicker, action: \.quantityPicker) {
+            QuantityPicker()
+        }
+    }
+
+    private func reduce(state: inout State, action: QuantityPicker.Action) -> Effect<Action> {
+        // nothing
+        return .none
     }
 }
 
-#Preview {
-    FoodComparison(
-        store: Store(
-            initialState: FoodComparisonFeature.State(
-                foods: (1...7).map { Food.preview(id: $0, name: "eggplant\($0)") },
-                comparison: .energy
-            ),
-            reducer: {
-                FoodComparisonFeature()
-            }
-        )
-    )
+extension Array<Food> {
+    mutating func sort(
+        by strategy: FoodComparison.State.SortingStrategy,
+        comparison: Comparison?,
+        order: SortOrder
+    ) {
+        switch strategy {
+            case .name:
+                sort(using: SortDescriptor(\.name, order: order))
+            case .value:
+                if let comparison {
+                    sort(by: comparison, order: order)
+                }
+            case .protein:
+                sort(using: SortDescriptor(\.protein, order: order))
+            case .carbohydrate:
+                sort(using: SortDescriptor(\.carbohydrate, order: order))
+            case .fat:
+                sort(using: SortDescriptor(\.fatTotal, order: order))
+        }
+    }
+
+    func sorted(
+        by strategy: FoodComparison.State.SortingStrategy,
+        comparison: Comparison,
+        order: SortOrder
+    ) -> [Food] {
+        var copy = self
+        copy.sort(by: strategy, comparison: comparison, order: order)
+        return copy
+    }
 }
 
-fileprivate extension Quantity {
-    var convertedToMilligrams: Self {
-        converted(to: .milligrams)
+extension Array<Food> {
+    mutating func sort(by comparison: Comparison, order: SortOrder) {
+        switch comparison {
+            case .energy:
+                let descriptor = SortDescriptor(\Food.energy, order: order)
+                self.sort(using: descriptor)
+            case .protein, .carbohydrate, .fat, .cholesterol, .potassium, .sodium, .macronutrients, .sugar, .fiber, .saturatedFat:
+                let keyPath: KeyPath<Food, Quantity> = switch comparison {
+                case .protein: \.protein
+                case .carbohydrate: \.carbohydrate
+                case .sugar: \.sugar
+                case .fiber: \.fiber
+                case .saturatedFat: \.fatSaturated
+                case .fat: \.fatTotal
+                case .cholesterol: \.cholesterol
+                case .potassium: \.potassium
+                case .sodium: \.sodium
+                case .macronutrients: \.macronutrients
+                case .energy: fatalError()
+                }
+                let descriptor = SortDescriptor(keyPath, order: order)
+                self.sort(using: descriptor)
+        }
+    }
+
+    func sorted(by comparison: Comparison, order: SortOrder) -> [Food] {
+        var copy = self
+        copy.sort(by: comparison, order: order)
+        return copy
+    }
+}
+
+extension Food {
+    var macronutrients: Quantity {
+        protein + carbohydrate + fatTotal
     }
 }

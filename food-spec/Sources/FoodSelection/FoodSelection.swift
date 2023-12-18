@@ -1,113 +1,102 @@
-import SwiftUI
-import ComposableArchitecture
+import Foundation
 import Shared
+import Database
 import FoodComparison
+import ComposableArchitecture
 
-public struct FoodSelection: View {
-    @Bindable var store: StoreOf<FoodSelectionFeature>
+@Reducer
+public struct FoodSelection {
+    @ObservableState
+    public struct State: Hashable {
+        var foods: [Food] = []
+        var selectedFoodIds: Set<Int64?> = []
+        var filterQuery: String = ""
+        @Presents var foodComparison: FoodComparison.State?
 
-    public init(store: StoreOf<FoodSelectionFeature>) {
-        self.store = store
-    }
-
-    public var body: some View {
-        List(selection: $store.selectedFoodIds.sending(\.updateSelection)) {
-            if !self.store.filteredFoods.isEmpty {
-                recentSearchesSection
+        var filteredFoods: [Food] {
+            guard !filterQuery.isEmpty else { return foods }
+            return foods.filter {
+                $0.name.range(of: filterQuery, options: .caseInsensitive) != nil
             }
         }
-        .listStyle(.sidebar)
-        .searchable(
-            text: $store.filterQuery.sending(\.updateFilter),
-            prompt: "Filter"
-        )
-        .environment(\.editMode, .constant(.active))
-        .navigationTitle(navigationTitle)
-        .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            toolbar
-        }
-        .navigationDestination(
-            item: $store.scope(state: \.foodComparison, action: \.foodComparison),
-            destination: { store in
-                FoodComparison(store: store)
-            }
-        )
-        .onFirstAppear {
-            store.send(.onFirstAppear)
-        }
-    }
 
-    private var recentSearchesSection: some View {
-        Section {
-            ForEach(store.filteredFoods, id: \.id) { item in
-                LabeledListRow(title: item.name.capitalized)
-                    .selectionDisabled(store.state.isSelectionDisabled(for: item))
-            }
-        } header: {
-            Text("Recent searches")
+        var isCompareButtonDisabled: Bool {
+            selectedFoodIds.count < 2
+        }
+
+        var shouldShowCancelButton: Bool {
+            !selectedFoodIds.isEmpty
+        }
+
+        func isSelectionDisabled(for food: Food) -> Bool {
+            selectedFoodIds.count >= 7 &&
+            !selectedFoodIds.contains(food.id)
+        }
+
+        public init(selectedFoodIds: Set<Int64?> = []) {
+            self.selectedFoodIds = selectedFoodIds
         }
     }
 
-    @ToolbarContentBuilder
-    private var toolbar: some ToolbarContent {
-        if store.shouldShowCancelButton {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Cancel") {
-                    store.send(.cancelButtonTapped)
-                }
-            }
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-            Menu("Compare") {
-                ForEach(Comparison.allCases) { comparison in
-                    Button(comparison.rawValue.capitalized) {
-                        store.send(.compareButtonTapped(comparison))
+    @CasePathable
+    public enum Action {
+        case onFirstAppear
+        case updateFoods([Food])
+        case updateSelection(Set<Int64?>)
+        case updateFilter(String)
+        case foodComparison(PresentationAction<FoodComparison.Action>)
+        case cancelButtonTapped
+        case compareButtonTapped(Comparison)
+    }
+
+    public init() { }
+
+    @Dependency(\.databaseClient) private var databaseClient
+
+    public var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+                case .onFirstAppear:
+                    return .run { [databaseClient] send in
+                        let observation = databaseClient.observeFoods(sortedBy: Column("name"), order: .forward)
+                        for await foods in observation {
+                            await send(.updateFoods(foods))
+                        }
                     }
-                }
+
+                case .updateFoods(let foods):
+                    state.foods = foods
+                    return .none
+
+                case .updateSelection(let selection):
+                    state.selectedFoodIds = selection
+                    return .none
+
+                case .updateFilter(let query):
+                    state.filterQuery = query
+                    return .none
+
+                case .cancelButtonTapped:
+                    state.selectedFoodIds = []
+                    return .none
+
+                case .compareButtonTapped(let comparison):
+                    state.foodComparison = .init(
+                        foods: state.filteredFoods.filter {
+                            state.selectedFoodIds.contains($0.id)
+                        },
+                        comparison: comparison,
+                        foodSortingStrategy: .value,
+                        foodSortingOrder: .forward
+                    )
+                    return .none
+
+                case .foodComparison:
+                    return .none
             }
-            .disabled(store.isCompareButtonDisabled)
         }
-    }
-
-    private var navigationTitle: String {
-        if store.selectedFoodIds.count < 2 {
-            "Select \(2 - store.selectedFoodIds.count) or more"
-        } else {
-            "\(store.selectedFoodIds.count) foods selected"
+        .ifLet(\.$foodComparison, action: \.foodComparison) {
+            FoodComparison()
         }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        FoodSelection(
-            store: .init(
-                initialState: FoodSelectionFeature.State(),
-                reducer: {
-                    FoodSelectionFeature()
-                        ._printChanges()
-                }
-            )
-        )
-    }
-}
-
-fileprivate extension Food {
-    init(id: Int64, name: String) {
-        self.init(
-            id: id,
-            name: name,
-            energy: .zero,
-            fatTotal: .zero,
-            fatSaturated: .zero,
-            protein: .zero,
-            sodium: .zero,
-            potassium: .zero,
-            cholesterol: .zero,
-            carbohydrate: .zero,
-            fiber: .zero,
-            sugar: .zero
-        )
     }
 }

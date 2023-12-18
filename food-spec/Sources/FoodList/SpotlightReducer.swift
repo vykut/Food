@@ -5,13 +5,13 @@ import Database
 
 @Reducer
 struct SpotlightReducer {
-    typealias State = FoodListFeature.State
-    typealias Action = FoodListFeature.Action
+    typealias State = FoodList.State
+    typealias Action = FoodList.Action
 
     @Dependency(\.spotlightClient) var spotlightClient
     @Dependency(\.databaseClient) var databaseClient
 
-    func reduce(into state: inout FoodListFeature.State, action: FoodListFeature.Action) -> Effect<FoodListFeature.Action> {
+    func reduce(into state: inout FoodList.State, action: FoodList.Action) -> Effect<FoodList.Action> {
         switch action {
             case .onRecentFoodsChange(let recentFoods):
                 return .run { send in
@@ -29,7 +29,7 @@ struct SpotlightReducer {
         }
     }
 
-    private func reduce(into state: inout FoodListFeature.State, action: FoodListFeature.Action.Spotlight) -> Effect<FoodListFeature.Action> {
+    private func reduce(into state: inout FoodList.State, action: FoodList.Action.Spotlight) -> Effect<FoodList.Action> {
         switch action {
             case .handleSelectedFood(let activity):
                 guard let foodName = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return .none }
@@ -53,7 +53,7 @@ struct SpotlightReducer {
     }
 }
 
-extension FoodListFeature.Action {
+extension FoodList.Action {
     @CasePathable
     public enum Spotlight {
         case handleSelectedFood(NSUserActivity)
