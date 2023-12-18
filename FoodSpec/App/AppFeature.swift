@@ -6,17 +6,17 @@ import TabBar
 struct AppFeature {
     @ObservableState
     struct State: Equatable {
-        var tabBar: TabBarFeature.State = .init()
+        var tabBar: TabBar.State = .init()
     }
 
     @CasePathable
     enum Action {
-        case tabBar(TabBarFeature.Action)
+        case tabBar(TabBar.Action)
     }
 
     var body: some ReducerOf<Self> {
         Scope(state: \.tabBar, action: \.tabBar) {
-            TabBarFeature()
+            TabBar()
         }
         Reduce { state, action in
             switch action {

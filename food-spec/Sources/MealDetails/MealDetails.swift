@@ -1,109 +1,124 @@
-import SwiftUI
+import Foundation
 import Shared
 import MealForm
 import FoodDetails
 import FoodComparison
 import ComposableArchitecture
 
-public struct MealDetails: View {
-    @Bindable var store: StoreOf<MealDetailsFeature>
+@Reducer 
+public struct MealDetails {
+    @ObservableState
+    public struct State: Hashable {
+        var meal: Meal
+        var nutritionalValuesPerTotal: Ingredient
+        var nutritionalValuesPerServing: Ingredient
+        @Presents var destination: Destination.State?
 
-    public init(store: StoreOf<MealDetailsFeature>) {
-        self.store = store
-    }
-
-    public var body: some View {
-        List {
-            summarySection
-            ingredientsSection
-            notesSection
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Edit") {
-                    self.store.send(.editButtonTapped)
-                }
-            }
-        }
-        .navigationTitle(self.store.meal.name.capitalized)
-        .navigationDestination(
-            item: self.$store.scope(state: \.destination?.foodDetails, action: \.destination.foodDetails),
-            destination: { store in
-                FoodDetails(store: store)
-            }
-        )
-        .navigationDestination(
-            item: self.$store.scope(state: \.destination?.foodComparison, action: \.destination.foodComparison),
-            destination: { store in
-                FoodComparison(store: store)
-            }
-        )
-        .sheet(
-            item: self.$store.scope(state: \.destination?.mealForm, action: \.destination.mealForm),
-            content: { store in
-                NavigationStack {
-                    MealForm(store: store)
-                }
-            }
-        )
-    }
-
-    private var summarySection: some View {
-        Section("Summary") {
-            let nutritionFacts = self.store.nutritionalValuesPerTotal.foodWithQuantity
-            LabeledContent("Energy", value: nutritionFacts.energy.formatted(width: .wide))
-            LabeledContent("Protein", value: nutritionFacts.protein.formatted(width: .wide))
-            LabeledContent("Carbohydrate", value: nutritionFacts.carbohydrate.formatted(width: .wide))
-            LabeledContent("Fat", value: nutritionFacts.fatTotal.formatted(width: .wide))
-            LabeledContent("Servings", value: self.store.meal.servings, format: .number)
-
-            ListButton("Nutritional values per serving") {
-                self.store.send(.nutritionalInfoPerServingButtonTapped)
-            }
-            .disabled(self.store.meal.servings == 1)
-
-            ListButton("Nutritional values per total") {
-                self.store.send(.nutritionalInfoButtonTapped)
-            }
+        public init(meal: Meal) {
+            @Dependency(\.nutritionalValuesCalculator) var calculator
+            self.meal = meal
+            self.nutritionalValuesPerTotal = calculator.nutritionalValues(meal: meal)
+            self.nutritionalValuesPerServing = calculator.nutritionalValuesPerServing(meal: meal)
         }
     }
 
-    private var ingredientsSection: some View {
-        Section("^[\(self.store.meal.ingredients.count) Ingredient](inflect: true)") {
-            if self.store.meal.ingredients.count > 1 {
-                ListButton("Ingredient comparison") {
-                    self.store.send(.ingredientComparisonButtonTapped)
-                }
+    @CasePathable
+    public enum Action {
+        case editButtonTapped
+        case nutritionalInfoPerServingButtonTapped
+        case nutritionalInfoButtonTapped
+        case ingredientComparisonButtonTapped
+        case ingredientTapped(Ingredient)
+        case destination(PresentationAction<Destination.Action>)
+    }
+
+    public init() { }
+
+    @Dependency(\.nutritionalValuesCalculator) private var calculator
+
+    public var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+                case .editButtonTapped:
+                    state.destination = .mealForm(.init(meal: state.meal))
+                    return .none
+
+                case .nutritionalInfoPerServingButtonTapped:
+                    state.destination = .foodDetails(.init(
+                        food: state.nutritionalValuesPerServing.food,
+                        quantity: state.nutritionalValuesPerServing.quantity
+                    ))
+                    return .none
+
+                case .nutritionalInfoButtonTapped:
+                    state.destination = .foodDetails(.init(
+                        food: state.nutritionalValuesPerTotal.food,
+                        quantity: state.nutritionalValuesPerTotal.quantity
+                    ))
+                    return .none
+
+                case .ingredientComparisonButtonTapped:
+                    let foods = state.meal.ingredients.map(\.foodWithQuantity)
+                    state.destination = .foodComparison(.init(
+                        foods: foods,
+                        comparison: .energy,
+                        canChangeQuantity: false
+                    ))
+                    return .none
+
+                case .ingredientTapped(let ingredient):
+                    state.destination = .foodDetails(.init(
+                        food: ingredient.food,
+                        quantity: ingredient.quantity
+                    ))
+                    return .none
+
+                case .destination(.presented(.mealForm(.delegate(.mealSaved(let meal))))):
+                    state.meal = meal
+                    return .none
+
+                case .destination:
+                    return .none
             }
-            ForEach(self.store.meal.ingredients, id: \.food.id) { ingredient in
-                ListButton {
-                    self.store.send(.ingredientTapped(ingredient))
-                } label: {
-                    LabeledListRow(
-                        title: "\(ingredient.food.name.capitalized) \(ingredient.quantity.formatted(width: .wide, fractionLength: 0...2))",
-                        footnote: ingredient.foodWithQuantity.nutritionalSummary
-                    )
-                }
+        }
+        .onChange(of: \.meal) { _, newMeal in
+            Reduce { state, _ in
+                state.nutritionalValuesPerTotal = calculator.nutritionalValues(meal: newMeal)
+                state.nutritionalValuesPerServing = calculator.nutritionalValuesPerServing(meal: newMeal)
+                return .none
             }
+        }
+        .ifLet(\.$destination, action: \.destination) {
+            Destination()
         }
     }
 
-    private var notesSection: some View {
-        Section("Notes") {
-            Text(self.store.meal.instructions)
+    @Reducer
+    public struct Destination {
+        @ObservableState
+        public enum State: Hashable {
+            case mealForm(MealForm.State)
+            case foodDetails(FoodDetails.State)
+            case foodComparison(FoodComparison.State)
         }
-    }
-}
 
-#Preview {
-    NavigationStack {
-        MealDetails(
-            store: .init(
-                initialState: MealDetailsFeature.State(meal: .preview),
-                reducer: {
-                    MealDetailsFeature()
-                }
-            )
-        )
+        @CasePathable
+        public enum Action {
+            case mealForm(MealForm.Action)
+            case foodDetails(FoodDetails.Action)
+            case foodComparison(FoodComparison.Action)
+        }
+
+        public var body: some ReducerOf<Self> {
+            Scope(state: \.mealForm, action: \.mealForm) {
+                MealForm()
+            }
+            Scope(state: \.foodDetails, action: \.foodDetails) {
+                FoodDetails()
+            }
+            Scope(state: \.foodComparison, action: \.foodComparison) {
+                FoodComparison()
+            }
+        }
     }
 }

@@ -4,12 +4,12 @@ import Ads
 
 @Reducer
 struct BillboardReducer {
-    typealias State = FoodListFeature.State
-    typealias Action = FoodListFeature.Action
+    typealias State = FoodList.State
+    typealias Action = FoodList.Action
 
     @Dependency(\.billboardClient) private var billboardClient
 
-    func reduce(into state: inout FoodListFeature.State, action: FoodListFeature.Action) -> Effect<FoodListFeature.Action> {
+    func reduce(into state: inout FoodList.State, action: FoodList.Action) -> Effect<FoodList.Action> {
         switch action {
             case .onFirstAppear:
                 return .run { [billboardClient] send in
@@ -31,7 +31,7 @@ struct BillboardReducer {
         }
     }
 
-    private func reduce(into state: inout FoodListFeature.State, action: FoodListFeature.Action.Billboard) -> Effect<FoodListFeature.Action> {
+    private func reduce(into state: inout FoodList.State, action: FoodList.Action.Billboard) -> Effect<FoodList.Action> {
         switch action {
             case .showBanner(let banner):
                 state.billboard.banner = banner
@@ -40,13 +40,13 @@ struct BillboardReducer {
     }
 }
 
-extension FoodListFeature.State {
+extension FoodList.State {
     public struct Billboard: Equatable {
         var banner: BillboardAd?
     }
 }
 
-extension FoodListFeature.Action {
+extension FoodList.Action {
     @CasePathable
     public enum Billboard {
         case showBanner(BillboardAd?)

@@ -5,16 +5,16 @@ import Shared
 
 @MainActor
 final class FoodComparisonReducerTests: XCTestCase {
-    typealias State = FoodComparisonFeature.State
+    typealias State = FoodComparison.State
 
     func testStateDefaultInitializer() async throws {
         let store = TestStore(
-            initialState: FoodComparisonFeature.State(
+            initialState: FoodComparison.State(
                 foods: [.preview(id: 1), .preview(id: 2)],
                 comparison: .energy
             ),
             reducer: {
-                FoodComparisonFeature()
+                FoodComparison()
             }
         )
 
@@ -133,12 +133,12 @@ final class FoodComparisonReducerTests: XCTestCase {
         var ribeye = Food.ribeye
         ribeye.id = 3
         let store = TestStore(
-            initialState: FoodComparisonFeature.State(
+            initialState: FoodComparison.State(
                 foods: [eggplant, oliveOil, ribeye],
                 comparison: .energy
             ),
             reducer: {
-                FoodComparisonFeature()
+                FoodComparison()
             }
         )
 
@@ -173,12 +173,12 @@ final class FoodComparisonReducerTests: XCTestCase {
 
     func testIntegration_withQuantityPicker() async throws {
         let store = TestStore(
-            initialState: FoodComparisonFeature.State(
+            initialState: FoodComparison.State(
                 foods: [.preview],
                 comparison: .energy
             ),
             reducer: {
-                FoodComparisonFeature()
+                FoodComparison()
             }
         )
 

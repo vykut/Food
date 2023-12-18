@@ -7,9 +7,9 @@ import ComposableArchitecture
 final class IngredientPickerTests: XCTestCase {
     func testStateInitializers() async throws {
         var store = TestStore(
-            initialState: IngredientPickerFeature.State(food: .preview),
+            initialState: IngredientPicker.State(food: .preview),
             reducer: {
-                IngredientPickerFeature()
+                IngredientPicker()
             }
         )
         store.assert { state in
@@ -23,12 +23,12 @@ final class IngredientPickerTests: XCTestCase {
         )
 
         store = TestStore(
-            initialState: IngredientPickerFeature.State(
+            initialState: IngredientPicker.State(
                 food: .preview,
                 quantity: .init(value: 5.5, unit: .ounces)
             ),
             reducer: {
-                IngredientPickerFeature()
+                IngredientPicker()
             }
         )
         store.assert { state in
@@ -44,9 +44,9 @@ final class IngredientPickerTests: XCTestCase {
 
     func testUpdateSelection() async throws {
         let store = TestStore(
-            initialState: IngredientPickerFeature.State(food: .preview),
+            initialState: IngredientPicker.State(food: .preview),
             reducer: {
-                IngredientPickerFeature()
+                IngredientPicker()
             }
         )
         await store.send(.updateSelection(true)) {
@@ -59,9 +59,9 @@ final class IngredientPickerTests: XCTestCase {
 
     func testIntegrationWithQuantityPicker() async throws {
         let store = TestStore(
-            initialState: IngredientPickerFeature.State(food: .preview),
+            initialState: IngredientPicker.State(food: .preview),
             reducer: {
-                IngredientPickerFeature()
+                IngredientPicker()
             }
         )
         await store.send(.updateSelection(true)) {

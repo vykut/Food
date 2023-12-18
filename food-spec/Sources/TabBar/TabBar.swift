@@ -1,76 +1,59 @@
-import SwiftUI
+import Shared
 import FoodList
 import FoodSelection
 import MealList
 import ComposableArchitecture
 
-public struct TabBar: View {
-    typealias Tab = TabBarFeature.State.Tab
+@Reducer
+public struct TabBar {
+    @ObservableState
+    public struct State: Equatable {
+        var tab: Tab = .foodList
+        var foodList: FoodList.State = .init()
+        var foodSelection: FoodSelection.State = .init()
+        var mealList: MealList.State = .init()
 
-    @Bindable var store: StoreOf<TabBarFeature>
+        public enum Tab: Hashable {
+            case foodList
+            case foodSelection
+            case mealList
+        }
 
-    public init(store: StoreOf<TabBarFeature>) {
-        self.store = store
+        public init() { }
     }
 
-    public var body: some View {
-        TabView(
-            selection: $store.tab.sending(\.updateTab),
-            content: {
-                foodList
-                foodSelection
-                mealList
+    @CasePathable
+    public enum Action {
+        case updateTab(State.Tab)
+        case foodList(FoodList.Action)
+        case foodSelection(FoodSelection.Action)
+        case mealList(MealList.Action)
+    }
+
+    public init() { }
+
+    public var body: some ReducerOf<Self> {
+        Scope(state: \.foodSelection, action: \.foodSelection) {
+            FoodSelection()
+        }
+        Scope(state: \.foodList, action: \.foodList) {
+            FoodList()
+        }
+        Scope(state: \.mealList, action: \.mealList) {
+            MealList()
+        }
+        Reduce { state, action in
+            switch action {
+                case .updateTab(let tab):
+                    state.tab = tab
+                    return .none
+                case .foodList:
+                    return .none
+                case .foodSelection:
+                    return .none
+                case .mealList:
+                    return .none
             }
-        )
+        }
     }
-
-    @MainActor
-    private var foodList: some View {
-        NavigationStack {
-            FoodList(
-                store: store.scope(state: \.foodList, action: \.foodList)
-            )
-        }
-        .tabItem {
-            Label("Search", systemImage: "magnifyingglass")
-        }
-        .tag(Tab.foodList)
-    }
-
-    @MainActor
-    private var foodSelection: some View {
-        NavigationStack {
-            FoodSelection(
-                store: store.scope(state: \.foodSelection, action: \.foodSelection)
-            )
-        }
-        .tabItem {
-            Label("Food Comparison", systemImage: "shuffle")
-        }
-        .tag(Tab.foodSelection)
-    }
-
-    @MainActor
-    private var mealList: some View {
-        NavigationStack {
-            MealList(
-                store: store.scope(state: \.mealList, action: \.mealList)
-            )
-        }
-        .tabItem {
-            Label("Meals", systemImage: "fork.knife")
-        }
-        .tag(Tab.mealList)
-    }
-}
-
-#Preview {
-    TabBar(
-        store: .init(
-            initialState: TabBarFeature.State(),
-            reducer: {
-                TabBarFeature()
-            }
-        )
-    )
 }

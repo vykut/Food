@@ -8,9 +8,9 @@ import ComposableArchitecture
 final class MealListTests: XCTestCase {
     func testStateInitialization() async throws {
         let store = TestStore(
-            initialState: MealListFeature.State(),
+            initialState: MealList.State(),
             reducer: {
-                MealListFeature()
+                MealList()
             }
         )
         store.assert {
@@ -28,9 +28,9 @@ final class MealListTests: XCTestCase {
         ]
         let (stream, continuation) = AsyncStream.makeStream(of: [Meal].self)
         let store = TestStore(
-            initialState: MealListFeature.State(),
+            initialState: MealList.State(),
             reducer: {
-                MealListFeature()
+                MealList()
             },
             withDependencies: {
                 $0.databaseClient.observeMeals = { stream }
@@ -53,9 +53,9 @@ final class MealListTests: XCTestCase {
 
     func testPlusButton() async throws {
         let store = TestStore(
-            initialState: MealListFeature.State(),
+            initialState: MealList.State(),
             reducer: {
-                MealListFeature()
+                MealList()
             }
         )
         await store.send(.plusButtonTapped) {
@@ -65,9 +65,9 @@ final class MealListTests: XCTestCase {
 
     func testMealTapped() async throws {
         let store = TestStore(
-            initialState: MealListFeature.State(),
+            initialState: MealList.State(),
             reducer: {
-                MealListFeature()
+                MealList()
             }
         )
         await store.send(.mealTapped(.chimichurri)) {
@@ -83,9 +83,9 @@ final class MealListTests: XCTestCase {
         ]
         let (stream, continuation) = AsyncStream.makeStream(of: [Meal].self)
         let store = TestStore(
-            initialState: MealListFeature.State(),
+            initialState: MealList.State(),
             reducer: {
-                MealListFeature()
+                MealList()
             },
             withDependencies: {
                 $0.databaseClient.observeMeals = { stream }
@@ -112,9 +112,9 @@ final class MealListTests: XCTestCase {
     func testFullFlow() async throws {
         let (stream, continuation) = AsyncStream.makeStream(of: [Meal].self)
         let store = TestStore(
-            initialState: MealListFeature.State(),
+            initialState: MealList.State(),
             reducer: {
-                MealListFeature()
+                MealList()
             },
             withDependencies: {
                 $0.databaseClient.observeMeals = { stream }

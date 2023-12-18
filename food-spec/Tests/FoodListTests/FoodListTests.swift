@@ -11,9 +11,9 @@ import Spotlight
 final class FoodListTests: XCTestCase {
     func testStateDefaultInitializer() async throws {
         let store = TestStore(
-            initialState: FoodListFeature.State(),
+            initialState: FoodList.State(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             }
         )
 
@@ -32,15 +32,15 @@ final class FoodListTests: XCTestCase {
 
     func test_onTask() async throws {
         let store = TestStore(
-            initialState: FoodListFeature.State(),
+            initialState: FoodList.State(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             },
             withDependencies: {
                 $0.userPreferencesClient = .init(
                     getPreferences: {
                         .init(
-                            recentSearchesSortingStrategy: FoodListFeature.State.SortingStrategy.energy.rawValue,
+                            recentSearchesSortingStrategy: FoodList.State.SortingStrategy.energy.rawValue,
                             recentSearchesSortingOrder: .reverse
                         )
                     },
@@ -83,15 +83,15 @@ final class FoodListTests: XCTestCase {
     func test_onTask_hasRecentFoods() async throws {
         let food = Food.preview
         let store = TestStore(
-            initialState: FoodListFeature.State(),
+            initialState: FoodList.State(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             },
             withDependencies: {
                 $0.userPreferencesClient = .init(
                     getPreferences: {
                         .init(
-                            recentSearchesSortingStrategy: FoodListFeature.State.SortingStrategy.energy.rawValue,
+                            recentSearchesSortingStrategy: FoodList.State.SortingStrategy.energy.rawValue,
                             recentSearchesSortingOrder: .reverse
                         )
                     },
@@ -140,16 +140,16 @@ final class FoodListTests: XCTestCase {
         let ribeyeApi = FoodApiModel.ribeye
         let ribeye = Food(foodApiModel: ribeyeApi)
         let store = TestStore(
-            initialState: FoodListFeature.State(),
+            initialState: FoodList.State(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
                 $0.userPreferencesClient = .init(
                     getPreferences: {
                         .init(
-                            recentSearchesSortingStrategy: FoodListFeature.State.SortingStrategy.energy.rawValue,
+                            recentSearchesSortingStrategy: FoodList.State.SortingStrategy.energy.rawValue,
                             recentSearchesSortingOrder: .reverse
                         )
                     },
@@ -336,9 +336,9 @@ final class FoodListTests: XCTestCase {
         let ribeyeApi = FoodApiModel.ribeye
         let ribeye = Food(foodApiModel: ribeyeApi)
         let store = TestStore(
-            initialState: FoodListFeature.State(),
+            initialState: FoodList.State(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -358,9 +358,9 @@ final class FoodListTests: XCTestCase {
 
     func testSearchError() async throws {
         let store = TestStore(
-            initialState: FoodListFeature.State(),
+            initialState: FoodList.State(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -389,9 +389,9 @@ final class FoodListTests: XCTestCase {
 
     func testSearchBarFocus() async throws {
         let store = TestStore(
-            initialState: FoodListFeature.State(),
+            initialState: FoodList.State(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             },
             withDependencies: {
                 $0.mainQueue = .immediate
@@ -416,12 +416,12 @@ final class FoodListTests: XCTestCase {
     func testDeletion_error() async throws {
         let store = TestStore(
             initialState: {
-                var state = FoodListFeature.State()
+                var state = FoodList.State()
                 state.recentFoods = [.preview]
                 return state
             }(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             },
             withDependencies: {
                 $0.databaseClient.deleteFood = { _ in
@@ -441,9 +441,9 @@ final class FoodListTests: XCTestCase {
     func testIntegrationWithSpotlight_foodSelection() async throws {
         let eggplant = Food.eggplant
         let store = TestStore(
-            initialState: FoodListFeature.State(),
+            initialState: FoodList.State(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             }
         )
         store.dependencies.databaseClient.getFood = {
@@ -462,12 +462,12 @@ final class FoodListTests: XCTestCase {
         let eggplant = Food.eggplant
         let store = TestStore(
             initialState: {
-                var state = FoodListFeature.State()
+                var state = FoodList.State()
                 state.destination = .foodDetails(.init(food: eggplant))
                 return state
             }(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             }
         )
         store.dependencies.mainQueue = .immediate
@@ -515,16 +515,16 @@ final class FoodListTests: XCTestCase {
             transparent: true
         )
         let store = TestStore(
-            initialState: FoodListFeature.State(),
+            initialState: FoodList.State(),
             reducer: {
-                FoodListFeature()
+                FoodList()
             }
         )
         store.exhaustivity = .off
         store.dependencies.userPreferencesClient = .init(
             getPreferences: {
                 .init(
-                    recentSearchesSortingStrategy: FoodListFeature.State.SortingStrategy.energy.rawValue,
+                    recentSearchesSortingStrategy: FoodList.State.SortingStrategy.energy.rawValue,
                     recentSearchesSortingOrder: .reverse
                 )
             },

@@ -1,82 +1,85 @@
-import SwiftUI
+import Foundation
 import Shared
 import IngredientPicker
 import Database
 import ComposableArchitecture
 
-public struct AddIngredients: View {
-    @Bindable var store: StoreOf<AddIngredientsFeature>
+@Reducer
+public struct AddIngredients {
+    public typealias FoodID = Int64?
 
-    public init(store: StoreOf<AddIngredientsFeature>) {
-        self.store = store
-    }
+    @ObservableState
+    public struct State: Hashable {
+        var initialIngredients: [Ingredient]
+        var ingredientPickers: IdentifiedArray<FoodID, IngredientPicker.State> = .init(id: \.food.id)
 
-    public var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                ForEachStore(self.store.scope(
-                    state: \.ingredientPickers,
-                    action: \.ingredientPickers)
-                ) { store in
-                    IngredientPicker(store: store)
-                        .padding(.horizontal)
-                }
+        public var selectedIngredients: [Ingredient] {
+            ingredientPickers
+                .filter(\.isSelected)
+                .map(\.ingredient)
+        }
+
+        public init(ingredients: [Ingredient] = []) {
+            self.initialIngredients = ingredients
+            for ingredient in ingredients {
+                ingredientPickers.append(.init(
+                    food: ingredient.food,
+                    quantity: ingredient.quantity
+                ))
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Done") {
-                    self.store.send(.doneButtonTapped)
-                }
+    }
+
+    @CasePathable
+    public enum Action {
+        case onFirstAppear
+        case updateFoods([Food])
+        case ingredientPickers(IdentifiedAction<FoodID, IngredientPicker.Action>)
+        case doneButtonTapped
+    }
+
+    public init() { }
+
+    @Dependency(\.databaseClient) private var databaseClient
+    @Dependency(\.dismiss) private var dismiss
+
+    public var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+                case .onFirstAppear:
+                    return .run { [databaseClient] send in
+                        let foods = try await databaseClient.getRecentFoods(sortedBy: Column("name"), order: .forward)
+                        await send(.updateFoods(foods))
+                    }
+
+                    // todo: when reducer is initialized with nonempty ingredients, put them at the top of the list, if any is deselected, move it in the list (sort it)
+                    // don't move pickers up and down based on selection as it can be bad UX to the user
+
+                case .updateFoods(let foods):
+                    for food in foods {
+                        if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
+                            let ingredientPicker = IngredientPicker.State(
+                                food: food,
+                                quantity: alreadySelectedIngredient.quantity
+                            )
+                            state.ingredientPickers.updateOrAppend(ingredientPicker)
+                        } else {
+                            state.ingredientPickers.updateOrAppend(.init(food: food))
+                        }
+                    }
+                    return .none
+
+                case .ingredientPickers:
+                    return .none
+
+                case .doneButtonTapped:
+                    return .run { _ in
+                        await dismiss()
+                    }
             }
         }
-        .navigationTitle(navigationTitle)
-        .onFirstAppear {
-            self.store.send(.onFirstAppear)
+        .forEach(\.ingredientPickers, action: \.ingredientPickers) {
+            IngredientPicker()
         }
-    }
-
-    private var navigationTitle: LocalizedStringKey {
-        if self.store.selectedIngredients.isEmpty {
-            "Select ingredients"
-        } else {
-            "^[\(self.store.selectedIngredients.count) ingredient](inflect: true) selected"
-        }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        AddIngredients(
-            store: .init(
-                initialState: AddIngredientsFeature.State(
-                    ingredients: [
-                        .init(foodId: 2),
-                        .init(foodId: 3),
-                    ]
-                ),
-                reducer: {
-                    AddIngredientsFeature()
-                        .dependency(\.databaseClient.getRecentFoods, { _, _ in
-                            [
-                                .preview(id: 1),
-                                .preview(id: 2),
-                                .preview(id: 3),
-                                .preview(id: 4),
-                                .preview(id: 5),
-                            ]
-                        })
-                }
-            )
-        )
-    }
-}
-
-fileprivate extension Ingredient {
-    init(foodId: Int64) {
-        self.init(
-            food: .preview(id: foodId),
-            quantity: .init(value: 1.5, unit: .pounds)
-        )
     }
 }

@@ -8,9 +8,9 @@ import ComposableArchitecture
 final class MealFormTests: XCTestCase {
     func testStateInitializers() async throws {
         var store = TestStore(
-            initialState: MealFormFeature.State(),
+            initialState: MealForm.State(),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         store.assert { state in
@@ -23,9 +23,9 @@ final class MealFormTests: XCTestCase {
         XCTAssertNoDifference(store.state.isMealValid, false)
 
         store = TestStore(
-            initialState: MealFormFeature.State(meal: .chimichurri),
+            initialState: MealForm.State(meal: .chimichurri),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         store.assert { state in
@@ -56,9 +56,9 @@ final class MealFormTests: XCTestCase {
 
     func testCancelButton() async throws {
         let store = TestStore(
-            initialState: MealFormFeature.State(),
+            initialState: MealForm.State(),
             reducer: {
-                MealFormFeature()
+                MealForm()
             },
             withDependencies: {
                 $0.dismiss = . init {
@@ -71,9 +71,9 @@ final class MealFormTests: XCTestCase {
 
     func testSaveButton() async throws {
         let store = TestStore(
-            initialState: MealFormFeature.State(meal: .chimichurri),
+            initialState: MealForm.State(meal: .chimichurri),
             reducer: {
-                MealFormFeature()
+                MealForm()
             },
             withDependencies: {
                 $0.databaseClient.insertMeal = {
@@ -98,9 +98,9 @@ final class MealFormTests: XCTestCase {
 
     func testAddIngredientsButton() async throws {
         var store = TestStore(
-            initialState: MealFormFeature.State(),
+            initialState: MealForm.State(),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         await store.send(.addIngredientsButtonTapped) {
@@ -108,9 +108,9 @@ final class MealFormTests: XCTestCase {
         }
 
         store = TestStore(
-            initialState: MealFormFeature.State(meal: .chimichurri),
+            initialState: MealForm.State(meal: .chimichurri),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         await store.send(.addIngredientsButtonTapped) {
@@ -120,9 +120,9 @@ final class MealFormTests: XCTestCase {
 
     func testIngredientTapped() async throws {
         let store = TestStore(
-            initialState: MealFormFeature.State(meal: .chimichurri),
+            initialState: MealForm.State(meal: .chimichurri),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         await store.send(.ingredientTapped(store.state.meal.ingredients[0])) {
@@ -132,9 +132,9 @@ final class MealFormTests: XCTestCase {
 
     func testUpdateMeal() async throws {
         let store = TestStore(
-            initialState: MealFormFeature.State(),
+            initialState: MealForm.State(),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         await store.send(.updateMeal(.chimichurri)) {
@@ -145,9 +145,9 @@ final class MealFormTests: XCTestCase {
 
     func testServings() async throws {
         let store = TestStore(
-            initialState: MealFormFeature.State(),
+            initialState: MealForm.State(),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         await store.send(.servingsIncrementButtonTapped) {
@@ -170,9 +170,9 @@ final class MealFormTests: XCTestCase {
 
     func testDeleteIngredients() async throws {
         let store = TestStore(
-            initialState: MealFormFeature.State(meal: .chimichurri),
+            initialState: MealForm.State(meal: .chimichurri),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         await store.send(.onDeleteIngredients([0, 1, 2, 3])) {
@@ -197,9 +197,9 @@ final class MealFormTests: XCTestCase {
 
     func testShowAllIngredientsButton() async throws {
         let store = TestStore(
-            initialState: MealFormFeature.State(meal: .chimichurri),
+            initialState: MealForm.State(meal: .chimichurri),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         await store.send(.showAllIngredientsButtonTapped) {
@@ -214,9 +214,9 @@ final class MealFormTests: XCTestCase {
 
     func testIntegrationWithAddIngredients() async throws {
         let store = TestStore(
-            initialState: MealFormFeature.State(),
+            initialState: MealForm.State(),
             reducer: {
-                MealFormFeature()
+                MealForm()
             }
         )
         await store.send(.addIngredientsButtonTapped) {

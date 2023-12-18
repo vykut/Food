@@ -8,9 +8,9 @@ import ComposableArchitecture
 final class MealDetailsTests: XCTestCase {
     func testStateInitialization() async throws {
         let store = TestStore(
-            initialState: MealDetailsFeature.State(meal: .chimichurri),
+            initialState: MealDetails.State(meal: .chimichurri),
             reducer: {
-                MealDetailsFeature()
+                MealDetails()
             },
             withDependencies: {
                 $0.nutritionalValuesCalculator.nutritionalValues = { meal in
@@ -32,9 +32,9 @@ final class MealDetailsTests: XCTestCase {
 
     func testEditButtonTapped() async throws {
         let store = TestStore(
-            initialState: MealDetailsFeature.State(meal: .chimichurri),
+            initialState: MealDetails.State(meal: .chimichurri),
             reducer: {
-                MealDetailsFeature()
+                MealDetails()
             },
             withDependencies: {
                 $0.nutritionalValuesCalculator = .zero
@@ -47,9 +47,9 @@ final class MealDetailsTests: XCTestCase {
 
     func testNutritionalInfoPerServingButtonTapped() async throws {
         let store = TestStore(
-            initialState: MealDetailsFeature.State(meal: .chimichurri),
+            initialState: MealDetails.State(meal: .chimichurri),
             reducer: {
-                MealDetailsFeature()
+                MealDetails()
             },
             withDependencies: {
                 $0.nutritionalValuesCalculator = .zero
@@ -65,9 +65,9 @@ final class MealDetailsTests: XCTestCase {
 
     func testNutritionalInfoButtonTapped() async throws {
         let store = TestStore(
-            initialState: MealDetailsFeature.State(meal: .chimichurri),
+            initialState: MealDetails.State(meal: .chimichurri),
             reducer: {
-                MealDetailsFeature()
+                MealDetails()
             },
             withDependencies: {
                 $0.nutritionalValuesCalculator = .zero
@@ -83,9 +83,9 @@ final class MealDetailsTests: XCTestCase {
 
     func testIngredientComparisonButtonTapped() async throws {
         let store = TestStore(
-            initialState: MealDetailsFeature.State(meal: .chimichurri),
+            initialState: MealDetails.State(meal: .chimichurri),
             reducer: {
-                MealDetailsFeature()
+                MealDetails()
             },
             withDependencies: {
                 $0.nutritionalValuesCalculator = .zero
@@ -110,9 +110,9 @@ final class MealDetailsTests: XCTestCase {
 
     func testIngredientTapped() async throws {
         let store = TestStore(
-            initialState: MealDetailsFeature.State(meal: .chimichurri),
+            initialState: MealDetails.State(meal: .chimichurri),
             reducer: {
-                MealDetailsFeature()
+                MealDetails()
             },
             withDependencies: {
                 $0.nutritionalValuesCalculator = .zero
@@ -132,9 +132,9 @@ final class MealDetailsTests: XCTestCase {
 
     func testMealForm() async throws {
         let store = TestStore(
-            initialState: MealDetailsFeature.State(meal: .chimichurri),
+            initialState: MealDetails.State(meal: .chimichurri),
             reducer: {
-                MealDetailsFeature()
+                MealDetails()
             },
             withDependencies: {
                 $0.nutritionalValuesCalculator = .zero
@@ -156,9 +156,9 @@ final class MealDetailsTests: XCTestCase {
 
     func testFullFlow() async throws {
         let store = TestStore(
-            initialState: MealDetailsFeature.State(meal: .chimichurri),
+            initialState: MealDetails.State(meal: .chimichurri),
             reducer: {
-                MealDetailsFeature()
+                MealDetails()
             },
             withDependencies: {
                 $0.nutritionalValuesCalculator = .zero

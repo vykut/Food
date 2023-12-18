@@ -9,9 +9,9 @@ final class FoodDetailsTests: XCTestCase {
     func testIntegration_withQuantityPicker() async throws {
         let food = Food.preview
         let store = TestStore(
-            initialState: FoodDetailsFeature.State(food: food),
+            initialState: FoodDetails.State(food: food),
             reducer: {
-                FoodDetailsFeature()
+                FoodDetails()
             }
         )
         await store.send(.quantityPicker(.updateValue(200))) {
