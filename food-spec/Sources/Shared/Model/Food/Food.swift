@@ -1,7 +1,9 @@
 import Foundation
 
 public struct Food: Hashable, Sendable {
-    public var id: Int64?
+    public typealias ID = Int64?
+
+    public var id: ID
     public var name: String
     public var energy: Energy
     public var fatTotal: Quantity
@@ -15,7 +17,7 @@ public struct Food: Hashable, Sendable {
     public var sugar: Quantity
 
     public init(
-        id: Int64? = nil,
+        id: ID = nil,
         name: String,
         energy: Energy,
         fatTotal: Quantity,

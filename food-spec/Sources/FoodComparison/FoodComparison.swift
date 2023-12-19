@@ -63,8 +63,8 @@ public struct FoodComparison {
             self.comparison = comparison
             self.foodSortingStrategy = foodSortingStrategy
             self.foodSortingOrder = foodSortingOrder
-            if canChangeQuantity {
-                quantityPicker = .init()
+            if canChangeQuantity, let id = foods.first?.id {
+                quantityPicker = .init(id: id)
             }
         }
     }

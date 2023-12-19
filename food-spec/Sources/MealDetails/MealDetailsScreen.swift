@@ -90,7 +90,13 @@ public struct MealDetailsScreen: View {
 
     private var notesSection: some View {
         Section("Notes") {
-            Text(self.store.meal.instructions)
+            if !self.store.meal.instructions.isEmpty {
+                Text(self.store.meal.instructions)
+            } else {
+                Button("Add notes") {
+                    self.store.send(.addNotesButtonTapped)
+                }
+            }
         }
     }
 }

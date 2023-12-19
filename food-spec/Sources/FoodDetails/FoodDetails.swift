@@ -9,14 +9,16 @@ public struct FoodDetails {
     public struct State: Hashable {
         let originalFood: Food
         var food: Food
-        var quantityPicker: QuantityPicker.State = .init()
+        var quantityPicker: QuantityPicker.State
 
         public init(food: Food, quantity: Quantity? = nil) {
             self.originalFood = food
             self.food = food
             if let quantity {
-                self.quantityPicker = .init(quantity: quantity)
+                self.quantityPicker = .init(id: food.id, quantity: quantity)
                 self.food = food.changingServingSize(to: quantity)
+            } else {
+                self.quantityPicker = .init(id: food.id)
             }
         }
     }

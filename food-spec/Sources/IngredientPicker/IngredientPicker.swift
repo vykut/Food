@@ -20,7 +20,7 @@ public struct IngredientPicker {
 
         public init(food: Food) {
             self.food = food
-            self.quantityPicker = .init()
+            self.quantityPicker = .init(id: food.id)
             self.isSelected = false
         }
 
@@ -29,7 +29,7 @@ public struct IngredientPicker {
             quantity: Quantity
         ) {
             self.food = food
-            self.quantityPicker = .init(quantity: quantity)
+            self.quantityPicker = .init(id: food.id, quantity: quantity)
             self.isSelected = true
         }
     }

@@ -28,6 +28,7 @@ public struct MealDetails {
         case nutritionalInfoPerServingButtonTapped
         case nutritionalInfoButtonTapped
         case ingredientComparisonButtonTapped
+        case addNotesButtonTapped
         case ingredientTapped(Ingredient)
         case destination(PresentationAction<Destination.Action>)
     }
@@ -71,6 +72,10 @@ public struct MealDetails {
                         food: ingredient.food,
                         quantity: ingredient.quantity
                     ))
+                    return .none
+
+                case .addNotesButtonTapped:
+                    state.destination = .mealForm(.init(meal: state.meal))
                     return .none
 
                 case .destination(.presented(.mealForm(.delegate(.mealSaved(let meal))))):
