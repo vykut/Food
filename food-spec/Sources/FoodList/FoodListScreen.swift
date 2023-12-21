@@ -96,14 +96,7 @@ public struct FoodListScreen: View {
                     .id(UUID())
             }
             if self.store.isSearching {
-                HStack {
-                    Spacer()
-                    ProgressView("Searching...")
-//                        .id("search")
-                        .id(UUID())
-                    Spacer()
-                }
-//                .id(UUID())
+                SpinnerListRow()
             }
         }
     }

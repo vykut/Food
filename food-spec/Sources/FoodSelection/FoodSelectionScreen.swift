@@ -1,6 +1,7 @@
 import SwiftUI
 import ComposableArchitecture
 import Shared
+import Search
 import FoodComparison
 
 public struct FoodSelectionScreen: View {
@@ -17,9 +18,8 @@ public struct FoodSelectionScreen: View {
             }
         }
         .listStyle(.sidebar)
-        .searchable(
-            text: $store.filterQuery.sending(\.updateFilter),
-            prompt: "Filter"
+        .searchableFood(
+            store: self.store.scope(state: \.foodSearch, action: \.foodSearch)
         )
         .environment(\.editMode, .constant(.active))
         .navigationTitle(navigationTitle)
@@ -39,13 +39,14 @@ public struct FoodSelectionScreen: View {
     }
 
     private var recentSearchesSection: some View {
-        Section {
+        Section("Recent searches") {
             ForEach(store.filteredFoods, id: \.id) { item in
                 LabeledListRow(title: item.name.capitalized)
                     .selectionDisabled(store.state.isSelectionDisabled(for: item))
             }
-        } header: {
-            Text("Recent searches")
+            if self.store.foodSearch.isSearching {
+                SpinnerListRow()
+            }
         }
     }
 

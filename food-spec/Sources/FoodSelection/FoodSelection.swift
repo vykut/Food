@@ -2,6 +2,7 @@ import Foundation
 import Shared
 import Database
 import FoodComparison
+import Search
 import ComposableArchitecture
 
 @Reducer
@@ -10,13 +11,13 @@ public struct FoodSelection {
     public struct State: Hashable {
         var foods: [Food] = []
         var selectedFoodIds: Set<Int64?> = []
-        var filterQuery: String = ""
+        var foodSearch: FoodSearch.State = .init()
         @Presents var foodComparison: FoodComparison.State?
 
         var filteredFoods: [Food] {
-            guard !filterQuery.isEmpty else { return foods }
+            guard !foodSearch.query.isEmpty else { return foods }
             return foods.filter {
-                $0.name.range(of: filterQuery, options: .caseInsensitive) != nil
+                $0.name.range(of: foodSearch.query, options: .caseInsensitive) != nil
             }
         }
 
@@ -40,10 +41,10 @@ public struct FoodSelection {
 
     @CasePathable
     public enum Action {
+        case foodSearch(FoodSearch.Action)
         case onFirstAppear
         case updateFoods([Food])
         case updateSelection(Set<Int64?>)
-        case updateFilter(String)
         case foodComparison(PresentationAction<FoodComparison.Action>)
         case cancelButtonTapped
         case compareButtonTapped(Comparison)
@@ -64,16 +65,15 @@ public struct FoodSelection {
                         }
                     }
 
+                case .foodSearch(let action):
+                    return reduce(state: &state, action: action)
+
                 case .updateFoods(let foods):
                     state.foods = foods
                     return .none
 
                 case .updateSelection(let selection):
                     state.selectedFoodIds = selection
-                    return .none
-
-                case .updateFilter(let query):
-                    state.filterQuery = query
                     return .none
 
                 case .cancelButtonTapped:
@@ -97,6 +97,28 @@ public struct FoodSelection {
         }
         .ifLet(\.$foodComparison, action: \.foodComparison) {
             FoodComparison()
+        }
+    }
+
+    private func reduce(state: inout State, action: FoodSearch.Action) -> EffectOf<Self> {
+        switch action {
+            case .updateQuery(let query):
+                return .none
+
+            case .updateFocus(let focused):
+                return .none
+
+            case .searchStarted:
+                return .none
+
+            case .searchEnded:
+                return .none
+
+            case .searchSubmitted:
+                return .none
+
+            case .delegate(let action):
+                return .none
         }
     }
 }
