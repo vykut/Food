@@ -84,7 +84,6 @@ public struct FoodList {
         case didSelectSearchResult(Food)
         case didDeleteRecentFoods(IndexSet)
         case foodSearch(FoodSearch.Action)
-        case inlineFood(FoodDetails.Action)
         case updateRecentFoodsSortingStrategy(State.SortingStrategy)
         case billboard(Billboard)
         case spotlight(Spotlight)
@@ -171,9 +170,6 @@ public struct FoodList {
                         await send(.showGenericAlert)
                     }
 
-                case .inlineFood:
-                    return .none
-
                 case .updateRecentFoodsSortingStrategy(let newStrategy):
                     if newStrategy == state.recentFoodsSortingStrategy {
                         state.recentFoodsSortingOrder.toggle()
@@ -225,10 +221,12 @@ public struct FoodList {
                 return .none
 
             case .delegate(.result(let foods)):
+                guard state.foodSearch.isSearching else { return .none }
                 state.searchResults = foods
                 return .none
 
             case .delegate(.error(let error)):
+                guard state.foodSearch.isSearching else { return .none }
                 if state.searchResults.isEmpty {
                     showGenericAlert(state: &state)
                 }

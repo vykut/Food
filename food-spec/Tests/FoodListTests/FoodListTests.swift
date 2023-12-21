@@ -20,8 +20,7 @@ final class FoodListTests: XCTestCase {
         store.assert { state in
             state.recentFoodsSortingStrategy = .name
             state.recentFoodsSortingOrder = .forward
-            state.searchQuery = ""
-            state.isSearchFocused = false
+            state.foodSearch = .init()
             state.recentFoods = []
             state.searchResults = []
             state.shouldShowNoResults = false
@@ -70,7 +69,7 @@ final class FoodListTests: XCTestCase {
         await store.receive(\.startObservingRecentFoods)
         continuation.yield([])
         await store.receive(\.onRecentFoodsChange) {
-            $0.isSearchFocused = true
+            $0.foodSearch.isFocused = true
         }
         XCTAssertNoDifference(store.state.shouldShowRecentSearches, false)
         XCTAssertNoDifference(store.state.shouldShowPrompt, true)
@@ -124,7 +123,7 @@ final class FoodListTests: XCTestCase {
             $0.recentFoods = [food]
         }
 
-        XCTAssertNoDifference(store.state.isSearchFocused, false)
+        XCTAssertNoDifference(store.state.foodSearch.isFocused, false)
         XCTAssertNoDifference(store.state.shouldShowRecentSearches, true)
         XCTAssertNoDifference(store.state.shouldShowPrompt, false)
         XCTAssertNoDifference(store.state.shouldShowSpinner, false)
@@ -160,17 +159,19 @@ final class FoodListTests: XCTestCase {
                         .finished
                     }
                 )
+                $0.spotlightClient.indexFoods = {
+                    XCTAssertNoDifference($0, [])
+                }
+                $0.billboardClient.getRandomBanners = {
+                    .init {
+                        $0.yield(.preview)
+                        $0.finish()
+                    }
+                }
+                $0.databaseClient.numberOfFoods = { _ in 0 }
+                $0.databaseClient.insertFoods = { $0 }
             }
         )
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, [])
-        }
-        store.dependencies.billboardClient.getRandomBanners = {
-            .init {
-                $0.yield(.preview)
-                $0.finish()
-            }
-        }
         var (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.databaseClient.observeFoods = { strategy, order in
             XCTAssertEqual(strategy.name, "energy")
@@ -185,7 +186,7 @@ final class FoodListTests: XCTestCase {
         }
         continuation.yield([])
         await store.receive(\.onRecentFoodsChange) {
-            $0.isSearchFocused = true
+            $0.foodSearch.isFocused = true
         }
         XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
         XCTAssertNoDifference(store.state.shouldShowRecentSearches, false)
@@ -196,24 +197,23 @@ final class FoodListTests: XCTestCase {
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [eggplant])
         }
-        store.dependencies.foodClient.getFoods = { _ in [eggplantApi] }
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertNoDifference($0, .preview)
-            return $0
-        }
-        await store.send(.updateSearchQuery("C")) {
-            $0.searchQuery = "C"
+        store.dependencies.foodClient.getFoods = { _ in [] }
+        store.dependencies.databaseClient.numberOfFoods = { _ in 1 }
+        store.dependencies.databaseClient.getFoods = { _, _, _ in [eggplant] }
+        await store.send(.foodSearch(.updateQuery("C"))) {
+            $0.foodSearch.query = "C"
             $0.shouldShowNoResults = false
             $0.searchResults = []
-            $0.inlineFood = nil
         }
-        await store.receive(\.startSearching) {
-            $0.isSearching = true
+        await store.receive(\.foodSearch.searchStarted) {
+            $0.foodSearch.isSearching = true
         }
         XCTAssertEqual(store.state.shouldShowSpinner, true)
-        await store.receive(\.didReceiveSearchFoods) {
-            $0.inlineFood = .init(food: .preview)
-            $0.isSearching = false
+        await store.receive(\.foodSearch.delegate.result) {
+            $0.searchResults = [.preview]
+        }
+        await store.receive(\.foodSearch.searchEnded) {
+            $0.foodSearch.isSearching = false
         }
         XCTAssertEqual(store.state.shouldShowSpinner, false)
         continuation.yield([eggplant])
@@ -222,39 +222,35 @@ final class FoodListTests: XCTestCase {
         }
         XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
 
-        await store.send(.updateSearchQuery("")) {
-            $0.searchQuery = ""
+        await store.send(.foodSearch(.updateQuery(""))) {
+            $0.foodSearch.query = ""
             $0.shouldShowNoResults = false
-            $0.searchResults = []
-            $0.inlineFood = nil
-            $0.isSearching = false
+            $0.foodSearch.isSearching = false
         }
-        store.exhaustivity = .off(showSkippedAssertions: true)
+        store.exhaustivity = .off
         store.dependencies.foodClient.getFoods = { _ in [] }
-        await store.send(.updateSearchQuery("R"))
-        await store.send(.updateSearchQuery("Ri"))
-        await store.send(.updateSearchQuery("Rib"))
-        await store.send(.updateSearchQuery("Ribe"))
-        await store.send(.updateSearchQuery("Ribey"))
+        await store.send(.foodSearch(.updateQuery("R")))
+        await store.send(.foodSearch(.updateQuery("Ri")))
+        await store.send(.foodSearch(.updateQuery("Rib")))
+        await store.send(.foodSearch(.updateQuery("Ribe")))
+        await store.send(.foodSearch(.updateQuery("Ribey")))
         store.dependencies.spotlightClient.indexFoods = {
             XCTAssertNoDifference($0, [ribeye, eggplant])
         }
-        store.dependencies.foodClient.getFoods = { _ in [ribeyeApi] }
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertEqual($0, ribeye)
-            return $0
-        }
-        await store.send(.updateSearchQuery("Ribeye")) {
-            $0.searchQuery = "Ribeye"
+        store.dependencies.databaseClient.getFoods = { _, _, _ in [ribeye] }
+        await store.send(.foodSearch(.updateQuery("Ribeye"))) {
+            $0.foodSearch.query = "Ribeye"
             $0.shouldShowNoResults = false
         }
         store.exhaustivity = .on
-        await store.receive(\.startSearching) {
-            $0.isSearching = true
+        await store.receive(\.foodSearch.searchStarted) {
+            $0.foodSearch.isSearching = true
         }
-        await store.receive(\.didReceiveSearchFoods) {
-            $0.isSearching = false
-            $0.inlineFood = .init(food: ribeye)
+        await store.receive(\.foodSearch.delegate.result) {
+            $0.searchResults = [ribeye]
+        }
+        await store.receive(\.foodSearch.searchEnded) {
+            $0.foodSearch.isSearching = false
         }
         await store.send(.onRecentFoodsChange([ribeye, eggplant])) {
             $0.recentFoods = [ribeye, eggplant]
@@ -342,14 +338,25 @@ final class FoodListTests: XCTestCase {
             },
             withDependencies: {
                 $0.mainQueue = .immediate
+                $0.databaseClient.numberOfFoods = { _ in 2 }
+                $0.databaseClient.getFoods = { _, _, _ in [eggplant, ribeye] }
+                $0.foodClient.getFoods = { _ in [] }
             }
         )
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertNoDifference($0, eggplant)
-            return $0
+        await store.send(.foodSearch(.updateFocus(true))) {
+            $0.foodSearch.isFocused = true
         }
-        await store.send(.didReceiveSearchFoods([eggplantApi, ribeyeApi])) {
+        await store.send(.foodSearch(.updateQuery("asd"))) {
+            $0.foodSearch.query = "asd"
+        }
+        await store.receive(\.foodSearch.searchStarted) {
+            $0.foodSearch.isSearching = true
+        }
+        await store.receive(\.foodSearch.delegate.result) {
             $0.searchResults = [eggplant, ribeye]
+        }
+        await store.receive(\.foodSearch.searchEnded) {
+            $0.foodSearch.isSearching = false
         }
         await store.send(.didSelectSearchResult(eggplant)) {
             $0.destination = .foodDetails(.init(food: eggplant))
@@ -364,26 +371,28 @@ final class FoodListTests: XCTestCase {
             },
             withDependencies: {
                 $0.mainQueue = .immediate
+                $0.databaseClient.numberOfFoods = { _ in 0 }
             }
         )
         store.dependencies.foodClient.getFoods = { _ in
             struct FoodError: Error { }
             throw FoodError()
         }
-        await store.send(.updateSearchQuery("eggplant")) {
-            $0.searchQuery = "eggplant"
+        await store.send(.foodSearch(.updateQuery("eggplant"))) {
+            $0.foodSearch.query = "eggplant"
         }
-        await store.receive(\.startSearching) {
-            $0.isSearching = true
+        await store.receive(\.foodSearch.searchStarted) {
+            $0.foodSearch.isSearching = true
         }
-        await store.receive(\.didReceiveSearchFoods) {
-            $0.shouldShowNoResults = true
-            $0.isSearching = false
-        }
-        await store.receive(\.showGenericAlert) {
+        await store.receive(\.foodSearch.delegate.result)
+        await store.receive(\.foodSearch.delegate.error) {
             $0.destination = .alert(.init {
                 TextState("Something went wrong. Please try again later.")
             })
+        }
+        await store.receive(\.foodSearch.searchEnded) {
+            $0.foodSearch.isSearching = false
+            $0.shouldShowNoResults = true
         }
     }
 
@@ -397,19 +406,11 @@ final class FoodListTests: XCTestCase {
                 $0.mainQueue = .immediate
             }
         )
-        await store.send(.updateSearchFocus(true)) {
-            $0.isSearchFocused = true
+        await store.send(.foodSearch(.updateFocus(true))) {
+            $0.foodSearch.isFocused = true
         }
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertNoDifference($0, .eggplant)
-            return $0
-        }
-        await store.send(.didReceiveSearchFoods([.eggplant])) {
-            $0.inlineFood = .init(food: .eggplant)
-        }
-        await store.send(.updateSearchFocus(false)) {
-            $0.isSearchFocused = false
-            $0.inlineFood = nil
+        await store.send(.foodSearch(.updateFocus((false)))) {
+            $0.foodSearch.isFocused = false
         }
     }
 
@@ -468,35 +469,34 @@ final class FoodListTests: XCTestCase {
             }(),
             reducer: {
                 FoodList()
+            },
+            withDependencies: {
+                $0.mainQueue = .immediate
+                $0.foodClient.getFoods = { _ in [] }
+                $0.databaseClient.numberOfFoods = { _ in 1 }
+                $0.databaseClient.getFoods = { _, _, _ in [eggplant] }
             }
         )
-        store.dependencies.mainQueue = .immediate
-        store.dependencies.foodClient.getFoods = {
-            XCTAssertNoDifference($0, eggplant.name)
-            return [.eggplant]
-        }
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertNoDifference($0, eggplant)
-            return eggplant
-        }
         let activity = NSUserActivity(activityType: "mock")
         activity.userInfo?[CSSearchQueryString] = eggplant.name
         await store.send(.spotlight(.handleSearchInApp(activity)))
         await store.receive(\.destination.dismiss) {
             $0.destination = nil
         }
-        await store.receive(\.updateSearchFocus) {
-            $0.isSearchFocused = true
+        await store.receive(\.foodSearch.updateFocus) {
+            $0.foodSearch.isFocused = true
         }
-        await store.receive(\.updateSearchQuery) {
-            $0.searchQuery = eggplant.name
+        await store.receive(\.foodSearch.updateQuery) {
+            $0.foodSearch.query = eggplant.name
         }
-        await store.receive(\.startSearching) {
-            $0.isSearching = true
+        await store.receive(\.foodSearch.searchStarted) {
+            $0.foodSearch.isSearching = true
         }
-        await store.receive(\.didReceiveSearchFoods) {
-            $0.inlineFood = .init(food: eggplant)
-            $0.isSearching = false
+        await store.receive(\.foodSearch.delegate.result) {
+            $0.searchResults = [eggplant]
+        }
+        await store.receive(\.foodSearch.searchEnded) {
+            $0.foodSearch.isSearching = false
         }
     }
 

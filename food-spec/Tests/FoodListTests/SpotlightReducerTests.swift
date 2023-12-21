@@ -51,8 +51,8 @@ final class SpotlightReducerTests: XCTestCase {
         let activity = NSUserActivity(activityType: "mock")
         activity.userInfo?[CSSearchQueryString] = eggplant.name
         await store.send(.spotlight(.handleSearchInApp(activity)))
-        await store.receive(\.updateSearchFocus)
-        await store.receive(\.updateSearchQuery)
+        await store.receive(\.foodSearch.updateFocus)
+        await store.receive(\.foodSearch.updateQuery)
     }
 
     func testSpotlightSearchInApp_foodDetailsAlreadyPresented() async throws {
@@ -71,7 +71,7 @@ final class SpotlightReducerTests: XCTestCase {
         activity.userInfo?[CSSearchQueryString] = eggplant.name
         await store.send(.spotlight(.handleSearchInApp(activity)))
         await store.receive(\.destination.dismiss)
-        await store.receive(\.updateSearchFocus)
-        await store.receive(\.updateSearchQuery)
+        await store.receive(\.foodSearch.updateFocus)
+        await store.receive(\.foodSearch.updateQuery)
     }
 }
