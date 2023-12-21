@@ -2,7 +2,7 @@ import Foundation
 import Database
 import ComposableArchitecture
 import Shared
-import API
+import Search
 import Ads
 import FoodDetails
 import UserPreferences
@@ -12,23 +12,25 @@ public struct FoodList {
     @ObservableState
     public struct State: Equatable {
         var recentFoods: [Food] = []
+        var shouldShowNoResults: Bool = false
+        var foodSearch: FoodSearch.State = .init()
         var recentFoodsSortingStrategy: SortingStrategy
         var recentFoodsSortingOrder: SortOrder
-        var searchQuery = ""
-        var isSearchFocused = false
-        var isSearching = false
         var searchResults: [Food] = []
-        var shouldShowNoResults: Bool = false
-        var inlineFood: FoodDetails.State?
         var billboard: Billboard = .init()
         @Presents var destination: Destination.State?
 
         var shouldShowRecentSearches: Bool {
-            searchQuery.isEmpty && !recentFoods.isEmpty
+            foodSearch.query.isEmpty &&
+            !recentFoods.isEmpty
         }
 
         var shouldShowPrompt: Bool {
-            searchQuery.isEmpty && recentFoods.isEmpty && !shouldShowNoResults
+            foodSearch.query.isEmpty && recentFoods.isEmpty
+        }
+
+        var isSearching: Bool {
+            foodSearch.isSearching
         }
 
         var shouldShowSpinner: Bool {
@@ -36,7 +38,8 @@ public struct FoodList {
         }
 
         var shouldShowSearchResults: Bool {
-            isSearchFocused && !searchResults.isEmpty && inlineFood == nil
+            foodSearch.isFocused &&
+            !foodSearch.query.isEmpty
         }
 
         var isSortMenuDisabled: Bool {
@@ -77,13 +80,10 @@ public struct FoodList {
         case startObservingRecentFoods
         case onRecentFoodsChange([Food])
         case onUserPreferencesChange(UserPreferences)
-        case updateSearchQuery(String)
-        case updateSearchFocus(Bool)
         case didSelectRecentFood(Food)
         case didSelectSearchResult(Food)
         case didDeleteRecentFoods(IndexSet)
-        case startSearching
-        case didReceiveSearchFoods([FoodApiModel])
+        case foodSearch(FoodSearch.Action)
         case inlineFood(FoodDetails.Action)
         case updateRecentFoodsSortingStrategy(State.SortingStrategy)
         case billboard(Billboard)
@@ -100,12 +100,14 @@ public struct FoodList {
     public init() { }
 
     @Dependency(\.databaseClient) private var databaseClient
-    @Dependency(\.foodClient) private var foodClient
     @Dependency(\.mainQueue) private var mainQueue
     @Dependency(\.userPreferencesClient) private var userPreferencesClient
 
 
     public var body: some ReducerOf<Self> {
+        Scope(state: \.foodSearch, action: \.foodSearch) {
+            FoodSearch()
+        }
         Reduce { state, action in
             switch action {
                 case .onFirstAppear:
@@ -129,8 +131,8 @@ public struct FoodList {
 
                 case .onRecentFoodsChange(let foods):
                     state.recentFoods = foods
-                    if foods.isEmpty && state.searchQuery.isEmpty {
-                        state.isSearchFocused = true
+                    if foods.isEmpty && state.foodSearch.query.isEmpty {
+                        state.foodSearch.isFocused = true
                     }
                     return .none
 
@@ -150,53 +152,8 @@ public struct FoodList {
                         return .none
                     }
 
-                case .updateSearchQuery(let query):
-                    guard state.searchQuery != query else { return .none }
-                    state.searchQuery = query
-                    state.shouldShowNoResults = false
-                    state.searchResults = []
-                    state.inlineFood = nil
-                    if query.isEmpty {
-                        state.isSearching = false
-                        return .cancel(id: CancelID.search)
-                    } else {
-                        return .run { [searchQuery = state.searchQuery] send in
-                            await send(.startSearching)
-                            let foods = try await foodClient.getFoods(query: searchQuery)
-                            await send(.didReceiveSearchFoods(foods))
-                        } catch: { error, send in
-                            await send(.didReceiveSearchFoods([]))
-                            await send(.showGenericAlert)
-                        }
-                        .debounce(id: CancelID.search, for: .milliseconds(300), scheduler: mainQueue)
-                    }
-
-                case .startSearching:
-                    state.isSearching = true
-                    return .none
-
-                case .didReceiveSearchFoods(let foods):
-                    state.isSearching = false
-                    if foods.isEmpty {
-                        state.shouldShowNoResults = true
-                    } else if foods.count == 1 {
-                        let food = Food(foodApiModel: foods[0])
-                        state.inlineFood = .init(food: food)
-                        return .run { send in
-                            _ = try await databaseClient.insert(food: food)
-                        }
-                    } else {
-                        state.searchResults = foods.map { .init(foodApiModel: $0) }
-                    }
-                    return .none
-
-                case .updateSearchFocus(let focus):
-                    guard state.isSearchFocused != focus else { return .none }
-                    state.isSearchFocused = focus
-                    if !focus {
-                        state.inlineFood = nil
-                    }
-                    return .none
+                case .foodSearch(let action):
+                    return reduce(state: &state, action: action)
 
                 case .didSelectRecentFood(let food):
                     state.destination = .foodDetails(.init(food: food))
@@ -204,9 +161,7 @@ public struct FoodList {
 
                 case .didSelectSearchResult(let food):
                     state.destination = .foodDetails(.init(food: food))
-                    return .run { send in
-                        _ = try await databaseClient.insert(food: food)
-                    }
+                    return .none
 
                 case .didDeleteRecentFoods(let indices):
                     return .run { [recentFoods = state.recentFoods, databaseClient] send in
@@ -237,9 +192,7 @@ public struct FoodList {
                     }
 
                 case .showGenericAlert:
-                    state.destination = .alert(.init {
-                        TextState("Something went wrong. Please try again later.")
-                    })
+                    showGenericAlert(state: &state)
                     return .none
 
                 case .billboard:
@@ -254,14 +207,66 @@ public struct FoodList {
                     return .none
             }
         }
-        .ifLet(\.inlineFood, action: \.inlineFood) {
-            FoodDetails()
-        }
         .ifLet(\.$destination, action: \.destination) {
             Destination()
         }
         SpotlightReducer()
         BillboardReducer()
+    }
+
+    private func reduce(state: inout State, action: FoodSearch.Action) -> EffectOf<Self> {
+        switch action {
+            case .updateQuery(let query):
+                state.shouldShowNoResults = false
+                return .none
+
+            case .updateFocus(let focus):
+                if !focus {
+                    state.searchResults = []
+                }
+                return .none
+
+            case .delegate(let action):
+                switch action {
+                    case .searchStarted:
+                        state.shouldShowNoResults = false
+                        return .none
+
+                    case .searchEnded:
+                        state.shouldShowNoResults = state.searchResults.isEmpty
+                        return .none
+
+                    case .result(let foods):
+                        state.searchResults = foods
+                        return .none
+
+                    case .error(let error):
+                        if state.searchResults.isEmpty {
+                            showGenericAlert(state: &state)
+                        }
+                        return .none
+                }
+
+            case .searchSubmitted:
+                return .none
+
+            case .searchStarted:
+//                state.shouldShowNoResults = false
+                return .none
+
+            case .searchEnded:
+//                state.shouldShowNoResults = state.searchResults.isEmpty
+                return .none
+
+            case .actualSearchStarted:
+                return .none
+        }
+    }
+
+    private func showGenericAlert(state: inout State) {
+        state.destination = .alert(.init {
+            TextState("Something went wrong. Please try again later.")
+        })
     }
 
     @Reducer

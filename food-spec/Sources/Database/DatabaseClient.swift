@@ -9,9 +9,13 @@ public struct DatabaseClient {
     // MARK: Foods
     public var observeFoods: (_ sortedBy: Column, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
     public var getRecentFoods: (_ sortedBy: Column, _ order: SortOrder) async throws -> [Food]
+    public var numberOfFoods: (_ matching: String) async throws -> Int
+    public var getFoods: (_ matching: String, _ sortedBy: Column, _ order: SortOrder) async throws -> [Food]
     public var getFood: (_ name: String) async throws -> Food?
     @DependencyEndpoint(method: "insert")
     public var insertFood: (_ food: Food) async throws -> Food
+    @DependencyEndpoint(method: "insert")
+    public var insertFoods: (_ foods: [Food]) async throws -> [Food]
     @DependencyEndpoint(method: "delete")
     public var deleteFood: (_ food: Food) async throws -> Void
 
@@ -55,6 +59,21 @@ extension DatabaseClient: DependencyKey {
                     try fetchFoods(db: $0, sortedBy: column, order: order)
                 }
             },
+            numberOfFoods: { matching in
+                try await db.read {
+                    try FoodDB
+                        .filter(Column("name").like("%\(matching)%"))
+                        .fetchCount($0)
+                }
+            },
+            getFoods: { matching, column, order in
+                try await db.read {
+                    let request = FoodDB
+                        .filter(Column("name").like("%\(matching)%"))
+                        .order(order == .forward ? column : column.desc)
+                    return try Food.fetchAll($0, request)
+                }
+            },
             getFood: { name in
                 return try await db.read {
                     let request = FoodDB.filter(Column("name") == name)
@@ -66,6 +85,22 @@ extension DatabaseClient: DependencyKey {
                     var foodDb = FoodDB(food: food)
                     try foodDb.upsert($0)
                     return Food(foodDb: foodDb)
+                }
+            },
+            insertFoods: { foods in
+                try await db.write {
+                    do {
+                        var insertedFoods: [Food] = []
+                        for food in foods {
+                            var foodDb = FoodDB(food: food)
+                            try foodDb.upsert($0)
+                            insertedFoods.append(Food(foodDb: foodDb))
+                        }
+                        return insertedFoods
+                    } catch {
+                        try $0.rollback()
+                        throw error
+                    }
                 }
             },
             deleteFood: { food in

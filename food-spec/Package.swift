@@ -38,7 +38,7 @@ let package = Package(
     ],
     targets: [
         .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection", "MealList"]),
-        .feature(name: "FoodList", dependencies: ["FoodDetails", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
+        .feature(name: "FoodList", dependencies: ["FoodDetails", "Search", "Database", "UserPreferences", "Ads", "Spotlight"]),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
         .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),
@@ -48,6 +48,7 @@ let package = Package(
         .feature(name: "AddIngredients", dependencies: ["Database", "IngredientPicker"]),
         .feature(name: "IngredientPicker", dependencies: ["QuantityPicker"]),
         .feature(name: "QuantityPicker"),
+        .feature(name: "Search", dependencies: ["Database", "API"]),
 
         .client(name: "UserPreferences", dependencies: ["UserDefaults", asyncSemaphoreDependency]),
         .client(name: "UserDefaults"),

@@ -3,6 +3,7 @@ import ComposableArchitecture
 import Ads
 import Spotlight
 import Shared
+import Search
 import FoodDetails
 
 public struct FoodListScreen: View {
@@ -19,10 +20,8 @@ public struct FoodListScreen: View {
             .toolbar {
                 toolbar
             }
-            .searchable(
-                text: self.$store.searchQuery.sending(\.updateSearchQuery),
-                isPresented: self.$store.isSearchFocused.sending(\.updateSearchFocus),
-                placement: .navigationBarDrawer
+            .searchableFood(
+                store: self.store.scope(state: \.foodSearch, action: \.foodSearch)
             )
             .safeAreaInset(edge: .bottom) {
                 if let ad = store.billboard.banner {
@@ -48,30 +47,17 @@ public struct FoodListScreen: View {
             }
     }
 
-    @MainActor @ViewBuilder
+    @MainActor
     private var list: some View {
-        if let store = store.scope(state: \.inlineFood, action: \.inlineFood) {
-            FoodDetailsScreen(store: store)
-        } else {
-            List {
-                if self.store.shouldShowRecentSearches {
-                    recentSearches
-                }
-                if self.store.shouldShowPrompt {
-                    ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
-                }
-                if self.store.shouldShowSearchResults {
-                    searchResultsList
-                }
-                if self.store.shouldShowNoResults {
-                    ContentUnavailableView.search(text: self.store.searchQuery)
-                }
+        List {
+            if self.store.shouldShowSearchResults {
+                searchResultsList
             }
-            .overlay {
-                if self.store.isSearching {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                }
+            if self.store.shouldShowRecentSearches {
+                recentSearches
+            }
+            if self.store.shouldShowPrompt {
+                ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
             }
         }
     }
@@ -91,22 +77,34 @@ public struct FoodListScreen: View {
         } header: {
             Text("Recent Searches")
         } footer: {
-            Text("Values per \(Quantity.grams( 100).formatted(width: .wide))")
+            Text("Values per \(Quantity.grams(100).formatted(width: .wide))")
                 .font(.footnote)
         }
     }
 
     private var searchResultsList: some View {
-        Section {
-            ForEach(self.store.searchResults, id: \.self) { item in
+        Section("Results") {
+            ForEach(self.store.searchResults, id: \.id) { item in
                 ListButton {
                     self.store.send(.didSelectSearchResult(item))
                 } label: {
                     FoodListRow(food: item)
                 }
             }
-        } header: {
-            Text("Results")
+            if self.store.shouldShowNoResults {
+                ContentUnavailableView.search(text: self.store.foodSearch.query)
+                    .id(UUID())
+            }
+            if self.store.isSearching {
+                HStack {
+                    Spacer()
+                    ProgressView("Searching...")
+//                        .id("search")
+                        .id(UUID())
+                    Spacer()
+                }
+//                .id(UUID())
+            }
         }
     }
 
