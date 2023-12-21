@@ -106,6 +106,13 @@
         "identifier" : "MealListTests",
         "name" : "MealListTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:food-spec",
+        "identifier" : "SearchTests",
+        "name" : "SearchTests"
+      }
     }
   ],
   "version" : 1

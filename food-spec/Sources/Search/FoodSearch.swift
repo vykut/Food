@@ -65,12 +65,10 @@ public struct FoodSearch {
                     return startSearching(state: &state)
 
                 case .searchStarted:
-                    guard !state.isSearching else { return .none }
                     state.isSearching = true
                     return .none
 
                 case .searchEnded:
-                    guard state.isSearching else { return .none }
                     state.isSearching = false
                     return .none
 

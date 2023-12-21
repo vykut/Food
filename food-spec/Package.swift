@@ -79,6 +79,7 @@ let package = Package(
         .featureTests(for: "AddIngredients"),
         .featureTests(for: "IngredientPicker"),
         .featureTests(for: "QuantityPicker"),
+        .featureTests(for: "Search"),
 
         .testTarget(for: "API"),
         .testTarget(for: "Shared"),
