@@ -100,9 +100,7 @@ public struct FoodList {
     public init() { }
 
     @Dependency(\.databaseClient) private var databaseClient
-    @Dependency(\.mainQueue) private var mainQueue
     @Dependency(\.userPreferencesClient) private var userPreferencesClient
-
 
     public var body: some ReducerOf<Self> {
         Scope(state: \.foodSearch, action: \.foodSearch) {
@@ -226,39 +224,25 @@ public struct FoodList {
                 }
                 return .none
 
-            case .delegate(let action):
-                switch action {
-                    case .searchStarted:
-                        state.shouldShowNoResults = false
-                        return .none
+            case .delegate(.result(let foods)):
+                state.searchResults = foods
+                return .none
 
-                    case .searchEnded:
-                        state.shouldShowNoResults = state.searchResults.isEmpty
-                        return .none
-
-                    case .result(let foods):
-                        state.searchResults = foods
-                        return .none
-
-                    case .error(let error):
-                        if state.searchResults.isEmpty {
-                            showGenericAlert(state: &state)
-                        }
-                        return .none
+            case .delegate(.error(let error)):
+                if state.searchResults.isEmpty {
+                    showGenericAlert(state: &state)
                 }
-
-            case .searchSubmitted:
                 return .none
 
             case .searchStarted:
-//                state.shouldShowNoResults = false
+                state.shouldShowNoResults = false
                 return .none
 
             case .searchEnded:
-//                state.shouldShowNoResults = state.searchResults.isEmpty
+                state.shouldShowNoResults = state.searchResults.isEmpty
                 return .none
 
-            case .actualSearchStarted:
+            case .searchSubmitted:
                 return .none
         }
     }
