@@ -11,6 +11,22 @@ public struct FoodSearch {
         public var query: String = ""
         public var isFocused: Bool = false
         public var isSearching: Bool = false
+        public var searchResults: [Food] = []
+
+        public var shouldShowSearchResults: Bool {
+            isFocused &&
+            !query.isEmpty
+        }
+
+        public var shouldShowNoResults: Bool {
+            shouldShowSearchResults &&
+            !isSearching &&
+            hasNoResults
+        }
+
+        public var hasNoResults: Bool {
+            searchResults.isEmpty
+        }
 
         public init() { }
     }
@@ -22,13 +38,8 @@ public struct FoodSearch {
         case searchStarted
         case searchEnded
         case searchSubmitted
-        case delegate(Delegate)
-
-        @CasePathable
-        public enum Delegate {
-            case result([Food])
-            case error(Error)
-        }
+        case result([Food])
+        case error(Error)
     }
 
     enum CancelID: Hashable {
@@ -47,6 +58,7 @@ public struct FoodSearch {
                 case .updateFocus(let focused):
                     state.isFocused = focused
                     if !focused {
+                        state.searchResults = []
                         return .cancel(id: CancelID.search)
                     } else {
                         return .none
@@ -55,11 +67,15 @@ public struct FoodSearch {
                 case .updateQuery(let query):
                     guard state.query != query else { return .none }
                     state.query = query
-                    guard !query.isEmpty else { return .cancel(id: CancelID.search) }
-                    return .concatenate(
-                        .cancel(id: CancelID.search),
-                        startSearching(state: &state)
-                    )
+                    if query.isEmpty {
+                        state.searchResults = []
+                        return .cancel(id: CancelID.search)
+                    } else {
+                        return .concatenate(
+                            .cancel(id: CancelID.search),
+                            startSearching(state: &state)
+                        )
+                    }
 
                 case .searchSubmitted:
                     return startSearching(state: &state)
@@ -68,11 +84,16 @@ public struct FoodSearch {
                     state.isSearching = true
                     return .none
 
-                case .searchEnded:
-                    state.isSearching = false
+                case .result(let foods):
+                    guard state.isSearching else { return .none }
+                    state.searchResults = foods
                     return .none
 
-                case .delegate:
+                case .error:
+                    return .none
+
+                case .searchEnded:
+                    state.isSearching = false
                     return .none
             }
         }
@@ -91,19 +112,19 @@ public struct FoodSearch {
             .send(.searchStarted),
             .run { send in
                 if try await self.databaseClient.numberOfFoods(matching: query) != 0 {
-                    try await send(.delegate(.result(getFoods())), animation: .default)
+                    try await send(.result(getFoods()), animation: .default)
                 } else {
-                    await send(.delegate(.result([])), animation: .default)
+                    await send(.result([]), animation: .default)
                 }
             },
             .run { send in
                 let apiFoods = try await self.foodClient.getFoods(query: query)
                 if !apiFoods.isEmpty {
                     _ = try await self.databaseClient.insert(foods: apiFoods.map(Food.init))
-                    try await send(.delegate(.result(getFoods())), animation: .default)
+                    try await send(.result(getFoods()), animation: .default)
                 }
             } catch: { error, send in
-                await send(.delegate(.error(error)))
+                await send(.error(error))
             }
             .debounce(id: CancelID.search, for: .milliseconds(300), scheduler: mainQueue),
             .send(.searchEnded)

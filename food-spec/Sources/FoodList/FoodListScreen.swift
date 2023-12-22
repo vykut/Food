@@ -50,7 +50,7 @@ public struct FoodListScreen: View {
     @MainActor
     private var list: some View {
         List {
-            if self.store.shouldShowSearchResults {
+            if self.store.foodSearch.shouldShowSearchResults {
                 searchResultsList
             }
             if self.store.shouldShowRecentSearches {
@@ -84,19 +84,24 @@ public struct FoodListScreen: View {
 
     private var searchResultsList: some View {
         Section("Results") {
-            ForEach(self.store.searchResults, id: \.id) { item in
+            ForEach(self.store.foodSearch.searchResults, id: \.id) { item in
                 ListButton {
                     self.store.send(.didSelectSearchResult(item))
                 } label: {
                     FoodListRow(food: item)
                 }
             }
-            if self.store.shouldShowNoResults {
+            if self.store.foodSearch.shouldShowNoResults {
                 ContentUnavailableView.search(text: self.store.foodSearch.query)
                     .id(UUID())
             }
             if self.store.isSearching {
-                SpinnerListRow()
+                HStack {
+                    Spacer()
+                    ProgressView("Searching...")
+                        .id(UUID())
+                    Spacer()
+                }
             }
         }
     }

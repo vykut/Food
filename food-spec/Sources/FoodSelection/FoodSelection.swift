@@ -55,6 +55,9 @@ public struct FoodSelection {
     @Dependency(\.databaseClient) private var databaseClient
 
     public var body: some ReducerOf<Self> {
+        Scope(state: \.foodSearch, action: \.foodSearch) {
+            FoodSearch()
+        }
         Reduce { state, action in
             switch action {
                 case .onFirstAppear:
@@ -117,7 +120,10 @@ public struct FoodSelection {
             case .searchSubmitted:
                 return .none
 
-            case .delegate(let action):
+            case .result(let foods):
+                return .none
+
+            case .error(let error):
                 return .none
         }
     }

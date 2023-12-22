@@ -13,7 +13,9 @@ public struct FoodSelectionScreen: View {
 
     public var body: some View {
         List(selection: $store.selectedFoodIds.sending(\.updateSelection)) {
-            if !self.store.filteredFoods.isEmpty {
+            if self.store.foodSearch.shouldShowSearchResults {
+                searchResultsSection
+            } else if !self.store.filteredFoods.isEmpty {
                 recentSearchesSection
             }
         }
@@ -44,8 +46,28 @@ public struct FoodSelectionScreen: View {
                 LabeledListRow(title: item.name.capitalized)
                     .selectionDisabled(store.state.isSelectionDisabled(for: item))
             }
+        }
+    }
+
+    private var searchResultsSection: some View {
+        Section("Results") {
+            ForEach(store.foodSearch.searchResults, id: \.id) { item in
+                LabeledListRow(title: item.name.capitalized)
+                    .selectionDisabled(store.state.isSelectionDisabled(for: item))
+            }
+
+            if self.store.foodSearch.shouldShowNoResults {
+                ContentUnavailableView.search(text: self.store.foodSearch.query)
+                    .id(UUID())
+            }
+
             if self.store.foodSearch.isSearching {
-                SpinnerListRow()
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .id(UUID())
+                    Spacer()
+                }
             }
         }
     }

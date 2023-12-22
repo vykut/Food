@@ -12,11 +12,9 @@ public struct FoodList {
     @ObservableState
     public struct State: Equatable {
         var recentFoods: [Food] = []
-        var shouldShowNoResults: Bool = false
         var foodSearch: FoodSearch.State = .init()
         var recentFoodsSortingStrategy: SortingStrategy
         var recentFoodsSortingOrder: SortOrder
-        var searchResults: [Food] = []
         var billboard: Billboard = .init()
         @Presents var destination: Destination.State?
 
@@ -35,11 +33,6 @@ public struct FoodList {
 
         var shouldShowSpinner: Bool {
             isSearching
-        }
-
-        var shouldShowSearchResults: Bool {
-            foodSearch.isFocused &&
-            !foodSearch.query.isEmpty
         }
 
         var isSortMenuDisabled: Bool {
@@ -210,37 +203,29 @@ public struct FoodList {
 
     private func reduce(state: inout State, action: FoodSearch.Action) -> EffectOf<Self> {
         switch action {
-            case .updateQuery(let query):
-                state.shouldShowNoResults = false
+            case .updateQuery:
                 return .none
 
-            case .updateFocus(let focus):
-                if !focus {
-                    state.searchResults = []
-                }
+            case .updateFocus:
                 return .none
 
-            case .delegate(.result(let foods)):
+            case .error(let error):
                 guard state.foodSearch.isSearching else { return .none }
-                state.searchResults = foods
-                return .none
-
-            case .delegate(.error(let error)):
-                guard state.foodSearch.isSearching else { return .none }
-                if state.searchResults.isEmpty {
+                if state.foodSearch.hasNoResults {
                     showGenericAlert(state: &state)
                 }
                 return .none
 
             case .searchStarted:
-                state.shouldShowNoResults = false
                 return .none
 
             case .searchEnded:
-                state.shouldShowNoResults = state.searchResults.isEmpty
                 return .none
 
             case .searchSubmitted:
+                return .none
+
+            case .result(_):
                 return .none
         }
     }
