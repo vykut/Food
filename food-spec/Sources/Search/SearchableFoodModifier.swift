@@ -17,9 +17,6 @@ struct SearchableFoodModifier: ViewModifier {
             .onSubmit(of: .search) {
                 self.store.send(.searchSubmitted, animation: .default)
             }
-            .foodObservation(
-                store: self.store.scope(state: \.foodObservation, action: \.foodObservation)
-            )
     }
 }
 

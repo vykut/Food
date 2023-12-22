@@ -3,14 +3,10 @@ import ComposableArchitecture
 import Ads
 import Spotlight
 import Shared
-import Search
-import FoodObservation
+import SearchableFoodList
 import FoodDetails
 
 public struct FoodListScreen: View {
-    typealias State = FoodList.State
-    typealias SortStrategy = FoodObservation.State.SortStrategy
-
     @Bindable var store: StoreOf<FoodList>
 
     public init(store: StoreOf<FoodList>) {
@@ -18,14 +14,19 @@ public struct FoodListScreen: View {
     }
 
     public var body: some View {
-        List {
-            if self.store.foodSearch.shouldShowSearchResults {
-                searchResultsSection
-            } else if self.store.shouldShowRecentSearches {
-                recentSearchesSection
-            } else if self.store.shouldShowPrompt {
-                ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
+        SearchableFoodListView(
+            store: self.store.scope(
+                state: \.searchableFoodList,
+                action: \.searchableFoodList
+            )
+        ) { food in
+            ListButton {
+                self.store.send(.didSelectSearchResult(food))
+            } label: {
+                FoodListRow(food: food)
             }
+        } defaultView: { _ in
+            recentSearchesSection
         }
         .toolbar {
             toolbar
@@ -43,9 +44,6 @@ public struct FoodListScreen: View {
         }
         .navigationTitle("Search")
         .alert(self.$store.scope(state: \.destination?.alert, action: \.destination.alert))
-        .searchableFood(
-            store: self.store.scope(state: \.foodSearch, action: \.foodSearch)
-        )
         .onFirstAppear {
             self.store.send(.onFirstAppear)
         }
@@ -59,7 +57,7 @@ public struct FoodListScreen: View {
 
     private var recentSearchesSection: some View {
         Section {
-            ForEach(self.store.recentFoods, id: \.id) { item in
+            ForEach(self.store.recentSearches, id: \.id) { item in
                 ListButton {
                     self.store.send(.didSelectRecentFood(item))
                 } label: {
@@ -77,30 +75,6 @@ public struct FoodListScreen: View {
         }
     }
 
-    private var searchResultsSection: some View {
-        Section("Results") {
-            ForEach(self.store.foodSearch.searchResults, id: \.id) { item in
-                ListButton {
-                    self.store.send(.didSelectSearchResult(item))
-                } label: {
-                    FoodListRow(food: item)
-                }
-            }
-            if self.store.foodSearch.shouldShowNoResults {
-                ContentUnavailableView.search(text: self.store.foodSearch.query)
-                    .id(UUID())
-            }
-            if self.store.isSearching {
-                HStack {
-                    Spacer()
-                    ProgressView("Searching...")
-                        .id(UUID())
-                    Spacer()
-                }
-            }
-        }
-    }
-
     private var toolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
             sortRecentFoodsMenu
@@ -111,13 +85,13 @@ public struct FoodListScreen: View {
         Menu {
             Picker(
                 "Sort by",
-                selection: self.$store.recentFoodsSortStrategy.sending(\.updateRecentFoodsSortingStrategy)
+                selection: self.$store.sortStrategy.sending(\.updateRecentFoodsSortingStrategy)
             ) {
-                ForEach(SortStrategy.allCases) { strategy in
+                ForEach(Food.SortStrategy.allCases) { strategy in
                     let text = strategy.rawValue.capitalized
                     ZStack {
-                        if strategy == self.store.recentFoodsSortStrategy {
-                            let systemImageName = self.store.recentFoodsSortOrder == .forward ? "chevron.up" : "chevron.down"
+                        if strategy == self.store.sortStrategy {
+                            let systemImageName = self.store.sortOrder == .forward ? "chevron.up" : "chevron.down"
                             Label(text, systemImage: systemImageName)
                                 .imageScale(.small)
                         } else {

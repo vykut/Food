@@ -2,61 +2,39 @@ import Foundation
 import Database
 import ComposableArchitecture
 import Shared
-import Search
 import Ads
 import FoodDetails
-import FoodObservation
 import UserPreferences
+import SearchableFoodList
 
 @Reducer
 public struct FoodList {
     @ObservableState
     public struct State: Equatable {
-        var foodSearch: FoodSearch.State
+        var searchableFoodList: SearchableFoodList.State
+        var sortStrategy: Food.SortStrategy
+        var sortOrder: SortOrder
         var billboard: Billboard = .init()
         @Presents var destination: Destination.State?
 
-        var recentFoods: [Food] {
-            foodSearch.foodObservation.foods
-        }
-
-        var recentFoodsSortStrategy: FoodObservation.State.SortStrategy {
-            foodSearch.foodObservation.sortStrategy
-        }
-
-        var recentFoodsSortOrder: SortOrder {
-            foodSearch.foodObservation.sortOrder
-        }
-
-        var shouldShowRecentSearches: Bool {
-            foodSearch.query.isEmpty &&
-            !recentFoods.isEmpty
-        }
-
-        var shouldShowPrompt: Bool {
-            foodSearch.query.isEmpty && recentFoods.isEmpty
-        }
-
-        var isSearching: Bool {
-            foodSearch.isSearching
-        }
-
-        var shouldShowSpinner: Bool {
-            isSearching
+        var recentSearches: [Food] {
+            searchableFoodList.foods
         }
 
         var isSortMenuDisabled: Bool {
-            recentFoods.count < 2
+            searchableFoodList.foods.count < 2
         }
 
         public init() { 
             @Dependency(\.userPreferencesClient) var userPreferencesClient
             let prefs = userPreferencesClient.getPreferences()
-            self.foodSearch = .init(
-                foodObservation: .init(
-                    sortStrategy: prefs.foodSortingStrategy ?? .name,
-                    sortOrder: prefs.recentSearchesSortingOrder ?? .forward
-                )
+            let sortStrategy = prefs.recentSearchesSortStrategy ?? .name
+            let sortOrder = prefs.recentSearchesSortOrder ?? .forward
+            self.sortStrategy = sortStrategy
+            self.sortOrder = sortOrder
+            self.searchableFoodList = .init(
+                sortStrategy: sortStrategy,
+                sortOrder: sortOrder
             )
         }
     }
@@ -64,12 +42,11 @@ public struct FoodList {
     @CasePathable
     public enum Action {
         case onFirstAppear
-        case onUserPreferencesChange(UserPreferences)
         case didSelectRecentFood(Food)
         case didSelectSearchResult(Food)
         case didDeleteRecentFoods(IndexSet)
-        case foodSearch(FoodSearch.Action)
-        case updateRecentFoodsSortingStrategy(FoodObservation.State.SortStrategy)
+        case searchableFoodList(SearchableFoodList.Action)
+        case updateRecentFoodsSortingStrategy(Food.SortStrategy)
         case billboard(Billboard)
         case spotlight(Spotlight)
         case showGenericAlert
@@ -87,39 +64,15 @@ public struct FoodList {
     @Dependency(\.userPreferencesClient) private var userPreferencesClient
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.foodSearch, action: \.foodSearch) {
-            FoodSearch()
+        Scope(state: \.searchableFoodList, action: \.searchableFoodList) {
+            SearchableFoodList()
         }
         Reduce { state, action in
             switch action {
                 case .onFirstAppear:
-                    return .run { [userPreferencesClient] send in
-                        let stream = await userPreferencesClient.observeChanges()
-                        for await preferences in stream {
-                            await send(.onUserPreferencesChange(preferences))
-                        }
-                    }
-
-                case .foodSearch(.foodObservation(.updateFoods)):
-                    if state.foodSearch.foodObservation.foods.isEmpty && state.foodSearch.query.isEmpty {
-                        state.foodSearch.isFocused = true
-                    }
                     return .none
-
-                case .onUserPreferencesChange(let preferences):
-                    return .send(.foodSearch(.foodObservation(.updateSortStrategy(
-                        preferences.foodSortingStrategy ?? .name,
-                        preferences.recentSearchesSortingOrder ?? .forward
-                    ))))
-
-                case .foodSearch(.error):
-                    guard state.foodSearch.isSearching else { return .none }
-                    if state.foodSearch.hasNoResults {
-                        showGenericAlert(state: &state)
-                    }
-                    return .none
-
-                case .foodSearch:
+                    
+                case .searchableFoodList:
                     return .none
 
                 case .didSelectRecentFood(let food):
@@ -131,21 +84,32 @@ public struct FoodList {
                     return .none
 
                 case .didDeleteRecentFoods(let indices):
-                    return .run { [recentFoods = state.recentFoods, databaseClient] send in
-                        let foodsToDelete = indices.map { recentFoods[$0] }
+                    return .run { [foods = state.searchableFoodList.foods] send in
+                        let foodsToDelete = indices.map { foods[$0] }
                         try await databaseClient.delete(foods: foodsToDelete)
                     } catch: { error, send in
                         await send(.showGenericAlert)
                     }
 
                 case .updateRecentFoodsSortingStrategy(let newStrategy):
-                    let sortOrder: SortOrder = newStrategy == state.foodSearch.foodObservation.sortStrategy ? state.foodSearch.foodObservation.sortOrder.toggled() : .forward
-                    return .run { send in
-                        try await userPreferencesClient.setPreferences {
-                            $0.foodSortingStrategy = newStrategy
-                            $0.recentSearchesSortingOrder = sortOrder
-                        }
+                    if newStrategy == state.sortStrategy {
+                        state.sortOrder.toggle()
+                    } else {
+                        state.sortStrategy = newStrategy
+                        state.sortOrder = .forward
                     }
+                    return .merge(
+                        .send(.searchableFoodList(.updateSortStrategy(
+                            newStrategy,
+                            state.sortOrder
+                        ))),
+                        .run { [order = state.sortOrder] send in
+                            try await userPreferencesClient.setPreferences {
+                                $0.recentSearchesSortStrategy = newStrategy
+                                $0.recentSearchesSortOrder = order
+                            }
+                        }
+                    )
 
                 case .showGenericAlert:
                     showGenericAlert(state: &state)
@@ -161,6 +125,14 @@ public struct FoodList {
 
                 case .destination:
                     return .none
+            }
+        }
+        .onChange(of: \.searchableFoodList.foods) { _, newFoods in
+            Reduce { state, _ in
+                if newFoods.isEmpty && state.searchableFoodList.foodSearch.query.isEmpty {
+                    state.searchableFoodList.foodSearch.isFocused = true
+                }
+                return .none
             }
         }
         .ifLet(\.$destination, action: \.destination) {
@@ -197,17 +169,6 @@ public struct FoodList {
             Scope(state: \.foodDetails, action: \.foodDetails) {
                 FoodDetails()
             }
-        }
-    }
-}
-
-fileprivate extension UserPreferences {
-    var foodSortingStrategy: FoodObservation.State.SortStrategy? {
-        get {
-            recentSearchesSortingStrategy.flatMap { .init(rawValue: $0) }
-        }
-        set {
-            recentSearchesSortingStrategy = newValue?.rawValue
         }
     }
 }

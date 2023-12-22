@@ -56,3 +56,15 @@ extension FoodDB {
         )
     }
 }
+
+public extension Food.SortStrategy {
+    var column: Column {
+        switch self {
+            case .name: FoodDB.Columns.name
+            case .energy: FoodDB.Columns.energy
+            case .carbohydrate: FoodDB.Columns.carbohydrate
+            case .protein: FoodDB.Columns.protein
+            case .fat: FoodDB.Columns.fatTotal
+        }
+    }
+}

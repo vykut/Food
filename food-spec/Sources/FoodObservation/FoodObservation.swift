@@ -9,11 +9,11 @@ public struct FoodObservation {
     public struct State: Hashable {
         fileprivate let observationId: UUID
         public var foods: [Food] = []
-        public var sortStrategy: SortStrategy
+        public var sortStrategy: Food.SortStrategy
         public var sortOrder: SortOrder
 
         public init(
-            sortStrategy: SortStrategy = .name,
+            sortStrategy: Food.SortStrategy = .name,
             sortOrder: SortOrder = .forward
         ) {
             @Dependency(\.uuid) var uuid
@@ -21,33 +21,13 @@ public struct FoodObservation {
             self.sortStrategy = sortStrategy
             self.sortOrder = sortOrder
         }
-
-        public enum SortStrategy: String, Codable, Identifiable, Hashable, CaseIterable, Sendable {
-            case name
-            case energy
-            case carbohydrate
-            case protein
-            case fat
-
-            public var id: Self { self }
-
-            var column: Column {
-                switch self {
-                    case .name: Column("name")
-                    case .energy: Column("energy")
-                    case .carbohydrate: Column("carbohydrate")
-                    case .protein: Column("protein")
-                    case .fat: Column("fatTotal")
-                }
-            }
-        }
     }
 
     @CasePathable
     public enum Action {
         case startObservation
         case updateFoods([Food])
-        case updateSortStrategy(State.SortStrategy, SortOrder)
+        case updateSortStrategy(Food.SortStrategy, SortOrder)
     }
 
     public init() { }
@@ -85,7 +65,7 @@ public struct FoodObservation {
 
     private func observationEffect(state: State) -> EffectOf<Self> {
         .run { send in
-            let observation = databaseClient.observeFoods(sortedBy: state.sortStrategy.column, order: state.sortOrder)
+            let observation = databaseClient.observeFoods(sortedBy: state.sortStrategy, order: state.sortOrder)
             for await foods in observation {
                 await send(.updateFoods(foods))
             }

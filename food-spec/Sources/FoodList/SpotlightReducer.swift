@@ -3,6 +3,8 @@ import ComposableArchitecture
 import Spotlight
 import Database
 
+// TODO: Move to AppReducer
+
 @Reducer
 struct SpotlightReducer {
     typealias State = FoodList.State
@@ -11,44 +13,40 @@ struct SpotlightReducer {
     @Dependency(\.spotlightClient) var spotlightClient
     @Dependency(\.databaseClient) var databaseClient
 
-    func reduce(into state: inout FoodList.State, action: FoodList.Action) -> Effect<FoodList.Action> {
-        switch action {
-            case .foodSearch(.foodObservation(.updateFoods(let recentFoods))):
-                return .run { send in
-                    do {
-                        try await spotlightClient.indexFoods(foods: recentFoods)
-                    } catch {
-                        dump(error)
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+                case .spotlight(.handleSelectedFood(let activity)):
+                    guard let foodName = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return .none }
+                    return .run { send in
+                        guard let food = try await databaseClient.getFood(name: foodName) else { return }
+                        await send(.didSelectRecentFood(food))
                     }
-                }
-            case .spotlight(let spotlight):
-                return reduce(into: &state, action: spotlight)
 
-            default:
-                return .none
+                case .spotlight(.handleSelectedFood(let activity)):
+                    guard let searchString = activity.userInfo?[CSSearchQueryString] as? String else { return .none }
+                    return .run { [destination = state.destination, isSearchFocused = state.searchableFoodList.foodSearch.isFocused] send in
+                        if destination != nil {
+                            await send(.destination(.dismiss))
+                        }
+//                        if !isSearchFocused {
+//                            await send(.foodSearch(.updateFocus(true)))
+//                        }
+                        await send(.searchableFoodList(.foodSearch(.updateQuery(searchString))))
+                    }
+
+                default:
+                    return .none
+            }
         }
-    }
-
-    private func reduce(into state: inout FoodList.State, action: FoodList.Action.Spotlight) -> Effect<FoodList.Action> {
-        switch action {
-            case .handleSelectedFood(let activity):
-                guard let foodName = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return .none }
-                return .run { send in
-                    guard let food = try await databaseClient.getFood(name: foodName) else { return }
-                    await send(.didSelectRecentFood(food))
+        .onChange(of: \.searchableFoodList.foodObservation.foods) { _, newFoods in
+            Reduce { _, _ in
+                return .run { _ in
+                    try await spotlightClient.indexFoods(foods: newFoods)
+                } catch: { _, error in
+                    dump(error)
                 }
-
-            case .handleSearchInApp(let activity):
-                guard let searchString = activity.userInfo?[CSSearchQueryString] as? String else { return .none }
-                return .run { [destination = state.destination, isSearchFocused = state.foodSearch.isFocused] send in
-                    if destination != nil {
-                        await send(.destination(.dismiss))
-                    }
-                    if !isSearchFocused {
-                        await send(.foodSearch(.updateFocus(true)))
-                    }
-                    await send(.foodSearch(.updateQuery(searchString)))
-                }
+            }
         }
     }
 }

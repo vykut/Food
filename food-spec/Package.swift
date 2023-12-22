@@ -28,6 +28,7 @@ let package = Package(
         .library(name: "IngredientPicker"),
         .library(name: "QuantityPicker"),
         .library(name: "Shared"),
+        .library(name: "SearchableFoodList"),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
@@ -38,7 +39,7 @@ let package = Package(
     ],
     targets: [
         .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection", "MealList"]),
-        .feature(name: "FoodList", dependencies: ["FoodDetails", "Search", "FoodObservation", "Database", "UserPreferences", "Ads", "Spotlight"]),
+        .feature(name: "FoodList", dependencies: ["FoodDetails", "SearchableFoodList", "Database", "UserPreferences", "Ads", "Spotlight"]),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
         .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison", "Search"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),
@@ -48,6 +49,7 @@ let package = Package(
         .feature(name: "AddIngredients", dependencies: ["Database", "IngredientPicker", "Search"]),
         .feature(name: "IngredientPicker", dependencies: ["QuantityPicker"]),
         .feature(name: "QuantityPicker"),
+        .feature(name: "SearchableFoodList", dependencies: ["Search", "FoodObservation"]),
         .feature(name: "Search", dependencies: ["FoodObservation", "API"]),
         .feature(name: "FoodObservation", dependencies: ["Database"]),
 

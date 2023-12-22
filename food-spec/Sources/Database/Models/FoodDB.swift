@@ -32,3 +32,19 @@ extension FoodDB: FetchableRecord, MutablePersistableRecord {
         id = inserted.rowID
     }
 }
+
+extension FoodDB {
+    enum Columns {
+        static let name = Column(CodingKeys.name)
+        static let energy = Column(CodingKeys.energy)
+        static let fatTotal = Column(CodingKeys.fatTotal)
+        static let fatSaturated = Column(CodingKeys.fatSaturated)
+        static let protein = Column(CodingKeys.protein)
+        static let sodium = Column(CodingKeys.sodium)
+        static let potassium = Column(CodingKeys.potassium)
+        static let cholesterol = Column(CodingKeys.cholesterol)
+        static let carbohydrate = Column(CodingKeys.carbohydrate)
+        static let fiber = Column(CodingKeys.fiber)
+        static let sugar = Column(CodingKeys.sugar)
+    }
+}

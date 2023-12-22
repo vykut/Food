@@ -7,10 +7,10 @@ import DependenciesMacros
 @DependencyClient
 public struct DatabaseClient {
     // MARK: Foods
-    public var observeFoods: (_ sortedBy: Column, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
-    public var getRecentFoods: (_ sortedBy: Column, _ order: SortOrder) async throws -> [Food]
+    public var observeFoods: (_ sortedBy: Food.SortStrategy, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
+    public var getRecentFoods: (_ sortedBy: Food.SortStrategy, _ order: SortOrder) async throws -> [Food]
     public var numberOfFoods: (_ matching: String) async throws -> Int
-    public var getFoods: (_ matching: String, _ sortedBy: Column, _ order: SortOrder) async throws -> [Food]
+    public var getFoods: (_ matching: String, _ sortedBy: Food.SortStrategy, _ order: SortOrder) async throws -> [Food]
     public var getFood: (_ name: String) async throws -> Food?
     @DependencyEndpoint(method: "insert")
     public var insertFood: (_ food: Food) async throws -> Food
@@ -50,15 +50,15 @@ extension DatabaseClient: DependencyKey {
             return try Meal.fetchAll(db, request)
         }
         return .init(
-            observeFoods: { column, order in
+            observeFoods: { strategy, order in
                 let observation = ValueObservation.tracking {
-                    try fetchFoods(db: $0, sortedBy: column, order: order)
+                    try fetchFoods(db: $0, sortedBy: strategy.column, order: order)
                 }
                 return AsyncStream(observation.values(in: db))
             },
-            getRecentFoods: { column, order in
+            getRecentFoods: { strategy, order in
                 return try await db.read {
-                    try fetchFoods(db: $0, sortedBy: column, order: order)
+                    try fetchFoods(db: $0, sortedBy: strategy.column, order: order)
                 }
             },
             numberOfFoods: { matching in
@@ -68,8 +68,9 @@ extension DatabaseClient: DependencyKey {
                         .fetchCount($0)
                 }
             },
-            getFoods: { matching, column, order in
+            getFoods: { matching, strategy, order in
                 try await db.read {
+                    let column = strategy.column
                     let request = FoodDB
                         .filter(Column("name").like("%\(matching)%"))
                         .order(order == .forward ? column : column.desc)
