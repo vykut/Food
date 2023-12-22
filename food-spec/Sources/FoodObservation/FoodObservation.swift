@@ -7,6 +7,7 @@ import ComposableArchitecture
 public struct FoodObservation {
     @ObservableState
     public struct State: Hashable {
+        fileprivate let observationId: UUID
         public var foods: [Food] = []
         public var sortStrategy: SortStrategy
         public var sortOrder: SortOrder
@@ -15,6 +16,8 @@ public struct FoodObservation {
             sortStrategy: SortStrategy = .name,
             sortOrder: SortOrder = .forward
         ) {
+            @Dependency(\.uuid) var uuid
+            self.observationId = uuid()
             self.sortStrategy = sortStrategy
             self.sortOrder = sortOrder
         }
@@ -47,8 +50,6 @@ public struct FoodObservation {
         case updateSortStrategy(State.SortStrategy, SortOrder)
     }
 
-    private let cancelId = UUID()
-
     public init() { }
 
     @Dependency(\.databaseClient) private var databaseClient
@@ -57,7 +58,7 @@ public struct FoodObservation {
         Reduce { state, action in
             switch action {
                 case .startObservation:
-                    return observationEffect(strategy: state.sortStrategy, order: state.sortOrder)
+                    return observationEffect(state: state)
 
                 case .updateFoods(let foods):
                     state.foods = foods
@@ -74,7 +75,7 @@ public struct FoodObservation {
                         shouldRestartObservation = true
                     }
                     if shouldRestartObservation {
-                        return observationEffect(strategy: state.sortStrategy, order: state.sortOrder)
+                        return observationEffect(state: state)
                     } else {
                         return .none
                     }
@@ -82,17 +83,13 @@ public struct FoodObservation {
         }
     }
 
-    private func observationEffect(strategy: State.SortStrategy, order: SortOrder) -> EffectOf<Self> {
-        .concatenate(
-            .cancel(id: cancelId),
-            .run { send in
-                let observation = databaseClient.observeFoods(sortedBy: strategy.column, order: order)
-                for await foods in observation {
-                    await send(.updateFoods(foods))
-                }
-                print("Finished", Task.isCancelled)
+    private func observationEffect(state: State) -> EffectOf<Self> {
+        .run { send in
+            let observation = databaseClient.observeFoods(sortedBy: state.sortStrategy.column, order: state.sortOrder)
+            for await foods in observation {
+                await send(.updateFoods(foods))
             }
-            .cancellable(id: cancelId, cancelInFlight: true)
-        )
+        }
+        .cancellable(id: state.observationId, cancelInFlight: true)
     }
 }

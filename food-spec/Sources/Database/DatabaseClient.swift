@@ -18,6 +18,8 @@ public struct DatabaseClient {
     public var insertFoods: (_ foods: [Food]) async throws -> [Food]
     @DependencyEndpoint(method: "delete")
     public var deleteFood: (_ food: Food) async throws -> Void
+    @DependencyEndpoint(method: "delete")
+    public var deleteFoods: (_ foods: [Food]) async throws -> Void
 
     // MARK: Meals
     public var observeMeals: () -> AsyncStream<[Meal]> = { .finished }
@@ -106,6 +108,11 @@ extension DatabaseClient: DependencyKey {
             deleteFood: { food in
                 try await db.write {
                     _ = try FoodDB.deleteOne($0, key: food.id)
+                }
+            },
+            deleteFoods: { foods in
+                try await db.write {
+                    _ = try FoodDB.deleteAll($0, keys: foods.map(\.id))
                 }
             },
             observeMeals: {

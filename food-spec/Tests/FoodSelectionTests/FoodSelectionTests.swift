@@ -9,58 +9,66 @@ import Database
 final class FoodSelectionTests: XCTestCase {
     typealias State = FoodSelection.State
 
-    func testComputedProperty_filteredFoods() async throws {
-        var state = FoodSelection.State()
-        state.foods = [.ribeye, .eggplant]
-        state.filterQuery = "e"
-
-        XCTAssertNoDifference(state.filteredFoods, [.ribeye, .eggplant])
-
-        state = State()
-        state.foods = [.ribeye, .eggplant]
-        state.filterQuery = "eg"
-        XCTAssertNoDifference(state.filteredFoods, [.eggplant])
-
-        state = State()
-        state.foods = [.ribeye, .eggplant]
-        state.filterQuery = ""
-        XCTAssertNoDifference(state.filteredFoods, [.ribeye, .eggplant])
-    }
-
     func testComputedProperty_isCompareButtonDisabled() async throws {
-        var state = State(
-            selectedFoodIds: [1, 2]
+        let store = TestStore(
+            initialState: State(selectedFoodIds: [1, 2]),
+            reducer: {
+                FoodSelection()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+            }
         )
-        XCTAssertNoDifference(state.isCompareButtonDisabled, false)
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
 
-        state.selectedFoodIds = [1]
-        XCTAssertNoDifference(state.isCompareButtonDisabled, true)
+        await store.send(.updateSelection([1])) {
+            $0.selectedFoodIds = [1]
+        }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
 
-        state.selectedFoodIds = []
-        XCTAssertNoDifference(state.isCompareButtonDisabled, true)
+        await store.send(.updateSelection([])) {
+            $0.selectedFoodIds = []
+        }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, true)
 
-        state.selectedFoodIds = [1, 2, 3, 4, 5]
-        XCTAssertNoDifference(state.isCompareButtonDisabled, false)
+        await store.send(.updateSelection([1, 2, 3, 4, 5])) {
+            $0.selectedFoodIds = [1, 2, 3, 4, 5]
+        }
+        XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
     }
 
     func testIsSelectionDisabled() async throws {
-        let food = Food.eggplant
-        var state = State(
-            selectedFoodIds: []
+        let store = TestStore(
+            initialState: State(selectedFoodIds: []),
+            reducer: {
+                FoodSelection()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+            }
         )
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), false)
+        let food = Food.eggplant
+        XCTAssertNoDifference(store.state.isSelectionDisabled(for: food), false)
 
-        state.selectedFoodIds = [1, 2, 3, 4]
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), false)
+        await store.send(.updateSelection([1, 2, 3, 4])) {
+            $0.selectedFoodIds = [1, 2, 3, 4]
+        }
+        XCTAssertNoDifference(store.state.isSelectionDisabled(for: food), false)
 
-        state.selectedFoodIds = [nil]
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), false)
+        await store.send(.updateSelection([nil])) {
+            $0.selectedFoodIds = [nil]
+        }
+        XCTAssertNoDifference(store.state.isSelectionDisabled(for: food), false)
 
-        state.selectedFoodIds = [nil, 1, 2, 3, 4, 5, 6]
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), false)
+        await store.send(.updateSelection([nil, 1, 2, 3, 4, 5, 6])) {
+            $0.selectedFoodIds = [nil, 1, 2, 3, 4, 5, 6]
+        }
+        XCTAssertNoDifference(store.state.isSelectionDisabled(for: food), false)
 
-        state.selectedFoodIds = [1, 2, 3, 4, 5, 6, 7]
-        XCTAssertNoDifference(state.isSelectionDisabled(for: food), true)
+        await store.send(.updateSelection([1, 2, 3, 4, 5, 6, 7])) {
+            $0.selectedFoodIds = [1, 2, 3, 4, 5, 6, 7]
+        }
+        XCTAssertNoDifference(store.state.isSelectionDisabled(for: food), true)
     }
 
     func testFullFlow() async throws {
@@ -77,34 +85,17 @@ final class FoodSelectionTests: XCTestCase {
                 FoodSelection()
             },
             withDependencies: {
-                $0.databaseClient.observeFoods = { strategy, order in
-                    XCTAssertEqual(strategy.name, "name")
-                    XCTAssertEqual(order, .forward)
-                    return stream
-                }
+                $0.uuid = .constant(.init(0))
             }
         )
         XCTAssertEqual(store.state.shouldShowCancelButton, false)
-        await store.send(.onFirstAppear)
-        continuation.yield([eggplant, oliveOil, ribeye])
-        await store.receive(\.updateFoods) {
-            $0.foods = [eggplant, oliveOil, ribeye]
-        }
         await store.send(.updateSelection([1])) {
             $0.selectedFoodIds = [1]
         }
         XCTAssertEqual(store.state.shouldShowCancelButton, true)
-        await store.send(.updateFilter("e")) {
-            $0.filterQuery = "e"
-        }
-        XCTAssertNoDifference(store.state.filteredFoods, [eggplant, oliveOil, ribeye])
         await store.send(.updateSelection([1, 3])) {
             $0.selectedFoodIds = [1, 3]
         }
-        await store.send(.updateFilter("")) {
-            $0.filterQuery = ""
-        }
-        XCTAssertNoDifference(store.state.filteredFoods, store.state.foods)
         XCTAssertNoDifference(store.state.isCompareButtonDisabled, false)
         await store.send(.updateSelection([1, 3, 4, 5, 6, 7, 8])) {
             $0.selectedFoodIds = [1, 3, 4, 5, 6, 7, 8]
@@ -112,6 +103,9 @@ final class FoodSelectionTests: XCTestCase {
         XCTAssertNoDifference(store.state.isSelectionDisabled(for: oliveOil), true)
         await store.send(.updateSelection([1, 2, 3])) {
             $0.selectedFoodIds = [1, 2, 3]
+        }
+        await store.send(.foodSearch(.foodObservation(.updateFoods([eggplant, oliveOil, ribeye])))) {
+            $0.foodSearch.foodObservation.foods = [eggplant, oliveOil, ribeye]
         }
         await store.send(.compareButtonTapped(.energy)) {
             $0.foodComparison = .init(
@@ -125,9 +119,6 @@ final class FoodSelectionTests: XCTestCase {
             $0.foodComparison = nil
         }
         continuation.yield([eggplant, oliveOil, ribeye, .preview(id: 10)])
-        await store.receive(\.updateFoods) {
-            $0.foods = [eggplant, oliveOil, ribeye, .preview(id: 10)]
-        }
         await store.send(.cancelButtonTapped) {
             $0.selectedFoodIds = []
         }

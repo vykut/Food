@@ -101,6 +101,9 @@ final class MealFormTests: XCTestCase {
             initialState: MealForm.State(),
             reducer: {
                 MealForm()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.addIngredientsButtonTapped) {
@@ -111,6 +114,9 @@ final class MealFormTests: XCTestCase {
             initialState: MealForm.State(meal: .chimichurri),
             reducer: {
                 MealForm()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.addIngredientsButtonTapped) {
@@ -123,6 +129,9 @@ final class MealFormTests: XCTestCase {
             initialState: MealForm.State(meal: .chimichurri),
             reducer: {
                 MealForm()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.ingredientTapped(store.state.meal.ingredients[0])) {
@@ -217,13 +226,16 @@ final class MealFormTests: XCTestCase {
             initialState: MealForm.State(),
             reducer: {
                 MealForm()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.addIngredientsButtonTapped) {
             $0.addIngredients = .init()
         }
         store.exhaustivity = .off
-        await store.send(.addIngredients(.presented(.updateFoods([.chiliPepper, .coriander, .garlic, .oliveOil, .oregano, .parsley, .redWineVinegar]))))
+        await store.send(.addIngredients(.presented(.foodSearch(.foodObservation(.updateFoods([.chiliPepper, .coriander, .garlic, .oliveOil, .oregano, .parsley, .redWineVinegar]))))))
         await store.send(.addIngredients(.presented(.ingredientPickers(.element(id: 1, action: .updateSelection(true))))))
         await store.send(.addIngredients(.presented(.ingredientPickers(.element(id: 2, action: .updateSelection(true))))))
         await store.send(.addIngredients(.presented(.ingredientPickers(.element(id: 3, action: .updateSelection(true))))))

@@ -133,9 +133,7 @@ public struct FoodList {
                 case .didDeleteRecentFoods(let indices):
                     return .run { [recentFoods = state.recentFoods, databaseClient] send in
                         let foodsToDelete = indices.map { recentFoods[$0] }
-                        for food in foodsToDelete {
-                            try await databaseClient.delete(food: food)
-                        }
+                        try await databaseClient.delete(foods: foodsToDelete)
                     } catch: { error, send in
                         await send(.showGenericAlert)
                     }

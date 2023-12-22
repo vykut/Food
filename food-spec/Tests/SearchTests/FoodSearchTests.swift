@@ -11,6 +11,9 @@ final class FoodSearchTests: XCTestCase {
             initialState: FoodSearch.State(),
             reducer: {
                 FoodSearch()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         store.assert {
@@ -25,6 +28,9 @@ final class FoodSearchTests: XCTestCase {
             initialState: FoodSearch.State(),
             reducer: {
                 FoodSearch()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.updateFocus(true)) {
@@ -43,6 +49,7 @@ final class FoodSearchTests: XCTestCase {
                 FoodSearch()
             },
             withDependencies: {
+                $0.uuid = .constant(.init(0))
                 $0.mainQueue = .immediate
                 $0.foodClient.getFoods = { _ in [.preview] }
                 $0.databaseClient.numberOfFoods = { _ in 1 }
@@ -65,14 +72,6 @@ final class FoodSearchTests: XCTestCase {
         await store.receive(\.searchStarted) {
             $0.isSearching = true
         }
-        await store.receive {
-            guard case .delegate(.result([.chiliPepper])) = $0 else { return false }
-            return true
-        }
-        await store.receive {
-            guard case .delegate(.result([.chiliPepper, .init(foodApiModel: .preview)])) = $0 else { return false }
-            return true
-        }
         await store.receive(\.searchEnded) {
             $0.isSearching = false
         }
@@ -89,6 +88,7 @@ final class FoodSearchTests: XCTestCase {
                 FoodSearch()
             },
             withDependencies: {
+                $0.uuid = .constant(.init(0))
                 $0.mainQueue = .immediate
                 $0.foodClient.getFoods = { _ in
                     struct Failure: Error { }
@@ -103,25 +103,24 @@ final class FoodSearchTests: XCTestCase {
         await store.receive(\.searchStarted) {
             $0.isSearching = true
         }
-        await store.receive {
-            guard case .delegate(.result([])) = $0 else { return false }
-            return true
-        }
-        await store.receive(\.delegate.error)
+        await store.receive(\.error)
         await store.receive(\.searchEnded) {
             $0.isSearching = false
         }
     }
 
     func testSearchSubmitted() async throws {
-        var state = FoodSearch.State()
-        state.query = "asd"
         let store = TestStore(
-            initialState: state,
+            initialState: {
+                var state = FoodSearch.State()
+                state.query = "asd"
+                return state
+            }(),
             reducer: {
                 FoodSearch()
             },
             withDependencies: {
+                $0.uuid = .constant(.init(0))
                 $0.mainQueue = .immediate
                 $0.foodClient.getFoods = { _ in [] }
                 $0.databaseClient.numberOfFoods = { _ in 1 }
@@ -131,10 +130,6 @@ final class FoodSearchTests: XCTestCase {
         await store.send(.searchSubmitted)
         await store.receive(\.searchStarted) {
             $0.isSearching = true
-        }
-        await store.receive {
-            guard case .delegate(.result([.chiliPepper])) = $0 else { return false }
-            return true
         }
         await store.receive(\.searchEnded) {
             $0.isSearching = false

@@ -10,16 +10,19 @@ final class BillboardReducerTests: XCTestCase {
             initialState: FoodList.State(),
             reducer: {
                 BillboardReducer()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+                $0.billboardClient.getRandomBanners = {
+                    .init {
+                        $0.yield(.preview)
+                        $0.yield(nil)
+                        $0.yield(.preview)
+                        $0.finish()
+                    }
+                }
             }
         )
-        store.dependencies.billboardClient.getRandomBanners = {
-            .init {
-                $0.yield(.preview)
-                $0.yield(nil)
-                $0.yield(.preview)
-                $0.finish()
-            }
-        }
         await store.send(.onFirstAppear)
         await store.receive(\.billboard.showBanner) {
             $0.billboard.banner = .preview
@@ -37,14 +40,16 @@ final class BillboardReducerTests: XCTestCase {
             initialState: FoodList.State(),
             reducer: {
                 BillboardReducer()
+            }, withDependencies: {
+                $0.uuid = .constant(.init(0))
+                $0.billboardClient.getRandomBanners = {
+                    .init {
+                        struct Failure: Error { }
+                        $0.finish(throwing: Failure())
+                    }
+                }
             }
         )
-        store.dependencies.billboardClient.getRandomBanners = {
-            .init {
-                struct Failure: Error { }
-                $0.finish(throwing: Failure())
-            }
-        }
         await store.send(.onFirstAppear)
     }
 
@@ -53,6 +58,9 @@ final class BillboardReducerTests: XCTestCase {
             initialState: FoodList.State(),
             reducer: {
                 BillboardReducer()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.billboard(.showBanner(.preview))) {

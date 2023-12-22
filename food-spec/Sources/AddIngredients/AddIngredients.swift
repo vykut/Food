@@ -56,10 +56,6 @@ public struct AddIngredients {
         }
         Reduce { state, action in
             switch action {
-
-                    // todo: when reducer is initialized with nonempty ingredients, put them at the top of the list, if any is deselected, move it in the list (sort it)
-                    // don't move pickers up and down based on selection as it can be bad UX to the user
-
                 case .foodSearch(.foodObservation(.updateFoods(let foods))):
                     for food in foods {
                         if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {

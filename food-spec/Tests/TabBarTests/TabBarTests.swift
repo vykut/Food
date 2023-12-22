@@ -10,6 +10,9 @@ final class TabBarTests: XCTestCase {
             initialState: TabBar.State(),
             reducer: {
                 TabBar()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.updateTab(.foodSelection)) {

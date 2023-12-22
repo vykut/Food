@@ -5,12 +5,15 @@ import ComposableArchitecture
 @testable import AddIngredients
 
 @MainActor
-final class AddIngredientTests: XCTestCase {
+final class AddIngredientsTests: XCTestCase {
     func testStateInitializers() async throws {
         var store = TestStore(
             initialState: AddIngredients.State(ingredients: []),
             reducer: {
                 AddIngredients()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         store.assert { state in
@@ -24,6 +27,9 @@ final class AddIngredientTests: XCTestCase {
             initialState: AddIngredients.State(ingredients: ingredients),
             reducer: {
                 AddIngredients()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         store.assert { state in
@@ -38,91 +44,6 @@ final class AddIngredientTests: XCTestCase {
         XCTAssertNoDifference(store.state.selectedIngredients, ingredients)
     }
 
-    func testOnFirstAppear() async throws {
-        var store = TestStore(
-            initialState: AddIngredients.State(ingredients: []),
-            reducer: {
-                AddIngredients()
-            },
-            withDependencies: {
-                $0.databaseClient.getRecentFoods = { sortedBy, order in
-                    XCTAssertEqual(sortedBy.name, "name")
-                    XCTAssertEqual(order, .forward)
-                    return [.chiliPepper, .coriander, .garlic]
-                }
-            }
-        )
-        await store.send(.onFirstAppear)
-        await store.receive(\.updateFoods) {
-            $0.ingredientPickers = .init(
-                uniqueElements: [
-                    .init(food: .chiliPepper),
-                    .init(food: .coriander),
-                    .init(food: .garlic),
-                ],
-                id: \.food.id)
-        }
-        XCTAssertNoDifference(store.state.selectedIngredients, [])
-
-        store = TestStore(
-            initialState: AddIngredients.State(
-                ingredients: [
-                    .init(
-                        food: .oliveOil,
-                        quantity: .init(value: 0.5, unit: .cups)
-                    ),
-                    .init(
-                        food: .oregano,
-                        quantity: .init(value: 1, unit: .teaspoons)
-                    ),
-                ]
-            ),
-            reducer: {
-                AddIngredients()
-            },
-            withDependencies: {
-                $0.databaseClient.getRecentFoods = { sortedBy, order in
-                    XCTAssertEqual(sortedBy.name, "name")
-                    XCTAssertEqual(order, .forward)
-
-                    return [.chiliPepper, .coriander, .garlic, .oliveOil, .oregano]
-                }
-            }
-        )
-        await store.send(.onFirstAppear)
-        await store.receive(\.updateFoods) {
-            $0.ingredientPickers = .init(
-                uniqueElements: [
-                    .init(
-                        food: .oliveOil,
-                        quantity: .init(value: 0.5, unit: .cups)
-                    ),
-                    .init(
-                        food: .oregano,
-                        quantity: .init(value: 1, unit: .teaspoons)
-                    ),
-                    .init(food: .chiliPepper),
-                    .init(food: .coriander),
-                    .init(food: .garlic),
-                ],
-                id: \.food.id
-            )
-        }
-        XCTAssertNoDifference(
-            store.state.selectedIngredients,
-            [
-                .init(
-                    food: .oliveOil,
-                    quantity: .init(value: 0.5, unit: .cups)
-                ),
-                .init(
-                    food: .oregano,
-                    quantity: .init(value: 1, unit: .teaspoons)
-                ),
-            ]
-        )
-    }
-
     func testDoneButton() async throws {
         let store = TestStore(
             initialState: AddIngredients.State(ingredients: []),
@@ -130,6 +51,7 @@ final class AddIngredientTests: XCTestCase {
                 AddIngredients()
             },
             withDependencies: {
+                $0.uuid = .constant(.init(0))
                 $0.dismiss = .init {
                     XCTAssert(true)
                 }
@@ -139,6 +61,7 @@ final class AddIngredientTests: XCTestCase {
     }
 
     func testIntegrationWithIngredientPickers() async throws {
+        let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         let store = TestStore(
             initialState: AddIngredients.State(
                 ingredients: [
@@ -156,16 +79,14 @@ final class AddIngredientTests: XCTestCase {
                 AddIngredients()
             },
             withDependencies: {
-                $0.databaseClient.getRecentFoods = { sortedBy, order in
-                    XCTAssertEqual(sortedBy.name, "name")
-                    XCTAssertEqual(order, .forward)
-
-                    return [.chiliPepper, .coriander, .garlic, .oliveOil, .oregano]
-                }
+                $0.uuid = .constant(.init(0))
+                $0.databaseClient.observeFoods = { _, _ in stream }
             }
         )
-        await store.send(.onFirstAppear)
-        await store.receive(\.updateFoods) {
+        await store.send(.foodSearch(.foodObservation(.startObservation)))
+        continuation.yield([.chiliPepper, .coriander, .garlic, .oliveOil, .oregano])
+        await store.receive(\.foodSearch.foodObservation.updateFoods) {
+            $0.foodSearch.foodObservation.foods = [.chiliPepper, .coriander, .garlic, .oliveOil, .oregano]
             $0.ingredientPickers = .init(
                 uniqueElements: [
                     .init(
@@ -220,6 +141,8 @@ final class AddIngredientTests: XCTestCase {
                 ),
             ]
         )
+        continuation.finish()
+        await store.finish()
     }
 
     func testFullFlow() async throws {
@@ -240,6 +163,7 @@ final class AddIngredientTests: XCTestCase {
                 AddIngredients()
             },
             withDependencies: {
+                $0.uuid = .constant(.init(0))
                 $0.databaseClient.getRecentFoods = { sortedBy, order in
                     XCTAssertEqual(sortedBy.name, "name")
                     XCTAssertEqual(order, .forward)
@@ -252,8 +176,7 @@ final class AddIngredientTests: XCTestCase {
             }
         )
         store.exhaustivity = .off
-        await store.send(.onFirstAppear)
-        await store.receive(\.updateFoods)
+        await store.send(.foodSearch(.foodObservation(.updateFoods([.chiliPepper, .coriander, .garlic, .oliveOil, .oregano]))))
         await store.send(.ingredientPickers(.element(id: 4, action: .updateSelection(false))))
         await store.send(.ingredientPickers(.element(id: 1, action: .updateSelection(true))))
         await store.send(.ingredientPickers(.element(id: 1, action: .quantityPicker(.updateUnit(.tablespoons)))))
