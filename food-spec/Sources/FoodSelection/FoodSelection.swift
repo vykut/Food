@@ -2,7 +2,7 @@ import Foundation
 import Shared
 import Database
 import FoodComparison
-import Search
+import SearchableFoodList
 import ComposableArchitecture
 
 @Reducer
@@ -10,15 +10,15 @@ public struct FoodSelection {
     @ObservableState
     public struct State: Hashable {
         var selectedFoodIds: Set<Int64?> = []
-        var foodSearch: FoodSearch.State = .init()
+        var searchableFoodList: SearchableFoodList.State = .init()
         @Presents var foodComparison: FoodComparison.State?
 
         var foods: [Food] {
-            foodSearch.foodObservation.foods
+            searchableFoodList.foods
         }
 
         var searchResults: [Food] {
-            foodSearch.searchResults
+            searchableFoodList.searchResults
         }
 
         var isCompareButtonDisabled: Bool {
@@ -27,10 +27,6 @@ public struct FoodSelection {
 
         var shouldShowCancelButton: Bool {
             !selectedFoodIds.isEmpty
-        }
-
-        var shouldShowPrompt: Bool {
-            foodSearch.query.isEmpty && foods.isEmpty
         }
 
         func isSelectionDisabled(for food: Food) -> Bool {
@@ -45,8 +41,8 @@ public struct FoodSelection {
 
     @CasePathable
     public enum Action {
-        case foodSearch(FoodSearch.Action)
         case updateSelection(Set<Int64?>)
+        case searchableFoodList(SearchableFoodList.Action)
         case foodComparison(PresentationAction<FoodComparison.Action>)
         case cancelButtonTapped
         case compareButtonTapped(Comparison)
@@ -57,12 +53,12 @@ public struct FoodSelection {
     @Dependency(\.databaseClient) private var databaseClient
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.foodSearch, action: \.foodSearch) {
-            FoodSearch()
+        Scope(state: \.searchableFoodList, action: \.searchableFoodList) {
+            SearchableFoodList()
         }
         Reduce { state, action in
             switch action {
-                case .foodSearch(let action):
+                case .searchableFoodList:
                     return .none
 
                 case .updateSelection(let selection):

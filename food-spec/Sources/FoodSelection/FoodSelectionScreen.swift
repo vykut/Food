@@ -1,7 +1,7 @@
 import SwiftUI
 import ComposableArchitecture
 import Shared
-import Search
+import SearchableFoodList
 import FoodComparison
 
 public struct FoodSelectionScreen: View {
@@ -12,19 +12,17 @@ public struct FoodSelectionScreen: View {
     }
 
     public var body: some View {
-        List(selection: $store.selectedFoodIds.sending(\.updateSelection)) {
-            if self.store.foodSearch.shouldShowSearchResults {
-                searchResultsSection
-            } else if !self.store.foods.isEmpty {
-                recentSearchesSection
-            }else if self.store.shouldShowPrompt {
-                ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
-            }
+        SearchableFoodListView(
+            store: self.store.scope(
+                state: \.searchableFoodList,
+                action: \.searchableFoodList
+            )
+        ) { food in
+            LabeledListRow(title: food.name.capitalized)
+                .selectionDisabled(store.state.isSelectionDisabled(for: food))
+        } defaultView: { _ in
+            recentSearchesSection
         }
-        .listStyle(.sidebar)
-        .searchableFood(
-            store: self.store.scope(state: \.foodSearch, action: \.foodSearch)
-        )
         .environment(\.editMode, .constant(.active))
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.large)
@@ -44,29 +42,6 @@ public struct FoodSelectionScreen: View {
             ForEach(store.foods, id: \.id) { item in
                 LabeledListRow(title: item.name.capitalized)
                     .selectionDisabled(store.state.isSelectionDisabled(for: item))
-            }
-        }
-    }
-
-    private var searchResultsSection: some View {
-        Section("Results") {
-            ForEach(store.searchResults, id: \.id) { item in
-                LabeledListRow(title: item.name.capitalized)
-                    .selectionDisabled(store.state.isSelectionDisabled(for: item))
-            }
-
-            if self.store.foodSearch.shouldShowNoResults {
-                ContentUnavailableView.search(text: self.store.foodSearch.query)
-                    .id(UUID())
-            }
-
-            if self.store.foodSearch.isSearching {
-                HStack {
-                    Spacer()
-                    ProgressView()
-                        .id(UUID())
-                    Spacer()
-                }
             }
         }
     }

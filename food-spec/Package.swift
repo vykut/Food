@@ -41,7 +41,7 @@ let package = Package(
         .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection", "MealList"]),
         .feature(name: "FoodList", dependencies: ["FoodDetails", "SearchableFoodList", "Database", "UserPreferences", "Ads", "Spotlight"]),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
-        .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison", "Search"]),
+        .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison", "SearchableFoodList"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),
         .feature(name: "MealList", dependencies: ["Database", "MealForm", "MealDetails"]),
         .feature(name: "MealDetails", dependencies: ["FoodDetails", "FoodComparison", "MealForm"]),
