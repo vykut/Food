@@ -11,7 +11,7 @@ struct FoodObservationModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onFirstAppear {
-                self.store.send(.startObservation)
+                self.store.send(.startObservation, animation: .default)
             }
     }
 }

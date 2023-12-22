@@ -53,6 +53,7 @@ public struct FoodSearch {
 
     enum CancelID: Hashable {
         case search
+        case apiSearch
     }
 
     public init() { }
@@ -69,7 +70,7 @@ public struct FoodSearch {
                     state.isFocused = focused
                     if !focused {
                         state.searchResults = []
-                        return .cancel(id: CancelID.search)
+                        return .cancel(id: CancelID.apiSearch)
                     } else {
                         return .none
                     }
@@ -79,7 +80,7 @@ public struct FoodSearch {
                     state.query = query
                     if query.isEmpty {
                         state.searchResults = []
-                        return .cancel(id: CancelID.search)
+                        return .cancel(id: CancelID.apiSearch)
                     } else {
                         return startSearching(state: state)
                     }
@@ -88,6 +89,7 @@ public struct FoodSearch {
                     return startSearching(state: state)
 
                 case .searchStarted:
+                    guard !state.isSearching else { return .none }
                     state.isSearching = true
                     return .none
 
@@ -99,6 +101,7 @@ public struct FoodSearch {
                     return .none
 
                 case .searchEnded:
+                    guard state.isSearching else { return .none }
                     state.isSearching = false
                     return .none
 
@@ -125,9 +128,10 @@ public struct FoodSearch {
             } catch: { error, send in
                 await send(.error(error))
             }
-            .cancellable(id: CancelID.search, cancelInFlight: true),
+            .cancellable(id: CancelID.apiSearch, cancelInFlight: true),
             .send(.searchEnded)
         )
+        .cancellable(id: CancelID.search, cancelInFlight: true)
     }
 
     private func getFoods(state: State) async throws -> [Food] {

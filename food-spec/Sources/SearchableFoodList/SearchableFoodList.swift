@@ -76,8 +76,8 @@ public struct SearchableFoodList {
 
                 case .updateSortStrategy(let strategy, let order):
                     return .merge(
-                        .send(.foodSearch(.updateSortStrategy(strategy, order))),
-                        .send(.foodObservation(.updateSortStrategy(strategy, order)))
+                        .send(.foodSearch(.updateSortStrategy(strategy, order)), animation: .default),
+                        .send(.foodObservation(.updateSortStrategy(strategy, order)), animation: .default)
                     )
 
                 case .alert:

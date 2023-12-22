@@ -56,6 +56,20 @@ public struct AddIngredients {
         }
         Reduce { state, action in
             switch action {
+                case .searchableFoodList(.foodObservation(.updateFoods(let newFoods))):
+                    for food in newFoods {
+                        if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
+                            let ingredientPicker = IngredientPicker.State(
+                                food: food,
+                                quantity: alreadySelectedIngredient.quantity
+                            )
+                            state.ingredientPickers.updateOrAppend(ingredientPicker)
+                        } else {
+                            state.ingredientPickers.updateOrAppend(.init(food: food))
+                        }
+                    }
+                    return .none
+
                 case .searchableFoodList:
                     return .none
 
@@ -66,22 +80,6 @@ public struct AddIngredients {
                     return .run { _ in
                         await dismiss()
                     }
-            }
-        }
-        .onChange(of: \.searchableFoodList.foodObservation.foods) { _, newFoods in
-            Reduce { state, _ in
-                for food in newFoods {
-                    if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
-                        let ingredientPicker = IngredientPicker.State(
-                            food: food,
-                            quantity: alreadySelectedIngredient.quantity
-                        )
-                        state.ingredientPickers.updateOrAppend(ingredientPicker)
-                    } else {
-                        state.ingredientPickers.updateOrAppend(.init(food: food))
-                    }
-                }
-                return .none
             }
         }
         .forEach(\.ingredientPickers, action: \.ingredientPickers) {

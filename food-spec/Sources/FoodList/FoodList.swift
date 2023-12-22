@@ -111,6 +111,12 @@ public struct FoodList {
                         }
                     )
 
+                case .searchableFoodList(.foodObservation(.updateFoods(let newFoods))):
+                    if newFoods.isEmpty && state.searchableFoodList.foodSearch.query.isEmpty {
+                        state.searchableFoodList.foodSearch.isFocused = true
+                    }
+                    return .none
+
                 case .showGenericAlert:
                     showGenericAlert(state: &state)
                     return .none
@@ -125,14 +131,6 @@ public struct FoodList {
 
                 case .destination:
                     return .none
-            }
-        }
-        .onChange(of: \.searchableFoodList.foods) { _, newFoods in
-            Reduce { state, _ in
-                if newFoods.isEmpty && state.searchableFoodList.foodSearch.query.isEmpty {
-                    state.searchableFoodList.foodSearch.isFocused = true
-                }
-                return .none
             }
         }
         .ifLet(\.$destination, action: \.destination) {

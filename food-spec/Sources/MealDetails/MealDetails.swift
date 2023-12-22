@@ -78,19 +78,14 @@ public struct MealDetails {
                     state.destination = .mealForm(.init(meal: state.meal))
                     return .none
 
-                case .destination(.presented(.mealForm(.delegate(.mealSaved(let meal))))):
-                    state.meal = meal
+                case .destination(.presented(.mealForm(.delegate(.mealSaved(let newMeal))))):
+                    state.meal = newMeal
+                    state.nutritionalValuesPerTotal = calculator.nutritionalValues(meal: newMeal)
+                    state.nutritionalValuesPerServing = calculator.nutritionalValuesPerServing(meal: newMeal)
                     return .none
 
                 case .destination:
                     return .none
-            }
-        }
-        .onChange(of: \.meal) { _, newMeal in
-            Reduce { state, _ in
-                state.nutritionalValuesPerTotal = calculator.nutritionalValues(meal: newMeal)
-                state.nutritionalValuesPerServing = calculator.nutritionalValuesPerServing(meal: newMeal)
-                return .none
             }
         }
         .ifLet(\.$destination, action: \.destination) {

@@ -16,6 +16,13 @@ struct SpotlightReducer {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
+                case .searchableFoodList(.foodObservation(.updateFoods(let newFoods))):
+                    return .run { _ in
+                        try await spotlightClient.indexFoods(foods: newFoods)
+                    } catch: { _, error in
+                        dump(error)
+                    }
+
                 case .spotlight(.handleSelectedFood(let activity)):
                     guard let foodName = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String else { return .none }
                     return .run { send in
@@ -37,15 +44,6 @@ struct SpotlightReducer {
 
                 default:
                     return .none
-            }
-        }
-        .onChange(of: \.searchableFoodList.foodObservation.foods) { _, newFoods in
-            Reduce { _, _ in
-                return .run { _ in
-                    try await spotlightClient.indexFoods(foods: newFoods)
-                } catch: { _, error in
-                    dump(error)
-                }
             }
         }
     }
