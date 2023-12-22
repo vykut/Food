@@ -14,30 +14,29 @@ public struct AddIngredientsScreen: View {
     }
 
     public var body: some View {
-        SearchableFoodListView(
+        SearchableFoodScrollView(
             store: self.store.scope(
                 state: \.searchableFoodList,
                 action: \.searchableFoodList
-            )
+            ),
+            spacing: 16
         ) { _ in
             ForEachStore(self.store.scope(
                 state: \.searchResults,
                 action: \.ingredientPickers
             )) { store in
                 IngredientPickerView(store: store)
+                    .padding(.horizontal)
             }
-            .listRowSeparator(.hidden)
         } defaultView: { _ in
             ForEachStore(self.store.scope(
                 state: \.ingredientPickers,
                 action: \.ingredientPickers
             )) { store in
                 IngredientPickerView(store: store)
+                    .padding(.horizontal)
             }
-            .listRowSeparator(.hidden)
         }
-        .listStyle(.plain)
-        .listRowSpacing(4)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") {
@@ -47,7 +46,7 @@ public struct AddIngredientsScreen: View {
             DefaultKeyboardToolbar()
         }
         .environment(\.focusState, $focusedField)
-//        .navigationTitle(navigationTitle)
+        .navigationTitle(navigationTitle)
     }
 
     private var ingredientsSection: some View {
