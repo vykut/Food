@@ -2,7 +2,7 @@ import Foundation
 import Shared
 import IngredientPicker
 import Database
-import Search
+import SearchableFoodList
 import ComposableArchitecture
 
 @Reducer
@@ -13,7 +13,7 @@ public struct AddIngredients {
     public struct State: Hashable {
         var initialIngredients: [Ingredient]
         var ingredientPickers: IdentifiedArray<FoodID, IngredientPicker.State> = .init(id: \.food.id)
-        var foodSearch: FoodSearch.State = .init()
+        var searchableFoodList: SearchableFoodList.State = .init()
 
         public var selectedIngredients: [Ingredient] {
             ingredientPickers
@@ -22,8 +22,8 @@ public struct AddIngredients {
         }
 
         var searchResults: IdentifiedArray<FoodID, IngredientPicker.State> {
-            return ingredientPickers.filter {
-                $0.ingredient.food.name.contains(foodSearch.query.lowercased())
+            ingredientPickers.filter { picker in
+                searchableFoodList.searchResults.contains(where: { $0.id == picker.food.id })
             }
         }
 
@@ -41,7 +41,7 @@ public struct AddIngredients {
     @CasePathable
     public enum Action {
         case ingredientPickers(IdentifiedAction<FoodID, IngredientPicker.Action>)
-        case foodSearch(FoodSearch.Action)
+        case searchableFoodList(SearchableFoodList.Action)
         case doneButtonTapped
     }
 
@@ -51,35 +51,37 @@ public struct AddIngredients {
     @Dependency(\.dismiss) private var dismiss
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.foodSearch, action: \.foodSearch) {
-            FoodSearch()
+        Scope(state: \.searchableFoodList, action: \.searchableFoodList) {
+            SearchableFoodList()
         }
         Reduce { state, action in
             switch action {
-                case .foodSearch(.foodObservation(.updateFoods(let foods))):
-                    for food in foods {
-                        if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
-                            let ingredientPicker = IngredientPicker.State(
-                                food: food,
-                                quantity: alreadySelectedIngredient.quantity
-                            )
-                            state.ingredientPickers.updateOrAppend(ingredientPicker)
-                        } else {
-                            state.ingredientPickers.updateOrAppend(.init(food: food))
-                        }
-                    }
+                case .searchableFoodList:
                     return .none
 
                 case .ingredientPickers:
-                    return .none
-
-                case .foodSearch:
                     return .none
 
                 case .doneButtonTapped:
                     return .run { _ in
                         await dismiss()
                     }
+            }
+        }
+        .onChange(of: \.searchableFoodList.foodObservation.foods) { _, newFoods in
+            Reduce { state, _ in
+                for food in newFoods {
+                    if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
+                        let ingredientPicker = IngredientPicker.State(
+                            food: food,
+                            quantity: alreadySelectedIngredient.quantity
+                        )
+                        state.ingredientPickers.updateOrAppend(ingredientPicker)
+                    } else {
+                        state.ingredientPickers.updateOrAppend(.init(food: food))
+                    }
+                }
+                return .none
             }
         }
         .forEach(\.ingredientPickers, action: \.ingredientPickers) {

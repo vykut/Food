@@ -20,6 +20,10 @@ public struct SearchableFoodList {
             foodSearch.searchResults
         }
 
+        public var query: String {
+            foodSearch.query
+        }
+
         public init(
             sortStrategy: Food.SortStrategy = .name,
             sortOrder: SortOrder = .forward
