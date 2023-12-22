@@ -36,11 +36,11 @@ public struct TabBar {
         Scope(state: \.foodSelection, action: \.foodSelection) {
             FoodSelection()
         }
-        Scope(state: \.foodList, action: \.foodList) {
-            FoodList()
-        }
         Scope(state: \.mealList, action: \.mealList) {
             MealList()
+        }
+        Scope(state: \.foodList, action: \.foodList) {
+            FoodList()
         }
         Reduce { state, action in
             switch action {

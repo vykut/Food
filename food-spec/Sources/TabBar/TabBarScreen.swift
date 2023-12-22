@@ -18,8 +18,8 @@ public struct TabBarScreen: View {
             selection: $store.tab.sending(\.updateTab),
             content: {
                 foodList
-                foodSelection
                 mealList
+                foodSelection
             }
         )
     }

@@ -2,6 +2,7 @@ import Foundation
 import Shared
 import IngredientPicker
 import Database
+import Search
 import ComposableArchitecture
 
 @Reducer
@@ -12,6 +13,7 @@ public struct AddIngredients {
     public struct State: Hashable {
         var initialIngredients: [Ingredient]
         var ingredientPickers: IdentifiedArray<FoodID, IngredientPicker.State> = .init(id: \.food.id)
+        var foodSearch: FoodSearch.State = .init()
 
         public var selectedIngredients: [Ingredient] {
             ingredientPickers
@@ -35,6 +37,7 @@ public struct AddIngredients {
         case onFirstAppear
         case updateFoods([Food])
         case ingredientPickers(IdentifiedAction<FoodID, IngredientPicker.Action>)
+        case foodSearch(FoodSearch.Action)
         case doneButtonTapped
     }
 
@@ -44,6 +47,9 @@ public struct AddIngredients {
     @Dependency(\.dismiss) private var dismiss
 
     public var body: some ReducerOf<Self> {
+        Scope(state: \.foodSearch, action: \.foodSearch) {
+            FoodSearch()
+        }
         Reduce { state, action in
             switch action {
                 case .onFirstAppear:
@@ -70,6 +76,9 @@ public struct AddIngredients {
                     return .none
 
                 case .ingredientPickers:
+                    return .none
+
+                case .foodSearch:
                     return .none
 
                 case .doneButtonTapped:

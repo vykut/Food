@@ -15,8 +15,14 @@ public struct FoodSelectionScreen: View {
         List(selection: $store.selectedFoodIds.sending(\.updateSelection)) {
             if self.store.foodSearch.shouldShowSearchResults {
                 searchResultsSection
-            } else if !self.store.filteredFoods.isEmpty {
+            }
+
+            if !self.store.foods.isEmpty {
                 recentSearchesSection
+            }
+
+            if self.store.shouldShowPrompt {
+                ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
             }
         }
         .listStyle(.sidebar)
@@ -35,14 +41,11 @@ public struct FoodSelectionScreen: View {
                 FoodComparisonScreen(store: store)
             }
         )
-        .onFirstAppear {
-            store.send(.onFirstAppear)
-        }
     }
 
     private var recentSearchesSection: some View {
         Section("Recent searches") {
-            ForEach(store.filteredFoods, id: \.id) { item in
+            ForEach(store.foods, id: \.id) { item in
                 LabeledListRow(title: item.name.capitalized)
                     .selectionDisabled(store.state.isSelectionDisabled(for: item))
             }
@@ -51,7 +54,7 @@ public struct FoodSelectionScreen: View {
 
     private var searchResultsSection: some View {
         Section("Results") {
-            ForEach(store.foodSearch.searchResults, id: \.id) { item in
+            ForEach(store.searchResults, id: \.id) { item in
                 LabeledListRow(title: item.name.capitalized)
                     .selectionDisabled(store.state.isSelectionDisabled(for: item))
             }

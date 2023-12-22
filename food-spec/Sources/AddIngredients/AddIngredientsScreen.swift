@@ -2,6 +2,7 @@ import SwiftUI
 import Shared
 import IngredientPicker
 import Database
+import Search
 import ComposableArchitecture
 
 public struct AddIngredientsScreen: View {
@@ -15,16 +16,17 @@ public struct AddIngredientsScreen: View {
     public var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                ForEachStore(self.store.scope(
-                    state: \.ingredientPickers,
-                    action: \.ingredientPickers)
-                ) { store in
-                    IngredientPickerView(store: store)
-                        .padding(.horizontal)
+                if self.store.foodSearch.shouldShowSearchResults {
+                    searchResultsSection
+                } else {
+                    ingredientsSection
                 }
             }
         }
         .scrollDismissesKeyboard(.immediately)
+        .searchableFood(
+            store: self.store.scope(state: \.foodSearch, action: \.foodSearch)
+        )
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") {
@@ -37,6 +39,26 @@ public struct AddIngredientsScreen: View {
         .navigationTitle(navigationTitle)
         .onFirstAppear {
             self.store.send(.onFirstAppear)
+        }
+    }
+
+    private var ingredientsSection: some View {
+        ForEachStore(self.store.scope(
+            state: \.ingredientPickers,
+            action: \.ingredientPickers
+        )) { store in
+            IngredientPickerView(store: store)
+                .padding(.horizontal)
+        }
+    }
+
+    private var searchResultsSection: some View {
+        ForEachStore(self.store.scope(
+            state: \.ingredientPickers,
+            action: \.ingredientPickers
+        )) { store in
+            IngredientPickerView(store: store)
+                .padding(.horizontal)
         }
     }
 

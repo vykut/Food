@@ -4,10 +4,12 @@ import Ads
 import Spotlight
 import Shared
 import Search
+import FoodObservation
 import FoodDetails
 
 public struct FoodListScreen: View {
     typealias State = FoodList.State
+    typealias SortStrategy = FoodObservation.State.SortStrategy
 
     @Bindable var store: StoreOf<FoodList>
 
@@ -16,53 +18,48 @@ public struct FoodListScreen: View {
     }
 
     public var body: some View {
-        list
-            .toolbar {
-                toolbar
-            }
-            .searchableFood(
-                store: self.store.scope(state: \.foodSearch, action: \.foodSearch)
-            )
-            .safeAreaInset(edge: .bottom) {
-                if let ad = store.billboard.banner {
-                    BillboardBannerView(advert: ad, hideDismissButtonAndTimer: true)
-                        .padding([.horizontal, .bottom])
-                }
-            }
-            .navigationDestination(
-                item: $store.scope(state: \.destination?.foodDetails, action: \.destination.foodDetails)
-            ) { store in
-                FoodDetailsScreen(store: store)
-            }
-            .navigationTitle("Search")
-            .alert($store.scope(state: \.destination?.alert, action: \.destination.alert))
-            .onFirstAppear {
-                self.store.send(.onFirstAppear)
-            }
-            .onContinueUserActivity(CSSearchableItemActionType) { activity in
-                store.send(.spotlight(.handleSelectedFood(activity)))
-            }
-            .onContinueUserActivity(CSQueryContinuationActionType) { activity in
-                store.send(.spotlight(.handleSearchInApp(activity)))
-            }
-    }
-
-    @MainActor
-    private var list: some View {
         List {
             if self.store.foodSearch.shouldShowSearchResults {
-                searchResultsList
+                searchResultsSection
             }
             if self.store.shouldShowRecentSearches {
-                recentSearches
+                recentSearchesSection
             }
             if self.store.shouldShowPrompt {
                 ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
             }
         }
+        .toolbar {
+            toolbar
+        }
+        .safeAreaInset(edge: .bottom) {
+            if let ad = self.store.billboard.banner {
+                BillboardBannerView(advert: ad, hideDismissButtonAndTimer: true)
+                    .padding([.horizontal, .bottom])
+            }
+        }
+        .navigationDestination(
+            item: self.$store.scope(state: \.destination?.foodDetails, action: \.destination.foodDetails)
+        ) { store in
+            FoodDetailsScreen(store: store)
+        }
+        .navigationTitle("Search")
+        .alert(self.$store.scope(state: \.destination?.alert, action: \.destination.alert))
+        .searchableFood(
+            store: self.store.scope(state: \.foodSearch, action: \.foodSearch)
+        )
+        .onFirstAppear {
+            self.store.send(.onFirstAppear)
+        }
+        .onContinueUserActivity(CSSearchableItemActionType) { activity in
+            self.store.send(.spotlight(.handleSelectedFood(activity)))
+        }
+        .onContinueUserActivity(CSQueryContinuationActionType) { activity in
+            self.store.send(.spotlight(.handleSearchInApp(activity)))
+        }
     }
 
-    private var recentSearches: some View {
+    private var recentSearchesSection: some View {
         Section {
             ForEach(self.store.recentFoods, id: \.id) { item in
                 ListButton {
@@ -82,7 +79,7 @@ public struct FoodListScreen: View {
         }
     }
 
-    private var searchResultsList: some View {
+    private var searchResultsSection: some View {
         Section("Results") {
             ForEach(self.store.foodSearch.searchResults, id: \.id) { item in
                 ListButton {
@@ -116,13 +113,13 @@ public struct FoodListScreen: View {
         Menu {
             Picker(
                 "Sort by",
-                selection: self.$store.recentFoodsSortingStrategy.sending(\.updateRecentFoodsSortingStrategy)
+                selection: self.$store.recentFoodsSortStrategy.sending(\.updateRecentFoodsSortingStrategy)
             ) {
-                ForEach(State.SortingStrategy.allCases) { strategy in
+                ForEach(SortStrategy.allCases) { strategy in
                     let text = strategy.rawValue.capitalized
                     ZStack {
-                        if strategy == self.store.recentFoodsSortingStrategy {
-                            let systemImageName = self.store.recentFoodsSortingOrder == .forward ? "chevron.up" : "chevron.down"
+                        if strategy == self.store.recentFoodsSortStrategy {
+                            let systemImageName = self.store.recentFoodsSortOrder == .forward ? "chevron.up" : "chevron.down"
                             Label(text, systemImage: systemImageName)
                                 .imageScale(.small)
                         } else {
@@ -137,7 +134,7 @@ public struct FoodListScreen: View {
                 .imageScale(.medium)
         }
         .menuActionDismissBehavior(.disabled)
-        .disabled(store.isSortMenuDisabled)
+        .disabled(self.store.isSortMenuDisabled)
     }
 }
 

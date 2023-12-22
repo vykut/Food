@@ -13,7 +13,7 @@ struct SpotlightReducer {
 
     func reduce(into state: inout FoodList.State, action: FoodList.Action) -> Effect<FoodList.Action> {
         switch action {
-            case .onRecentFoodsChange(let recentFoods):
+            case .foodSearch(.foodObservation(.updateFoods(let recentFoods))):
                 return .run { send in
                     do {
                         try await spotlightClient.indexFoods(foods: recentFoods)
