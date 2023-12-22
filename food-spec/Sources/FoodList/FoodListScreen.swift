@@ -21,11 +21,9 @@ public struct FoodListScreen: View {
         List {
             if self.store.foodSearch.shouldShowSearchResults {
                 searchResultsSection
-            }
-            if self.store.shouldShowRecentSearches {
+            } else if self.store.shouldShowRecentSearches {
                 recentSearchesSection
-            }
-            if self.store.shouldShowPrompt {
+            } else if self.store.shouldShowPrompt {
                 ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
             }
         }

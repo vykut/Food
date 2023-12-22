@@ -37,9 +37,6 @@ public struct AddIngredientsScreen: View {
         }
         .environment(\.focusState, $focusedField)
         .navigationTitle(navigationTitle)
-        .onFirstAppear {
-            self.store.send(.onFirstAppear)
-        }
     }
 
     private var ingredientsSection: some View {
@@ -52,13 +49,28 @@ public struct AddIngredientsScreen: View {
         }
     }
 
+    @ViewBuilder
     private var searchResultsSection: some View {
         ForEachStore(self.store.scope(
-            state: \.ingredientPickers,
+            state: \.searchResults,
             action: \.ingredientPickers
         )) { store in
             IngredientPickerView(store: store)
                 .padding(.horizontal)
+        }
+
+        if self.store.foodSearch.isSearching {
+            HStack {
+                Spacer()
+                ProgressView("Searching...")
+                    .id(UUID())
+                Spacer()
+            }
+        }
+
+        if self.store.foodSearch.shouldShowNoResults {
+            ContentUnavailableView.search(text: self.store.foodSearch.query)
+                .id(UUID())
         }
     }
 

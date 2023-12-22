@@ -21,6 +21,12 @@ public struct AddIngredients {
                 .map(\.ingredient)
         }
 
+        var searchResults: IdentifiedArray<FoodID, IngredientPicker.State> {
+            return ingredientPickers.filter {
+                $0.ingredient.food.name.contains(foodSearch.query.lowercased())
+            }
+        }
+
         public init(ingredients: [Ingredient] = []) {
             self.initialIngredients = ingredients
             for ingredient in ingredients {
@@ -34,8 +40,6 @@ public struct AddIngredients {
 
     @CasePathable
     public enum Action {
-        case onFirstAppear
-        case updateFoods([Food])
         case ingredientPickers(IdentifiedAction<FoodID, IngredientPicker.Action>)
         case foodSearch(FoodSearch.Action)
         case doneButtonTapped
@@ -52,16 +56,11 @@ public struct AddIngredients {
         }
         Reduce { state, action in
             switch action {
-                case .onFirstAppear:
-                    return .run { [databaseClient] send in
-                        let foods = try await databaseClient.getRecentFoods(sortedBy: Column("name"), order: .forward)
-                        await send(.updateFoods(foods))
-                    }
 
                     // todo: when reducer is initialized with nonempty ingredients, put them at the top of the list, if any is deselected, move it in the list (sort it)
                     // don't move pickers up and down based on selection as it can be bad UX to the user
 
-                case .updateFoods(let foods):
+                case .foodSearch(.foodObservation(.updateFoods(let foods))):
                     for food in foods {
                         if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
                             let ingredientPicker = IngredientPicker.State(

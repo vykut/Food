@@ -15,13 +15,9 @@ public struct FoodSelectionScreen: View {
         List(selection: $store.selectedFoodIds.sending(\.updateSelection)) {
             if self.store.foodSearch.shouldShowSearchResults {
                 searchResultsSection
-            }
-
-            if !self.store.foods.isEmpty {
+            } else if !self.store.foods.isEmpty {
                 recentSearchesSection
-            }
-
-            if self.store.shouldShowPrompt {
+            }else if self.store.shouldShowPrompt {
                 ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
             }
         }
