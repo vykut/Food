@@ -3,7 +3,6 @@ import ComposableArchitecture
 import Ads
 import Spotlight
 import Shared
-import SearchableFoodList
 import FoodDetails
 
 public struct FoodListScreen: View {
@@ -14,22 +13,14 @@ public struct FoodListScreen: View {
     }
 
     public var body: some View {
-        SearchableFoodListView(
-            store: self.store.scope(
-                state: \.searchableFoodList,
-                action: \.searchableFoodList
-            )
-        ) { food in
-            ListButton {
-                self.store.send(.didSelectSearchResult(food))
-            } label: {
-                FoodListRow(food: food)
+        List {
+            if self.store.foodSearch.shouldShowSearchResults {
+                searchResultsSection
+            } else if !self.store.recentSearches.isEmpty {
+                recentSearchesSection
+            } else {
+                ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
             }
-        } defaultView: { _ in
-            recentSearchesSection
-        }
-        .toolbar {
-            toolbar
         }
         .safeAreaInset(edge: .bottom) {
             if let ad = self.store.billboard.banner {
@@ -37,21 +28,63 @@ public struct FoodListScreen: View {
                     .padding([.horizontal, .bottom])
             }
         }
+        .toolbar {
+            toolbar
+        }
         .navigationDestination(
-            item: self.$store.scope(state: \.destination?.foodDetails, action: \.destination.foodDetails)
+            item: self.$store.scope(
+                state: \.destination?.foodDetails,
+                action: \.destination.foodDetails
+            )
         ) { store in
             FoodDetailsScreen(store: store)
         }
-        .navigationTitle("Search")
+        .foodSearch(
+            store: self.store.scope(
+                state: \.foodSearch,
+                action: \.foodSearch
+            )
+        )
+        .foodObservation(
+            store: self.store.scope(
+                state: \.foodObservation,
+                action: \.foodObservation
+            )
+        )
         .alert(self.$store.scope(state: \.destination?.alert, action: \.destination.alert))
         .onFirstAppear {
             self.store.send(.onFirstAppear)
         }
+        .navigationTitle("Search")
         .onContinueUserActivity(CSSearchableItemActionType) { activity in
             self.store.send(.spotlight(.handleSelectedFood(activity)))
         }
         .onContinueUserActivity(CSQueryContinuationActionType) { activity in
             self.store.send(.spotlight(.handleSearchInApp(activity)))
+        }
+    }
+
+    private var searchResultsSection: some View {
+        Section("Results") {
+            ForEach(self.store.foodSearch.searchResults, id: \.id) { item in
+                ListButton {
+                    self.store.send(.didSelectSearchResult(item))
+                } label: {
+                    FoodListRow(food: item)
+                }
+            }
+            if self.store.foodSearch.shouldShowNoResults {
+                ContentUnavailableView.search(text: self.store.foodSearch.query)
+                    .id(UUID())
+            }
+            if self.store.foodSearch.isSearching {
+                HStack {
+                    Spacer()
+                    ProgressView("Searching...")
+                        .id(UUID())
+                    Spacer()
+                }
+            }
         }
     }
 

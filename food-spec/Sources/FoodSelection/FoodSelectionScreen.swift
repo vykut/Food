@@ -1,8 +1,8 @@
 import SwiftUI
 import ComposableArchitecture
 import Shared
-import SearchableFoodList
 import FoodComparison
+import Search
 
 public struct FoodSelectionScreen: View {
     @Bindable var store: StoreOf<FoodSelection>
@@ -12,16 +12,14 @@ public struct FoodSelectionScreen: View {
     }
 
     public var body: some View {
-        SearchableFoodListView(
-            store: self.store.scope(
-                state: \.searchableFoodList,
-                action: \.searchableFoodList
-            )
-        ) { food in
-            LabeledListRow(title: food.name.capitalized)
-                .selectionDisabled(store.state.isSelectionDisabled(for: food))
-        } defaultView: { _ in
-            recentSearchesSection
+        List(selection: self.$store.selectedFoodIds.sending(\.updateSelection).animation()) {
+            if self.store.foodSearch.shouldShowSearchResults {
+                searchResultsSection
+            } else if !self.store.foods.isEmpty {
+                recentSearchesSection
+            } else {
+                ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
+            }
         }
         .environment(\.editMode, .constant(.active))
         .navigationTitle(navigationTitle)
@@ -29,29 +27,62 @@ public struct FoodSelectionScreen: View {
         .toolbar {
             toolbar
         }
+        .foodSearch(
+            store: self.store.scope(
+                state: \.foodSearch,
+                action: \.foodSearch
+            )
+        )
+        .foodObservation(
+            store: self.store.scope(
+                state: \.foodObservation,
+                action: \.foodObservation
+            )
+        )
         .navigationDestination(
-            item: $store.scope(state: \.foodComparison, action: \.foodComparison),
+            item: self.$store.scope(state: \.foodComparison, action: \.foodComparison),
             destination: { store in
                 FoodComparisonScreen(store: store)
             }
         )
     }
 
+    private var searchResultsSection: some View {
+        Section("Results") {
+            ForEach(self.store.searchResults, id: \.id) { item in
+                LabeledListRow(title: item.name.capitalized)
+                    .selectionDisabled(self.store.state.isSelectionDisabled(for: item))
+            }
+            if self.store.foodSearch.shouldShowNoResults {
+                ContentUnavailableView.search(text: self.store.foodSearch.query)
+                    .id(UUID())
+            }
+            if self.store.foodSearch.isSearching {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .id(UUID())
+                    Spacer()
+                }
+            }
+        }
+    }
+
     private var recentSearchesSection: some View {
         Section("Recent searches") {
-            ForEach(store.foods, id: \.id) { item in
+            ForEach(self.store.foods, id: \.id) { item in
                 LabeledListRow(title: item.name.capitalized)
-                    .selectionDisabled(store.state.isSelectionDisabled(for: item))
+                    .selectionDisabled(self.store.state.isSelectionDisabled(for: item))
             }
         }
     }
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
-        if store.shouldShowCancelButton {
+        if self.store.shouldShowCancelButton {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Cancel") {
-                    store.send(.cancelButtonTapped)
+                    self.store.send(.cancelButtonTapped)
                 }
             }
         }
@@ -59,19 +90,19 @@ public struct FoodSelectionScreen: View {
             Menu("Compare") {
                 ForEach(Comparison.allCases) { comparison in
                     Button(comparison.rawValue.capitalized) {
-                        store.send(.compareButtonTapped(comparison))
+                        self.store.send(.compareButtonTapped(comparison))
                     }
                 }
             }
-            .disabled(store.isCompareButtonDisabled)
+            .disabled(self.store.isCompareButtonDisabled)
         }
     }
 
     private var navigationTitle: String {
-        if store.selectedFoodIds.count < 2 {
+        if self.store.selectedFoodIds.count < 2 {
             "Select \(2 - store.selectedFoodIds.count) or more"
         } else {
-            "\(store.selectedFoodIds.count) foods selected"
+            "\(self.store.selectedFoodIds.count) foods selected"
         }
     }
 }

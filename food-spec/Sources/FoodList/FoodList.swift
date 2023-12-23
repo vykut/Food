@@ -5,24 +5,30 @@ import Shared
 import Ads
 import FoodDetails
 import UserPreferences
-import SearchableFoodList
+import Search
+import FoodObservation
 
 @Reducer
 public struct FoodList {
     @ObservableState
     public struct State: Equatable {
-        var searchableFoodList: SearchableFoodList.State
+        var foodSearch: FoodSearch.State
+        var foodObservation: FoodObservation.State
         var sortStrategy: Food.SortStrategy
         var sortOrder: SortOrder
         var billboard: Billboard = .init()
         @Presents var destination: Destination.State?
 
         var recentSearches: [Food] {
-            searchableFoodList.foods
+            foodObservation.foods
         }
 
         var isSortMenuDisabled: Bool {
-            searchableFoodList.foods.count < 2
+            foodObservation.foods.count < 2
+        }
+
+        public struct Billboard: Equatable {
+            var banner: BillboardAd?
         }
 
         public init() { 
@@ -32,7 +38,11 @@ public struct FoodList {
             let sortOrder = prefs.recentSearchesSortOrder ?? .forward
             self.sortStrategy = sortStrategy
             self.sortOrder = sortOrder
-            self.searchableFoodList = .init(
+            self.foodSearch = .init(
+                sortStrategy: sortStrategy,
+                sortOrder: sortOrder
+            )
+            self.foodObservation = .init(
                 sortStrategy: sortStrategy,
                 sortOrder: sortOrder
             )
@@ -45,12 +55,24 @@ public struct FoodList {
         case didSelectRecentFood(Food)
         case didSelectSearchResult(Food)
         case didDeleteRecentFoods(IndexSet)
-        case searchableFoodList(SearchableFoodList.Action)
+        case foodSearch(FoodSearch.Action)
+        case foodObservation(FoodObservation.Action)
         case updateRecentFoodsSortingStrategy(Food.SortStrategy)
         case billboard(Billboard)
         case spotlight(Spotlight)
         case showGenericAlert
         case destination(PresentationAction<Destination.Action>)
+
+        @CasePathable
+        public enum Billboard {
+            case showBanner(BillboardAd?)
+        }
+
+        @CasePathable
+        public enum Spotlight {
+            case handleSelectedFood(NSUserActivity)
+            case handleSearchInApp(NSUserActivity)
+        }
     }
 
     enum CancelID {
@@ -64,15 +86,15 @@ public struct FoodList {
     @Dependency(\.userPreferencesClient) private var userPreferencesClient
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.searchableFoodList, action: \.searchableFoodList) {
-            SearchableFoodList()
+        Scope(state: \.foodSearch, action: \.foodSearch) {
+            FoodSearch()
+        }
+        Scope(state: \.foodObservation, action: \.foodObservation) {
+            FoodObservation()
         }
         Reduce { state, action in
             switch action {
                 case .onFirstAppear:
-                    return .none
-                    
-                case .searchableFoodList:
                     return .none
 
                 case .didSelectRecentFood(let food):
@@ -84,7 +106,7 @@ public struct FoodList {
                     return .none
 
                 case .didDeleteRecentFoods(let indices):
-                    return .run { [foods = state.searchableFoodList.foods] send in
+                    return .run { [foods = state.recentSearches] send in
                         let foodsToDelete = indices.map { foods[$0] }
                         try await databaseClient.delete(foods: foodsToDelete)
                     } catch: { error, send in
@@ -99,10 +121,8 @@ public struct FoodList {
                         state.sortOrder = .forward
                     }
                     return .merge(
-                        .send(.searchableFoodList(.updateSortStrategy(
-                            newStrategy,
-                            state.sortOrder
-                        ))),
+                        .send(.foodSearch(.updateSortStrategy(newStrategy, state.sortOrder)), animation: .default),
+                        .send(.foodObservation(.updateSortStrategy(newStrategy, state.sortOrder)), animation: .default),
                         .run { [order = state.sortOrder] send in
                             try await userPreferencesClient.setPreferences {
                                 $0.recentSearchesSortStrategy = newStrategy
@@ -111,10 +131,16 @@ public struct FoodList {
                         }
                     )
 
-                case .searchableFoodList(.foodObservation(.updateFoods(let newFoods))):
-                    if newFoods.isEmpty && state.searchableFoodList.foodSearch.query.isEmpty {
-                        state.searchableFoodList.foodSearch.isFocused = true
+                case .foodObservation(.updateFoods(let newFoods)):
+                    if newFoods.isEmpty && state.foodSearch.query.isEmpty {
+                        state.foodSearch.isFocused = true
                     }
+                    return .none
+
+                case .foodSearch:
+                    return .none
+
+                case .foodObservation:
                     return .none
 
                 case .showGenericAlert:
@@ -136,8 +162,8 @@ public struct FoodList {
         .ifLet(\.$destination, action: \.destination) {
             Destination()
         }
-        SpotlightReducer()
-        BillboardReducer()
+//        SpotlightReducer()
+//        BillboardReducer()
     }
 
     private func showGenericAlert(state: inout State) {

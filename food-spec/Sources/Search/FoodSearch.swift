@@ -14,6 +14,7 @@ public struct FoodSearch {
         public var searchResults: [Food] = []
         public var sortStrategy: Food.SortStrategy
         public var sortOrder: SortOrder
+        @Presents public var alert: AlertState<Action.Alert>?
 
         public var hasNoResults: Bool {
             searchResults.isEmpty
@@ -49,6 +50,10 @@ public struct FoodSearch {
         case searchSubmitted
         case result([Food])
         case error(Error)
+        case alert(PresentationAction<Alert>)
+
+        @CasePathable
+        public enum Alert: Hashable { }
     }
 
     enum CancelID: Hashable {
@@ -60,7 +65,6 @@ public struct FoodSearch {
 
     @Dependency(\.foodClient) private var foodClient
     @Dependency(\.databaseClient) private var databaseClient
-    @Dependency(\.mainQueue) private var mainQueue
     @Dependency(\.continuousClock) private var clock
 
     public var body: some ReducerOf<Self> {
@@ -98,6 +102,14 @@ public struct FoodSearch {
                     return .none
 
                 case .error:
+                    if state.hasNoResults {
+                        state.alert = AlertState {
+                            TextState("Something went wrong. Please try again later.")
+                        }
+                    }
+                    return .none
+
+                case .alert:
                     return .none
 
                 case .searchEnded:
@@ -111,6 +123,7 @@ public struct FoodSearch {
                     return .none
             }
         }
+        .ifLet(\.$alert, action: \.alert)
     }
 
     private func startSearching(state: State) -> EffectOf<Self> {

@@ -2,7 +2,6 @@ import SwiftUI
 import Shared
 import IngredientPicker
 import Database
-import SearchableFoodList
 import ComposableArchitecture
 
 public struct AddIngredientsScreen: View {
@@ -14,29 +13,18 @@ public struct AddIngredientsScreen: View {
     }
 
     public var body: some View {
-        SearchableFoodScrollView(
-            store: self.store.scope(
-                state: \.searchableFoodList,
-                action: \.searchableFoodList
-            ),
-            spacing: 16
-        ) { _ in
-            ForEachStore(self.store.scope(
-                state: \.searchResults,
-                action: \.ingredientPickers
-            )) { store in
-                IngredientPickerView(store: store)
-                    .padding(.horizontal)
-            }
-        } defaultView: { _ in
-            ForEachStore(self.store.scope(
-                state: \.ingredientPickers,
-                action: \.ingredientPickers
-            )) { store in
-                IngredientPickerView(store: store)
-                    .padding(.horizontal)
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                if self.store.foodSearch.shouldShowSearchResults {
+                    searchResultsSection
+                } else if !self.store.ingredientPickers.isEmpty {
+                    ingredientsSection
+                } else {
+                    ContentUnavailableView("Search for ingredients", systemImage: "magnifyingglass")
+                }
             }
         }
+        .scrollDismissesKeyboard(.immediately)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") {
@@ -46,7 +34,44 @@ public struct AddIngredientsScreen: View {
             DefaultKeyboardToolbar()
         }
         .environment(\.focusState, $focusedField)
+        .foodSearch(
+            store: self.store.scope(
+                state: \.foodSearch,
+                action: \.foodSearch
+            )
+        )
+        .foodObservation(
+            store: self.store.scope(
+                state: \.foodObservation,
+                action: \.foodObservation
+            )
+        )
         .navigationTitle(navigationTitle)
+    }
+
+    @ViewBuilder
+    private var searchResultsSection: some View {
+        ForEachStore(self.store.scope(
+            state: \.searchResults,
+            action: \.ingredientPickers
+        )) { store in
+            IngredientPickerView(store: store)
+                .padding(.horizontal)
+        }
+
+        if self.store.foodSearch.shouldShowNoResults {
+            ContentUnavailableView.search(text: self.store.foodSearch.query)
+                .id(UUID())
+        }
+
+        if self.store.foodSearch.isSearching {
+            HStack {
+                Spacer()
+                ProgressView("Searching...")
+                    .id(UUID())
+                Spacer()
+            }
+        }
     }
 
     private var ingredientsSection: some View {

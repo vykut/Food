@@ -1,8 +1,7 @@
 import SwiftUI
-import FoodObservation
 import ComposableArchitecture
 
-struct SearchableFoodModifier: ViewModifier {
+struct FoodSearchModifier: ViewModifier {
     @Bindable var store: StoreOf<FoodSearch>
     var prompt: String
 
@@ -17,12 +16,13 @@ struct SearchableFoodModifier: ViewModifier {
             .onSubmit(of: .search) {
                 self.store.send(.searchSubmitted, animation: .default)
             }
+            .alert(self.$store.scope(state: \.alert, action: \.alert))
     }
 }
 
 public extension View {
-    func searchableFood(store: StoreOf<FoodSearch>, prompt: String = "Search") -> some View {
+    func foodSearch(store: StoreOf<FoodSearch>, prompt: String = "Search") -> some View {
         self
-            .modifier(SearchableFoodModifier(store: store, prompt: prompt))
+            .modifier(FoodSearchModifier(store: store, prompt: prompt))
     }
 }

@@ -1,6 +1,7 @@
 import Foundation
 import ComposableArchitecture
 import Spotlight
+import CoreSpotlight
 import Database
 
 // TODO: Move to AppReducer
@@ -16,7 +17,7 @@ struct SpotlightReducer {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-                case .searchableFoodList(.foodObservation(.updateFoods(let newFoods))):
+                case .foodObservation(.updateFoods(let newFoods)):
                     return .run { _ in
                         try await spotlightClient.indexFoods(foods: newFoods)
                     } catch: { _, error in
@@ -32,27 +33,19 @@ struct SpotlightReducer {
 
                 case .spotlight(.handleSelectedFood(let activity)):
                     guard let searchString = activity.userInfo?[CSSearchQueryString] as? String else { return .none }
-                    return .run { [destination = state.destination, isSearchFocused = state.searchableFoodList.foodSearch.isFocused] send in
+                    return .run { [destination = state.destination, isSearchFocused = state.foodSearch.isFocused] send in
                         if destination != nil {
                             await send(.destination(.dismiss))
                         }
 //                        if !isSearchFocused {
 //                            await send(.foodSearch(.updateFocus(true)))
 //                        }
-                        await send(.searchableFoodList(.foodSearch(.updateQuery(searchString))))
+                        await send(.foodSearch(.updateQuery(searchString)))
                     }
 
                 default:
                     return .none
             }
         }
-    }
-}
-
-extension FoodList.Action {
-    @CasePathable
-    public enum Spotlight {
-        case handleSelectedFood(NSUserActivity)
-        case handleSearchInApp(NSUserActivity)
     }
 }

@@ -2,18 +2,21 @@ import Foundation
 import Shared
 import IngredientPicker
 import Database
-import SearchableFoodList
+import Search
+import FoodObservation
 import ComposableArchitecture
 
 @Reducer
 public struct AddIngredients {
+    public typealias IngredientPickers = IdentifiedArray<FoodID, IngredientPicker.State>
     public typealias FoodID = Int64?
 
     @ObservableState
     public struct State: Hashable {
         var initialIngredients: [Ingredient]
-        var ingredientPickers: IdentifiedArray<FoodID, IngredientPicker.State> = .init(id: \.food.id)
-        var searchableFoodList: SearchableFoodList.State = .init()
+        var ingredientPickers: IngredientPickers = .init(id: \.food.id)
+        var foodSearch: FoodSearch.State = .init()
+        var foodObservation: FoodObservation.State = .init()
 
         public var selectedIngredients: [Ingredient] {
             ingredientPickers
@@ -21,9 +24,10 @@ public struct AddIngredients {
                 .map(\.ingredient)
         }
 
-        var searchResults: IdentifiedArray<FoodID, IngredientPicker.State> {
-            ingredientPickers.filter { picker in
-                searchableFoodList.searchResults.contains(where: { $0.id == picker.food.id })
+        var searchResults: IngredientPickers {
+            let results = Set(foodSearch.searchResults.map(\.id))
+            return ingredientPickers.filter { picker in
+                results.contains(picker.food.id)
             }
         }
 
@@ -41,36 +45,46 @@ public struct AddIngredients {
     @CasePathable
     public enum Action {
         case ingredientPickers(IdentifiedAction<FoodID, IngredientPicker.Action>)
-        case searchableFoodList(SearchableFoodList.Action)
+        case foodSearch(FoodSearch.Action)
+        case foodObservation(FoodObservation.Action)
         case doneButtonTapped
     }
 
     public init() { }
 
-    @Dependency(\.databaseClient) private var databaseClient
     @Dependency(\.dismiss) private var dismiss
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.searchableFoodList, action: \.searchableFoodList) {
-            SearchableFoodList()
+        Scope(state: \.foodObservation, action: \.foodObservation) {
+            FoodObservation()
+        }
+        Scope(state: \.foodSearch, action: \.foodSearch) {
+            FoodSearch()
         }
         Reduce { state, action in
             switch action {
-                case .searchableFoodList(.foodObservation(.updateFoods(let newFoods))):
+                case .foodObservation(.updateFoods(let newFoods)):
+                    var pickers: IngredientPickers = .init(id: \.food.id)
                     for food in newFoods {
-                        if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
-                            let ingredientPicker = IngredientPicker.State(
+                        if let picker = state.ingredientPickers[id: food.id] {
+                            pickers.append(picker)
+                        } else if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
+                            let picker = IngredientPicker.State(
                                 food: food,
                                 quantity: alreadySelectedIngredient.quantity
                             )
-                            state.ingredientPickers.updateOrAppend(ingredientPicker)
+                            pickers.append(picker)
                         } else {
-                            state.ingredientPickers.updateOrAppend(.init(food: food))
+                            pickers.append(.init(food: food))
                         }
                     }
+                    state.ingredientPickers = pickers
                     return .none
 
-                case .searchableFoodList:
+                case .foodObservation:
+                    return .none
+
+                case .foodSearch:
                     return .none
 
                 case .ingredientPickers:

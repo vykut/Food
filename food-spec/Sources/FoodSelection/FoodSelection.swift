@@ -2,7 +2,8 @@ import Foundation
 import Shared
 import Database
 import FoodComparison
-import SearchableFoodList
+import Search
+import FoodObservation
 import ComposableArchitecture
 
 @Reducer
@@ -10,15 +11,16 @@ public struct FoodSelection {
     @ObservableState
     public struct State: Hashable {
         var selectedFoodIds: Set<Int64?> = []
-        var searchableFoodList: SearchableFoodList.State = .init()
+        var foodSearch: FoodSearch.State = .init()
+        var foodObservation: FoodObservation.State = .init()
         @Presents var foodComparison: FoodComparison.State?
 
         var foods: [Food] {
-            searchableFoodList.foods
+            foodObservation.foods
         }
 
         var searchResults: [Food] {
-            searchableFoodList.searchResults
+            foodSearch.searchResults
         }
 
         var isCompareButtonDisabled: Bool {
@@ -42,7 +44,8 @@ public struct FoodSelection {
     @CasePathable
     public enum Action {
         case updateSelection(Set<Int64?>)
-        case searchableFoodList(SearchableFoodList.Action)
+        case foodSearch(FoodSearch.Action)
+        case foodObservation(FoodObservation.Action)
         case foodComparison(PresentationAction<FoodComparison.Action>)
         case cancelButtonTapped
         case compareButtonTapped(Comparison)
@@ -53,14 +56,14 @@ public struct FoodSelection {
     @Dependency(\.databaseClient) private var databaseClient
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.searchableFoodList, action: \.searchableFoodList) {
-            SearchableFoodList()
+        Scope(state: \.foodObservation, action: \.foodObservation) {
+            FoodObservation()
+        }
+        Scope(state: \.foodSearch, action: \.foodSearch) {
+            FoodSearch()
         }
         Reduce { state, action in
             switch action {
-                case .searchableFoodList:
-                    return .none
-
                 case .updateSelection(let selection):
                     state.selectedFoodIds = selection
                     return .none
@@ -78,6 +81,12 @@ public struct FoodSelection {
                         foodSortingStrategy: .value,
                         foodSortingOrder: .forward
                     )
+                    return .none
+
+                case .foodSearch:
+                    return .none
+
+                case .foodObservation:
                     return .none
 
                 case .foodComparison:
