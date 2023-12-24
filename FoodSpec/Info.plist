@@ -4,5 +4,7 @@
 <dict>
 	<key>CoreSpotlightContinuation</key>
 	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
