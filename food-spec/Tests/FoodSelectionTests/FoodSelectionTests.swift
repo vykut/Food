@@ -104,8 +104,8 @@ final class FoodSelectionTests: XCTestCase {
         await store.send(.updateSelection([1, 2, 3])) {
             $0.selectedFoodIds = [1, 2, 3]
         }
-        await store.send(.foodSearch(.foodObservation(.updateFoods([eggplant, oliveOil, ribeye])))) {
-            $0.foodSearch.foodObservation.foods = [eggplant, oliveOil, ribeye]
+        await store.send(.foodObservation(.updateFoods([eggplant, oliveOil, ribeye]))) {
+            $0.foodObservation.foods = [eggplant, oliveOil, ribeye]
         }
         await store.send(.compareButtonTapped(.energy)) {
             $0.foodComparison = .init(

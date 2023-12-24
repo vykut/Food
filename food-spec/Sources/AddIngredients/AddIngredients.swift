@@ -68,12 +68,6 @@ public struct AddIngredients {
                     for food in newFoods {
                         if let picker = state.ingredientPickers[id: food.id] {
                             pickers.append(picker)
-                        } else if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
-                            let picker = IngredientPicker.State(
-                                food: food,
-                                quantity: alreadySelectedIngredient.quantity
-                            )
-                            pickers.append(picker)
                         } else {
                             pickers.append(.init(food: food))
                         }

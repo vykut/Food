@@ -23,8 +23,12 @@ public struct FoodList {
             foodObservation.foods
         }
 
+        var searchResults: [Food] {
+            foodSearch.searchResults
+        }
+
         var isSortMenuDisabled: Bool {
-            foodObservation.foods.count < 2
+            recentSearches.count < 2
         }
 
         public struct Billboard: Equatable {

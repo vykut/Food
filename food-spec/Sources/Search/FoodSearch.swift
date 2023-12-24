@@ -136,8 +136,8 @@ public struct FoodSearch {
                 let apiFoods = try await self.foodClient.getFoods(query: query)
                 if !apiFoods.isEmpty {
                     _ = try await self.databaseClient.insert(foods: apiFoods.map(Food.init))
+                    try await send(.result(self.getFoods(state: state)))
                 }
-                try await send(.result(self.getFoods(state: state)))
             } catch: { error, send in
                 await send(.error(error))
             }

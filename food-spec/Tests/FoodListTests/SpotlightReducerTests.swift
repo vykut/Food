@@ -22,7 +22,7 @@ final class SpotlightReducerTests: XCTestCase {
                 }
             }
         )
-        await store.send(.foodSearch(.foodObservation(.updateFoods(foods))))
+        await store.send(.foodObservation(.updateFoods(foods)))
     }
 
     func testSpotlightSelection() async throws {
