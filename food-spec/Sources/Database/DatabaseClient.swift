@@ -5,13 +5,16 @@ import DependenciesMacros
 @_exported import GRDB
 
 @DependencyClient
-public struct DatabaseClient {
+public struct DatabaseClient: Sendable {
     // MARK: Foods
     public var observeFoods: (_ sortedBy: Food.SortStrategy, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
     public var getRecentFoods: (_ sortedBy: Food.SortStrategy, _ order: SortOrder) async throws -> [Food]
     public var numberOfFoods: (_ matching: String) async throws -> Int
     public var getFoods: (_ matching: String, _ sortedBy: Food.SortStrategy, _ order: SortOrder) async throws -> [Food]
-    public var getFood: (_ name: String) async throws -> Food?
+    @DependencyEndpoint(method: "getFood")
+    public var getFoodId: (_ id: Int64) async throws -> Food?
+    @DependencyEndpoint(method: "getFood")
+    public var getFoodName: (_ name: String) async throws -> Food?
     @DependencyEndpoint(method: "insert")
     public var insertFood: (_ food: Food) async throws -> Food
     @DependencyEndpoint(method: "insert")
@@ -24,6 +27,8 @@ public struct DatabaseClient {
     // MARK: Meals
     public var observeMeals: () -> AsyncStream<[Meal]> = { .finished }
     public var getMeals: () async throws -> [Meal]
+    @DependencyEndpoint(method: "getMeal")
+    public var getMealId: (_ id: Int64) async throws -> Meal?
     @DependencyEndpoint(method: "insert")
     public var insertMeal: (_ meal: Meal) async throws -> Meal
     @DependencyEndpoint(method: "delete")
@@ -77,7 +82,13 @@ extension DatabaseClient: DependencyKey {
                     return try Food.fetchAll($0, request)
                 }
             },
-            getFood: { name in
+            getFoodId: { id in
+                return try await db.read {
+                    let foodDb = try FoodDB.fetchOne($0, key: id)
+                    return foodDb.map(Food.init)
+                }
+            },
+            getFoodName: { name in
                 return try await db.read {
                     let request = FoodDB.filter(Column("name") == name)
                     return try Food.fetchOne($0, request)
@@ -125,6 +136,20 @@ extension DatabaseClient: DependencyKey {
             getMeals: {
                 try await db.read {
                     try fetchMeals(db: $0)
+                }
+            },
+            getMealId: { id in
+                try await db.read {
+                    let request = MealDB
+                        .filter(key: id)
+                        .including(
+                            all: MealDB.ingredients
+                                .including(
+                                    required: IngredientDB.food
+                                        .order(Column("name"))
+                                )
+                        )
+                    return try Meal.fetchOne($0, request)
                 }
             },
             insertMeal: { meal in

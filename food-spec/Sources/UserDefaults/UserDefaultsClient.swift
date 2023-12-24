@@ -4,7 +4,7 @@ import DependenciesMacros
 import Shared
 
 @DependencyClient
-public struct UserDefaultsClient {
+public struct UserDefaultsClient: Sendable {
     public var bool: @Sendable (_ key: String) -> Bool = { _ in false }
     public var string: @Sendable (_ key: String) -> String?
     public var data: @Sendable (_ key: String) -> Data?
@@ -20,7 +20,7 @@ public struct UserDefaultsClient {
 
 extension UserDefaultsClient: DependencyKey {
     public static let liveValue: Self = {
-        let defaults = { UserDefaults(suiteName: "group.foodspec")! }
+        let defaults = { @Sendable in UserDefaults(suiteName: "group.foodspec")! }
         return Self(
             bool: { defaults().bool(forKey: $0) },
             string: { defaults().string(forKey: $0) },

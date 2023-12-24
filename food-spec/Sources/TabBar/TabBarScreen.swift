@@ -3,6 +3,7 @@ import FoodList
 import FoodSelection
 import MealList
 import ComposableArchitecture
+import Spotlight
 
 public struct TabBarScreen: View {
     typealias Tab = TabBar.State.Tab
@@ -14,13 +15,16 @@ public struct TabBarScreen: View {
     }
 
     public var body: some View {
-        TabView(
-            selection: $store.tab.sending(\.updateTab),
-            content: {
-                foodList
-                mealList
-                foodSelection
-            }
+        TabView(selection: $store.tab.sending(\.updateTab).animation()) {
+            foodList
+            mealList
+            foodSelection
+        }
+        .spotlightModifier(
+            store: self.store.scope(
+                state: \.spotlight,
+                action: \.spotlight
+            )
         )
     }
 

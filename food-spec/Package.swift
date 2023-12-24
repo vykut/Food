@@ -36,8 +36,8 @@ let package = Package(
         .package(url: "https://github.com/groue/Semaphore", from: "0.0.8"),
     ],
     targets: [
-        .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection", "MealList"]),
-        .feature(name: "FoodList", dependencies: ["FoodDetails", "Search", "FoodObservation", "Database", "UserPreferences", "Spotlight"]),
+        .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection", "MealList", "Spotlight", "Database"]),
+        .feature(name: "FoodList", dependencies: ["FoodDetails", "Search", "FoodObservation", "Database", "UserPreferences"]),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
         .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison", "Search", "FoodObservation"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),

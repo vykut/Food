@@ -4,7 +4,6 @@ import Shared
 import Spotlight
 @testable import UserPreferences
 @testable import API
-@testable import Billboard
 @testable import FoodList
 
 @MainActor
