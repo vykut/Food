@@ -4,7 +4,6 @@
 import PackageDescription
 
 let grdbDependency: Target.Dependency = .product(name: "GRDB", package: "GRDB.swift")
-let billboardDependency: Target.Dependency = .product(name: "Billboard", package: "billboard")
 let asyncSemaphoreDependency: Target.Dependency = .product(name: "Semaphore", package: "Semaphore")
 let tcaDependency: Target.Dependency = .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
 let tcaDIDependency: Target.Dependency = .product(name: "Dependencies", package: "swift-dependencies")
@@ -34,12 +33,11 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.1.2"),
         .package(url: "https://github.com/groue/GRDB.swift", from: "6.23.0"),
-        .package(url: "https://github.com/hiddevdploeg/Billboard", from: "1.0.2"),
         .package(url: "https://github.com/groue/Semaphore", from: "0.0.8"),
     ],
     targets: [
         .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection", "MealList"]),
-        .feature(name: "FoodList", dependencies: ["FoodDetails", "Search", "FoodObservation", "Database", "UserPreferences", "Ads", "Spotlight"]),
+        .feature(name: "FoodList", dependencies: ["FoodDetails", "Search", "FoodObservation", "Database", "UserPreferences", "Spotlight"]),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
         .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison", "Search", "FoodObservation"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),
@@ -56,7 +54,6 @@ let package = Package(
         .client(name: "UserDefaults"),
         .client(name: "API"),
         .client(name: "Database", dependencies: [grdbDependency]),
-        .client(name: "Ads", dependencies: [billboardDependency]),
         .client(name: "Spotlight"),
 
         .target(
