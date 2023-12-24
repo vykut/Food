@@ -3,16 +3,22 @@ import Shared
 import Database
 import MealForm
 import MealDetails
+import DatabaseObservation
+import Search
 import ComposableArchitecture
 
 @Reducer
-public struct MealList {
+public struct MealList: Sendable {
     @ObservableState
     public struct State: Hashable {
         var mealsWithNutritionalValues: [MealWithNutritionalValues] = []
+        var searchResults: [MealWithNutritionalValues] = []
+        var mealObservation: MealObservation.State = .init()
+        var mealSearch: MealSearch.State = .init()
         @Presents public var destination: Destination.State?
 
         var showsAddMealPrompt: Bool {
+            !mealSearch.shouldShowSearchResults &&
             mealsWithNutritionalValues.isEmpty
         }
 
@@ -27,11 +33,11 @@ public struct MealList {
 
     @CasePathable
     public enum Action {
-        case onFirstAppear
         case plusButtonTapped
-        case onMealsUpdate([Meal])
         case mealTapped(Meal)
         case onDelete(IndexSet)
+        case mealObservation(MealObservation.Action)
+        case mealSearch(MealSearch.Action)
         case destination(PresentationAction<Destination.Action>)
     }
 
@@ -41,23 +47,40 @@ public struct MealList {
     @Dependency(\.nutritionalValuesCalculator) private var calculator
 
     public var body: some ReducerOf<Self> {
+        Scope(state: \.mealSearch, action: \.mealSearch) {
+            MealSearch()
+        }
         Reduce { state, action in
             switch action {
-                case .onFirstAppear:
-                    return .run { [databaseClient] send in
-                        let stream = databaseClient.observeMeals()
-                        for await meals in stream {
-                            await send(.onMealsUpdate(meals), animation: .default)
-                        }
-                    }
-
-                case .onMealsUpdate(let meals):
+                case .mealObservation(.delegate(.mealsChanged(let meals))):
                     state.mealsWithNutritionalValues = meals.map {
                         .init(
                             meal: $0,
                             perTotal: calculator.nutritionalValues(meal: $0),
                             perServing: calculator.nutritionalValuesPerServing(meal: $0)
                         )
+                    }
+                    return .none
+
+                case .mealSearch(.result(let meals)):
+                    state.searchResults = meals.map {
+                        .init(
+                            meal: $0,
+                            perTotal: calculator.nutritionalValues(meal: $0),
+                            perServing: calculator.nutritionalValuesPerServing(meal: $0)
+                        )
+                    }
+                    return .none
+
+                case .mealSearch(.updateFocus(let focused)):
+                    if !focused {
+                        state.searchResults = []
+                    }
+                    return .none
+
+                case .mealSearch(.updateQuery(let query)):
+                    if query.isEmpty {
+                        state.searchResults = []
                     }
                     return .none
 
@@ -72,9 +95,7 @@ public struct MealList {
                 case .onDelete(let indices):
                     return .run { [nutritionalValues = state.mealsWithNutritionalValues, databaseClient] send in
                         let mealsToDelete = indices.map { nutritionalValues[$0].meal }
-                        for meal in mealsToDelete {
-                            try await databaseClient.delete(meal: meal)
-                        }
+                        try await databaseClient.delete(meals: mealsToDelete)
                     }
 
                 case .destination(.presented(.mealForm(.delegate(.mealSaved(let meal))))):
@@ -83,8 +104,15 @@ public struct MealList {
 
                 case .destination:
                     return .none
+
+                case .mealObservation:
+                    return .none
+
+                case .mealSearch:
+                    return .none
             }
         }
+        .mealObservation(state: \.mealObservation, action: \.mealObservation)
         .ifLet(\.$destination, action: \.destination) {
             Destination()
         }

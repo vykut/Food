@@ -3,11 +3,11 @@ import Shared
 import IngredientPicker
 import Database
 import Search
-import FoodObservation
+import DatabaseObservation
 import ComposableArchitecture
 
 @Reducer
-public struct AddIngredients {
+public struct AddIngredients: Sendable {
     public typealias IngredientPickers = IdentifiedArray<FoodID, IngredientPicker.State>
     public typealias FoodID = Int64?
 
@@ -63,7 +63,7 @@ public struct AddIngredients {
         }
         Reduce { state, action in
             switch action {
-                case .foodObservation(.updateFoods(let newFoods)):
+                case .foodObservation(.delegate(.foodsChanged(let newFoods))):
                     var pickers: IngredientPickers = .init(id: \.food.id)
                     for food in newFoods {
                         if let picker = state.ingredientPickers[id: food.id] {

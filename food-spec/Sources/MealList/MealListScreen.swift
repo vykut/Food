@@ -2,6 +2,8 @@ import SwiftUI
 import Shared
 import MealForm
 import MealDetails
+import DatabaseObservation
+import Search
 import ComposableArchitecture
 
 public struct MealListScreen: View {
@@ -13,14 +15,16 @@ public struct MealListScreen: View {
 
     public var body: some View {
         List {
-            if store.showsAddMealPrompt {
+            if self.store.mealSearch.shouldShowSearchResults {
+                searchResultsSection
+            } else if !self.store.mealsWithNutritionalValues.isEmpty {
+                mealsSection
+            } else {
                 ContentUnavailableView(
                     "Your meals will be shown here.",
-                    systemImage: "fork.knife",
+                    systemImage: "takeoutbag.and.cup.and.straw.fill",
                     description: Text("You can add a meal by tapping the \"+\" icon.")
                 )
-            } else {
-                mealsSection
             }
         }
         .toolbar {
@@ -32,10 +36,19 @@ public struct MealListScreen: View {
                 }
             }
         }
+        .mealSearch(
+            store: self.store.scope(
+                state: \.mealSearch,
+                action: \.mealSearch
+            )
+        )
+        .mealObservation(
+            store: self.store.scope(
+                state: \.mealObservation,
+                action: \.mealObservation
+            )
+        )
         .navigationTitle("Meals")
-        .onFirstAppear {
-            store.send(.onFirstAppear)
-        }
         .navigationDestination(
             item: self.$store.scope(
                 state: \.destination?.mealDetails,
@@ -59,24 +72,36 @@ public struct MealListScreen: View {
         )
     }
 
+    private var searchResultsSection: some View {
+        Section {
+            ForEach(store.searchResults, id: \.meal.id) { nutritionalValue in
+                button(for: nutritionalValue)
+            }
+        }
+    }
+
     private var mealsSection: some View {
         Section {
             ForEach(store.mealsWithNutritionalValues, id: \.meal.id) { nutritionalValue in
-                ListButton {
-                    self.store.send(.mealTapped(nutritionalValue.meal))
-                } label: {
-                    let footnotePerServingSize = "Per serving: \(nutritionalValue.perServing.foodWithQuantity.nutritionalSummary)"
-                    let footnotePerTotal = nutritionalValue.perTotal.foodWithQuantity.nutritionalSummary
-                    let footnote = nutritionalValue.meal.servings != 1 ? footnotePerServingSize : footnotePerTotal
-                    LabeledListRow(
-                        title: nutritionalValue.meal.name.capitalized,
-                        footnote: footnote
-                    )
-                }
+                button(for: nutritionalValue)
             }
             .onDelete { offsets in
                 self.store.send(.onDelete(offsets))
             }
+        }
+    }
+
+    private func button(for nutritionalValue: MealList.State.MealWithNutritionalValues) -> some View {
+        ListButton {
+            self.store.send(.mealTapped(nutritionalValue.meal))
+        } label: {
+            let footnotePerServingSize = "Per serving: \(nutritionalValue.perServing.foodWithQuantity.nutritionalSummary)"
+            let footnotePerTotal = nutritionalValue.perTotal.foodWithQuantity.nutritionalSummary
+            let footnote = nutritionalValue.meal.servings != 1 ? footnotePerServingSize : footnotePerTotal
+            LabeledListRow(
+                title: nutritionalValue.meal.name.capitalized,
+                footnote: footnote
+            )
         }
     }
 }

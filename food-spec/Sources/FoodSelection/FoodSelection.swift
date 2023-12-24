@@ -3,21 +3,18 @@ import Shared
 import Database
 import FoodComparison
 import Search
-import FoodObservation
+import DatabaseObservation
 import ComposableArchitecture
 
 @Reducer
-public struct FoodSelection {
+public struct FoodSelection: Sendable {
     @ObservableState
     public struct State: Hashable {
         var selectedFoodIds: Set<Int64?> = []
         var foodSearch: FoodSearch.State = .init()
         var foodObservation: FoodObservation.State = .init()
+        var foods: [Food] = []
         @Presents var foodComparison: FoodComparison.State?
-
-        var foods: [Food] {
-            foodObservation.foods
-        }
 
         var searchResults: [Food] {
             foodSearch.searchResults
@@ -81,6 +78,11 @@ public struct FoodSelection {
                         foodSortingStrategy: .value,
                         foodSortingOrder: .forward
                     )
+                    return .none
+
+                case .foodObservation(.delegate(.foodsChanged(let foods))):
+                    state.foods = foods
+                    state.selectedFoodIds.formIntersection(foods.map(\.id)) // remove selected foods that have been deleted
                     return .none
 
                 case .foodSearch:

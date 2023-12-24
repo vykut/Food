@@ -1,18 +1,17 @@
 import Foundation
 import Shared
-import API
 import Database
 import ComposableArchitecture
 
 @Reducer
-public struct FoodSearch: Sendable {
+public struct MealSearch: Sendable {
     @ObservableState
     public struct State: Hashable {
         public var query: String = ""
         public var isFocused: Bool = false
         public var isSearching: Bool = false
-        public var searchResults: [Food] = []
-        public var sortStrategy: Food.SortStrategy
+        public var searchResults: [Meal] = []
+        public var sortStrategy: Meal.SortStrategy
         public var sortOrder: SortOrder
         @Presents public var alert: AlertState<Action.Alert>?
 
@@ -32,7 +31,7 @@ public struct FoodSearch: Sendable {
         }
 
         public init(
-            sortStrategy: Food.SortStrategy = .name,
+            sortStrategy: Meal.SortStrategy = .name,
             sortOrder: SortOrder = .forward
         ) {
             self.sortStrategy = sortStrategy
@@ -44,11 +43,11 @@ public struct FoodSearch: Sendable {
     public enum Action {
         case updateQuery(String)
         case updateFocus(Bool)
-        case updateSortStrategy(Food.SortStrategy, SortOrder)
+        case updateSortStrategy(Meal.SortStrategy, SortOrder)
         case searchStarted
         case searchEnded
         case searchSubmitted
-        case result([Food])
+        case result([Meal])
         case error(Error)
         case alert(PresentationAction<Alert>)
 
@@ -63,7 +62,6 @@ public struct FoodSearch: Sendable {
 
     public init() { }
 
-    @Dependency(\.foodClient) private var foodClient
     @Dependency(\.databaseClient) private var databaseClient
     @Dependency(\.continuousClock) private var clock
 
@@ -131,13 +129,7 @@ public struct FoodSearch: Sendable {
         return .concatenate(
             .send(.searchStarted),
             .run { send in
-                try await send(.result(self.getFoods(state: state)))
-                try await clock.sleep(for: .milliseconds(300))
-                let apiFoods = try await self.foodClient.getFoods(query: query)
-                if !apiFoods.isEmpty {
-                    _ = try await self.databaseClient.insert(foods: apiFoods.map(Food.init))
-                    try await send(.result(self.getFoods(state: state)))
-                }
+                try await send(.result(self.getMeals(state: state)))
             } catch: { error, send in
                 await send(.error(error))
             }
@@ -147,12 +139,13 @@ public struct FoodSearch: Sendable {
         .cancellable(id: CancelID.search, cancelInFlight: true)
     }
 
-    private func getFoods(state: State) async throws -> [Food] {
+    private func getMeals(state: State) async throws -> [Meal] {
         let query = state.query.trimmingCharacters(in: .whitespacesAndNewlines)
-        return try await databaseClient.getFoods(
+        return try await databaseClient.getMeals(
             matching: query,
             sortedBy: state.sortStrategy,
             order: state.sortOrder
         )
     }
 }
+

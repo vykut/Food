@@ -3,7 +3,7 @@ import ComposableArchitecture
 import Shared
 
 @Reducer
-public struct QuantityPicker {
+public struct QuantityPicker: Sendable {
     @ObservableState
     public struct State: Hashable {
         let id: Food.ID

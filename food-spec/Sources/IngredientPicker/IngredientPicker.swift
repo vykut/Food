@@ -4,7 +4,7 @@ import QuantityPicker
 import ComposableArchitecture
 
 @Reducer
-public struct IngredientPicker {
+public struct IngredientPicker: Sendable {
     @ObservableState
     public struct State: Hashable {
         public var food: Food

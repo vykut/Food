@@ -5,7 +5,7 @@ import AddIngredients
 import ComposableArchitecture
 
 @Reducer
-public struct MealForm {
+public struct MealForm: Sendable {
     @ObservableState
     public struct State: Hashable {
         public var meal: Meal

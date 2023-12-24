@@ -1,109 +1,110 @@
+import Foundation
+import Shared
 import XCTest
 import ComposableArchitecture
-import Spotlight
-import Shared
-@testable import TabBar
+@testable import DatabaseObservation
 
 @MainActor
-final class SpotlightReducerTests: XCTestCase {
-    func testStart() async throws {
-        let (foodStream, foodContinuation) = AsyncStream.makeStream(of: [Food].self)
-        let (mealStream, mealContinuation) = AsyncStream.makeStream(of: [Meal].self)
-        let chiliPepper = Food.chiliPepper
-        let redWineVinegar = Food.redWineVinegar
-        let foods = [chiliPepper, redWineVinegar]
+final class MealObservationTests: XCTestCase {
+    func testStateInitialization() async throws {
         let store = TestStore(
-            initialState: SpotlightReducer.State(),
+            initialState: MealObservation.State(),
             reducer: {
-                SpotlightReducer()
+                MealObservation()
             },
             withDependencies: {
                 $0.uuid = .constant(.init(0))
-                $0.databaseClient.observeFoods = {
-                    XCTAssertEqual($0, .name)
-                    XCTAssertEqual($1, .forward)
-                    return foodStream
-                }
-                $0.databaseClient.observeMeals = { _, _ in
-                    mealStream
-                }
-                $0.spotlightClient.indexFoods = {
-                    XCTAssertNoDifference($0, foods)
-                }
-                $0.spotlightClient.indexMeals = {
-                    XCTAssertNoDifference($0, [.chimichurri])
+            }
+        )
+        store.assert {
+            $0.sortStrategy = .name
+            $0.sortOrder = .forward
+        }
+    }
+
+    func testStartObservation() async throws {
+        let store = TestStore(
+            initialState: MealObservation.State(),
+            reducer: {
+                MealObservation()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        await store.send(.startObservation)
+    }
+
+    func testUpdateMeals() async throws {
+        let store = TestStore(
+            initialState: MealObservation.State(),
+            reducer: {
+                MealObservation()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        await store.send(.delegate(.mealsChanged([.chimichurri, .mock(id: 23, ingredients: [])])))
+        await store.send(.delegate(.mealsChanged([])))
+    }
+
+    func testUpdateSortStrategy() async throws {
+        let store = TestStore(
+            initialState: MealObservation.State(),
+            reducer: {
+                MealObservation()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        await store.send(.updateSortStrategy(.name, .reverse)) {
+            $0.sortStrategy = .name
+            $0.sortOrder = .reverse
+        }
+        store.dependencies.databaseClient.observeMeals = { _, _ in
+            XCTFail()
+            return .finished
+        }
+        await store.send(.updateSortStrategy(.name, .reverse))
+    }
+
+    func testFullFlow() async throws {
+        var (stream, continuation) = AsyncStream.makeStream(of: [Meal].self)
+        let store = TestStore(
+            initialState: MealObservation.State(),
+            reducer: {
+                MealObservation()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+                $0.databaseClient.observeMeals = { s, o in
+                    XCTAssertEqual(s, .name)
+                    XCTAssertEqual(o, .forward)
+                    return stream
                 }
             }
         )
-        await store.send(.start)
-        foodContinuation.yield(foods)
-        mealContinuation.yield([.chimichurri])
-        foodContinuation.finish()
-        mealContinuation.finish()
+        await store.send(.startObservation)
+        continuation.yield([.chimichurri])
+        await store.receive(.delegate(.mealsChanged([.chimichurri])))
+        continuation.yield([.chimichurri, .mock(id: 123, ingredients: [])])
+        await store.receive(.delegate(.mealsChanged([.chimichurri, .mock(id: 123, ingredients: [])])))
+        (stream, continuation) = AsyncStream.makeStream(of: [Meal].self)
+        store.dependencies.databaseClient.observeMeals = { s, o in
+            XCTAssertEqual(s, .name)
+            XCTAssertEqual(o, .reverse)
+            return stream
+        }
+        await store.send(.updateSortStrategy(.name, .reverse)) {
+            $0.sortOrder = .reverse
+        }
+        continuation.yield([.mock(id: 123, ingredients: []), .chimichurri])
+        await store.receive(.delegate(.mealsChanged([.mock(id: 123, ingredients: []), .chimichurri])))
+
+        continuation.finish()
         await store.finish()
-    }
-
-    func testHandleSelectedItem_food() async throws {
-        let store = TestStore(
-            initialState: SpotlightReducer.State(),
-            reducer: {
-                SpotlightReducer()
-            },
-            withDependencies: {
-                $0.databaseClient.getFoodId = {
-                    XCTAssertEqual($0, Food.chiliPepper.id)
-                    return .chiliPepper
-                }
-            }
-        )
-        let activity = NSUserActivity(activityType: "test")
-        activity.userInfo?[CSSearchableItemActivityIdentifier] = "foodId:\(Food.chiliPepper.id!)"
-        await store.send(.handleSelectedItem(activity))
-        await store.receive {
-            guard case .delegate(.showFoodDetails(.chiliPepper)) = $0 else { return false }
-            return true
-        }
-    }
-
-    func testHandleSelectedItem_meal() async throws {
-        let store = TestStore(
-            initialState: SpotlightReducer.State(),
-            reducer: {
-                SpotlightReducer()
-            },
-            withDependencies: {
-                $0.databaseClient.getMealId = {
-                    XCTAssertEqual($0, 1)
-                    return .chimichurri
-                }
-            }
-        )
-        let activity = NSUserActivity(activityType: "test")
-        activity.userInfo?[CSSearchableItemActivityIdentifier] = "mealId:\(Meal.chimichurri.id!)"
-        await store.send(.handleSelectedItem(activity))
-        await store.receive {
-            guard case .delegate(.showMealDetails(.chimichurri)) = $0 else { return false }
-            return true
-        }
-    }
-
-    func testSpotlightSearchInApp() async throws {
-        let store = TestStore(
-            initialState: SpotlightReducer.State(),
-            reducer: {
-                SpotlightReducer()
-            },
-            withDependencies: {
-                $0.uuid = .constant(.init(0))
-            }
-        )
-        let activity = NSUserActivity(activityType: "test")
-        activity.userInfo?[CSSearchQueryString] = "eggplant"
-        await store.send(.handleSearchInApp(activity))
-        await store.receive {
-            guard case .delegate(.searchFood("eggplant")) = $0 else { return false }
-            return true
-        }
     }
 }
 
@@ -120,7 +121,6 @@ fileprivate extension Meal {
 
     static var chimichurri: Self {
         Meal(
-            id: 1,
             name: "Chimichurri",
             ingredients: [
                 .init(

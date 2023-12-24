@@ -8,7 +8,7 @@ import DependenciesMacros
 public struct DatabaseClient: Sendable {
     // MARK: Foods
     public var observeFoods: (_ sortedBy: Food.SortStrategy, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
-    public var getRecentFoods: (_ sortedBy: Food.SortStrategy, _ order: SortOrder) async throws -> [Food]
+    public var getAllFoods: (_ sortedBy: Food.SortStrategy, _ order: SortOrder) async throws -> [Food]
     public var numberOfFoods: (_ matching: String) async throws -> Int
     public var getFoods: (_ matching: String, _ sortedBy: Food.SortStrategy, _ order: SortOrder) async throws -> [Food]
     @DependencyEndpoint(method: "getFood")
@@ -20,48 +20,53 @@ public struct DatabaseClient: Sendable {
     @DependencyEndpoint(method: "insert")
     public var insertFoods: (_ foods: [Food]) async throws -> [Food]
     @DependencyEndpoint(method: "delete")
-    public var deleteFood: (_ food: Food) async throws -> Void
-    @DependencyEndpoint(method: "delete")
     public var deleteFoods: (_ foods: [Food]) async throws -> Void
 
     // MARK: Meals
-    public var observeMeals: () -> AsyncStream<[Meal]> = { .finished }
-    public var getMeals: () async throws -> [Meal]
+    public var observeMeals: (_ sortedBy: Meal.SortStrategy, _ order: SortOrder) -> AsyncStream<[Meal]> = { _, _ in .finished }
+    public var getAllMeals: (_ sortedBy: Meal.SortStrategy, _ order: SortOrder) async throws -> [Meal]
+    public var getMeals: (_ matching: String, _ sortedBy: Meal.SortStrategy, _ order: SortOrder) async throws -> [Meal]
     @DependencyEndpoint(method: "getMeal")
     public var getMealId: (_ id: Int64) async throws -> Meal?
     @DependencyEndpoint(method: "insert")
     public var insertMeal: (_ meal: Meal) async throws -> Meal
     @DependencyEndpoint(method: "delete")
-    public var deleteMeal: (_ meal: Meal) async throws -> Void
+    public var deleteMeals: (_ meals: [Meal]) async throws -> Void
 }
 
 extension DatabaseClient: DependencyKey {
     public static var liveValue: DatabaseClient = {
         let db = createAppDatabase()
+
         @Sendable func fetchFoods(db: Database, sortedBy column: Column, order: SortOrder) throws -> [Food] {
             let request = FoodDB.order(order == .forward ? column : column.desc)
             return try Food.fetchAll(db, request)
         }
-        @Sendable func fetchMeals(db: Database) throws -> [Meal] {
-            let request = MealDB
+        
+        @Sendable func fetchMeals(db: Database, matching query: String? = nil, sortedBy column: Column, order: SortOrder) throws -> [Meal] {
+            var request = MealDB
                 .including(
                     all: MealDB.ingredients
                         .including(
                             required: IngredientDB.food
-                                .order(Column("name"))
+                                .order(MealDB.Columns.name)
                         )
                 )
-                .order(Column("name"))
+            if let query {
+                request = request.filter(MealDB.Columns.name.like("%\(query)%"))
+            }
+            request = request.order(order == .forward ? column : column.desc)
             return try Meal.fetchAll(db, request)
         }
+
         return .init(
             observeFoods: { strategy, order in
                 let observation = ValueObservation.tracking {
                     try fetchFoods(db: $0, sortedBy: strategy.column, order: order)
                 }
-                return AsyncStream(observation.values(in: db))
+                return AsyncStream(observation.removeDuplicates().values(in: db))
             },
-            getRecentFoods: { strategy, order in
+            getAllFoods: { strategy, order in
                 return try await db.read {
                     try fetchFoods(db: $0, sortedBy: strategy.column, order: order)
                 }
@@ -69,7 +74,7 @@ extension DatabaseClient: DependencyKey {
             numberOfFoods: { matching in
                 try await db.read {
                     try FoodDB
-                        .filter(Column("name").like("%\(matching)%"))
+                        .filter(FoodDB.Columns.name.like("%\(matching)%"))
                         .fetchCount($0)
                 }
             },
@@ -77,7 +82,7 @@ extension DatabaseClient: DependencyKey {
                 try await db.read {
                     let column = strategy.column
                     let request = FoodDB
-                        .filter(Column("name").like("%\(matching)%"))
+                        .filter(FoodDB.Columns.name.like("%\(matching)%"))
                         .order(order == .forward ? column : column.desc)
                     return try Food.fetchAll($0, request)
                 }
@@ -90,7 +95,7 @@ extension DatabaseClient: DependencyKey {
             },
             getFoodName: { name in
                 return try await db.read {
-                    let request = FoodDB.filter(Column("name") == name)
+                    let request = FoodDB.filter(FoodDB.Columns.name == name)
                     return try Food.fetchOne($0, request)
                 }
             },
@@ -117,25 +122,25 @@ extension DatabaseClient: DependencyKey {
                     }
                 }
             },
-            deleteFood: { food in
-                try await db.write {
-                    _ = try FoodDB.deleteOne($0, key: food.id)
-                }
-            },
             deleteFoods: { foods in
                 try await db.write {
                     _ = try FoodDB.deleteAll($0, keys: foods.map(\.id))
                 }
             },
-            observeMeals: {
+            observeMeals: { strategy, order in
                 let observation = ValueObservation.tracking {
-                    try fetchMeals(db: $0)
+                    try fetchMeals(db: $0, sortedBy: strategy.column, order: order)
                 }
-                return AsyncStream(observation.values(in: db))
+                return AsyncStream(observation.removeDuplicates().values(in: db))
             },
-            getMeals: {
+            getAllMeals: { strategy, order in
                 try await db.read {
-                    try fetchMeals(db: $0)
+                    try fetchMeals(db: $0, sortedBy: strategy.column, order: order)
+                }
+            },
+            getMeals: { query, strategy, order in
+                try await db.read {
+                    try fetchMeals(db: $0, matching: query, sortedBy: strategy.column, order: order)
                 }
             },
             getMealId: { id in
@@ -146,7 +151,7 @@ extension DatabaseClient: DependencyKey {
                             all: MealDB.ingredients
                                 .including(
                                     required: IngredientDB.food
-                                        .order(Column("name"))
+                                        .order(MealDB.Columns.name)
                                 )
                         )
                     return try Meal.fetchOne($0, request)
@@ -180,9 +185,9 @@ extension DatabaseClient: DependencyKey {
                     }
                 }
             },
-            deleteMeal: { meal in
+            deleteMeals: { meals in
                 try await db.write {
-                    _ = try MealDB.deleteOne($0, key: meal.id)
+                    _ = try MealDB.deleteAll($0, keys: meals.map(\.id))
                 }
             }
         )

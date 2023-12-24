@@ -5,20 +5,22 @@ import Shared
 import FoodDetails
 import UserPreferences
 import Search
-import FoodObservation
+import DatabaseObservation
 
 @Reducer
-public struct FoodList {
+public struct FoodList: Sendable {
     @ObservableState
     public struct State: Equatable {
         public var foodSearch: FoodSearch.State
         public var foodObservation: FoodObservation.State
+        public var recentSearches: [Food] = []
         public var sortStrategy: Food.SortStrategy
         public var sortOrder: SortOrder
         @Presents public var destination: Destination.State?
 
-        var recentSearches: [Food] {
-            foodObservation.foods
+        var showsSearchPrompt: Bool {
+            !foodSearch.shouldShowSearchResults &&
+            recentSearches.isEmpty
         }
 
         var searchResults: [Food] {
@@ -116,7 +118,8 @@ public struct FoodList {
                         }
                     )
 
-                case .foodObservation(.updateFoods(let newFoods)):
+                case .foodObservation(.delegate(.foodsChanged(let newFoods))):
+                    state.recentSearches = newFoods
                     if newFoods.isEmpty && state.foodSearch.query.isEmpty {
                         state.foodSearch.isFocused = true
                     }

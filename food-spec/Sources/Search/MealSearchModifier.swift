@@ -1,8 +1,8 @@
 import SwiftUI
 import ComposableArchitecture
 
-struct FoodSearchModifier: ViewModifier {
-    @Bindable var store: StoreOf<FoodSearch>
+struct MealSearchModifier: ViewModifier {
+    @Bindable var store: StoreOf<MealSearch>
     var prompt: String
 
     func body(content: Content) -> some View {
@@ -27,8 +27,8 @@ struct FoodSearchModifier: ViewModifier {
 }
 
 public extension View {
-    func foodSearch(store: StoreOf<FoodSearch>, prompt: String = "Search") -> some View {
+    func mealSearch(store: StoreOf<MealSearch>, prompt: String = "Search") -> some View {
         self
-            .modifier(FoodSearchModifier(store: store, prompt: prompt))
+            .modifier(MealSearchModifier(store: store, prompt: prompt))
     }
 }
