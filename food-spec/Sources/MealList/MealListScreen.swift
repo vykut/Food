@@ -22,7 +22,7 @@ public struct MealListScreen: View {
             } else {
                 ContentUnavailableView(
                     "Your meals will be shown here.",
-                    systemImage: "fork.knife",
+                    systemImage: "takeoutbag.and.cup.and.straw.fill",
                     description: Text("You can add a meal by tapping the \"+\" icon.")
                 )
             }

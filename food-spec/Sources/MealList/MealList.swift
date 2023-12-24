@@ -18,6 +18,7 @@ public struct MealList: Sendable {
         @Presents public var destination: Destination.State?
 
         var showsAddMealPrompt: Bool {
+            !mealSearch.shouldShowSearchResults &&
             mealsWithNutritionalValues.isEmpty
         }
 
@@ -46,15 +47,12 @@ public struct MealList: Sendable {
     @Dependency(\.nutritionalValuesCalculator) private var calculator
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.mealObservation, action: \.mealObservation) {
-            MealObservation()
-        }
         Scope(state: \.mealSearch, action: \.mealSearch) {
             MealSearch()
         }
         Reduce { state, action in
             switch action {
-                case .mealObservation(.updateMeals(let meals)):
+                case .mealObservation(.delegate(.mealsChanged(let meals))):
                     state.mealsWithNutritionalValues = meals.map {
                         .init(
                             meal: $0,
@@ -114,6 +112,7 @@ public struct MealList: Sendable {
                     return .none
             }
         }
+        .mealObservation(state: \.mealObservation, action: \.mealObservation)
         .ifLet(\.$destination, action: \.destination) {
             Destination()
         }

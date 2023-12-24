@@ -63,7 +63,7 @@ public struct AddIngredients: Sendable {
         }
         Reduce { state, action in
             switch action {
-                case .foodObservation(.updateFoods(let newFoods)):
+                case .foodObservation(.delegate(.foodsChanged(let newFoods))):
                     var pickers: IngredientPickers = .init(id: \.food.id)
                     for food in newFoods {
                         if let picker = state.ingredientPickers[id: food.id] {

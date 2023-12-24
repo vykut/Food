@@ -8,7 +8,6 @@ public struct FoodObservation: Sendable {
     @ObservableState
     public struct State: Hashable {
         fileprivate let observationId: UUID
-        public var foods: [Food] = []
         public var sortStrategy: Food.SortStrategy
         public var sortOrder: SortOrder
 
@@ -26,8 +25,13 @@ public struct FoodObservation: Sendable {
     @CasePathable
     public enum Action {
         case startObservation
-        case updateFoods([Food])
         case updateSortStrategy(Food.SortStrategy, SortOrder)
+        case delegate(Delegate)
+
+        @CasePathable
+        public enum Delegate {
+            case foodsChanged([Food])
+        }
     }
 
     public init() { }
@@ -39,10 +43,6 @@ public struct FoodObservation: Sendable {
             switch action {
                 case .startObservation:
                     return observationEffect(state: state)
-
-                case .updateFoods(let foods):
-                    state.foods = foods
-                    return .none
 
                 case .updateSortStrategy(let strategy, let order):
                     var shouldRestartObservation = false
@@ -59,6 +59,9 @@ public struct FoodObservation: Sendable {
                     } else {
                         return .none
                     }
+
+                case .delegate:
+                    return .none
             }
         }
     }
@@ -67,7 +70,7 @@ public struct FoodObservation: Sendable {
         .run { send in
             let observation = databaseClient.observeFoods(sortedBy: state.sortStrategy, order: state.sortOrder)
             for await foods in observation {
-                await send(.updateFoods(foods), animation: .default)
+                await send(.delegate(.foodsChanged(foods)), animation: .default)
             }
         }
         .cancellable(id: state.observationId, cancelInFlight: true)

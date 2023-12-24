@@ -3,12 +3,24 @@ import Database
 import Shared
 import ComposableArchitecture
 
+public extension Reducer {
+    @ReducerBuilder<State, Action>
+    func mealObservation(
+        state: WritableKeyPath<State, MealObservation.State>,
+        action: CaseKeyPath<Action, MealObservation.Action>
+    ) -> some ReducerOf<Self> {
+        Scope(state: state, action: action) {
+            MealObservation()
+        }
+        self
+    }
+}
+
 @Reducer
 public struct MealObservation: Sendable {
     @ObservableState
     public struct State: Hashable {
         fileprivate let observationId: UUID
-        public var meals: [Meal] = []
         public var sortStrategy: Meal.SortStrategy
         public var sortOrder: SortOrder
 
@@ -26,8 +38,13 @@ public struct MealObservation: Sendable {
     @CasePathable
     public enum Action {
         case startObservation
-        case updateMeals([Meal])
         case updateSortStrategy(Meal.SortStrategy, SortOrder)
+        case delegate(Delegate)
+
+        @CasePathable
+        public enum Delegate {
+            case mealsChanged([Meal])
+        }
     }
 
     public init() { }
@@ -39,10 +56,6 @@ public struct MealObservation: Sendable {
             switch action {
                 case .startObservation:
                     return observationEffect(state: state)
-
-                case .updateMeals(let meals):
-                    state.meals = meals
-                    return .none
 
                 case .updateSortStrategy(let strategy, let order):
                     var shouldRestartObservation = false
@@ -59,6 +72,9 @@ public struct MealObservation: Sendable {
                     } else {
                         return .none
                     }
+
+                case .delegate:
+                    return .none
             }
         }
     }
@@ -67,7 +83,7 @@ public struct MealObservation: Sendable {
         .run { send in
             let observation = databaseClient.observeMeals(sortedBy: state.sortStrategy, order: state.sortOrder)
             for await foods in observation {
-                await send(.updateMeals(foods), animation: .default)
+                await send(.delegate(.mealsChanged(foods)), animation: .default)
             }
         }
         .cancellable(id: state.observationId, cancelInFlight: true)
