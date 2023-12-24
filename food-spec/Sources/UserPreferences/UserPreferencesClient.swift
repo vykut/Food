@@ -5,7 +5,7 @@ import DependenciesMacros
 import Semaphore
 
 @DependencyClient
-public struct UserPreferencesClient {
+public struct UserPreferencesClient: Sendable {
     public var getPreferences: @Sendable () -> UserPreferences = { .init() }
     @DependencyEndpoint(method: "set")
     public var setPreferences: @Sendable (_ preferences: (inout UserPreferences) -> Void) async throws -> Void

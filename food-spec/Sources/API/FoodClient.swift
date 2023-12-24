@@ -3,7 +3,7 @@ import Dependencies
 import DependenciesMacros
 
 @DependencyClient
-public struct FoodClient {
+public struct FoodClient: Sendable {
     public var getFoods: (_ query: String) async throws -> [FoodApiModel]
 }
 

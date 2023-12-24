@@ -3,7 +3,7 @@ import Dependencies
 import DependenciesMacros
 
 @DependencyClient
-public struct NutritionalValuesCalculator {
+public struct NutritionalValuesCalculator: Sendable {
     public var nutritionalValues: (_ meal: Meal) -> Ingredient = { _ in .preview }
     public var nutritionalValuesPerServing: (_ meal: Meal) -> Ingredient = { _ in .preview }
 }

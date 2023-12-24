@@ -10,7 +10,7 @@ public struct MealList {
     @ObservableState
     public struct State: Hashable {
         var mealsWithNutritionalValues: [MealWithNutritionalValues] = []
-        @Presents var destination: Destination.State?
+        @Presents public var destination: Destination.State?
 
         var showsAddMealPrompt: Bool {
             mealsWithNutritionalValues.isEmpty

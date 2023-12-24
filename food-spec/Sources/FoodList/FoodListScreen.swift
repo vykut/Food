@@ -1,6 +1,5 @@
 import SwiftUI
 import ComposableArchitecture
-import Spotlight
 import Shared
 import FoodDetails
 
@@ -49,12 +48,6 @@ public struct FoodListScreen: View {
             self.store.send(.onFirstAppear)
         }
         .navigationTitle("Search")
-        .onContinueUserActivity(CSSearchableItemActionType) { activity in
-            self.store.send(.spotlight(.handleSelectedFood(activity)))
-        }
-        .onContinueUserActivity(CSQueryContinuationActionType) { activity in
-            self.store.send(.spotlight(.handleSearchInApp(activity)))
-        }
     }
 
     private var searchResultsSection: some View {

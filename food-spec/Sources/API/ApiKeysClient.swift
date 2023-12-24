@@ -3,7 +3,7 @@ import Dependencies
 import DependenciesMacros
 
 @DependencyClient
-struct ApiKeysClient {
+struct ApiKeysClient: Sendable {
     var getApiKeys: () async throws -> ApiKeys
 }
 

@@ -1,97 +1,108 @@
-import Foundation
-import Shared
 import XCTest
 import ComposableArchitecture
+import Spotlight
+import Shared
 @testable import TabBar
 
 @MainActor
-final class TabBarTests: XCTestCase {
-    func testUpdateTab() async throws {
+final class SpotlightReducerTests: XCTestCase {
+    func testStart() async throws {
+        let (foodStream, foodContinuation) = AsyncStream.makeStream(of: [Food].self)
+        let (mealStream, mealContinuation) = AsyncStream.makeStream(of: [Meal].self)
+        let chiliPepper = Food.chiliPepper
+        let redWineVinegar = Food.redWineVinegar
+        let foods = [chiliPepper, redWineVinegar]
         let store = TestStore(
-            initialState: TabBar.State(),
+            initialState: SpotlightReducer.State(),
             reducer: {
-                TabBar()
+                SpotlightReducer()
             },
             withDependencies: {
                 $0.uuid = .constant(.init(0))
-            }
-        )
-        await store.send(.updateTab(.foodSelection)) {
-            $0.tab = .foodSelection
-        }
-        await store.send(.updateTab(.foodList)) {
-            $0.tab = .foodList
-        }
-        await store.send(.updateTab(.mealList)) {
-            $0.tab = .mealList
-        }
-    }
-
-    func testIntegrationWithSpotlight_delegate_showFoodDetails() async throws {
-        let store = TestStore(
-            initialState: TabBar.State(),
-            reducer: {
-                TabBar()
-            },
-            withDependencies: {
-                $0.uuid = .constant(.init(0))
-            }
-        )
-        await store.send(.spotlight(.delegate(.showFoodDetails(.chiliPepper)))) {
-            $0.tab = .foodList
-            $0.foodList.destination = .foodDetails(.init(food: .chiliPepper))
-        }
-    }
-
-    func testIntegrationWithSpotlight_delegate_showMealDetails() async throws {
-        let store = TestStore(
-            initialState: TabBar.State(),
-            reducer: {
-                TabBar()
-            },
-            withDependencies: {
-                $0.uuid = .constant(.init(0))
-            }
-        )
-        await store.send(.spotlight(.delegate(.showMealDetails(.chimichurri)))) {
-            $0.tab = .mealList
-            $0.mealList.destination = .mealDetails(.init(meal: .chimichurri))
-        }
-    }
-
-    func testIntegrationWithSpotlight_delegate_searchFood() async throws {
-        let store = TestStore(
-            initialState: TabBar.State(),
-            reducer: {
-                TabBar()
-            },
-            withDependencies: {
-                $0.uuid = .constant(.init(0))
-                $0.continuousClock = ImmediateClock()
-                $0.foodClient.getFoods = {
-                    XCTAssertEqual($0, "eggplant")
-                    return []
+                $0.databaseClient.observeFoods = {
+                    XCTAssertEqual($0, .name)
+                    XCTAssertEqual($1, .forward)
+                    return foodStream
                 }
-                $0.databaseClient.getFoods = { q, _, _ in
-                    XCTAssertEqual(q, "eggplant")
-                    return []
+                $0.databaseClient.observeMeals = {
+                    mealStream
+                }
+                $0.spotlightClient.indexFoods = {
+                    XCTAssertNoDifference($0, foods)
+                }
+                $0.spotlightClient.indexMeals = {
+                    XCTAssertNoDifference($0, [.chimichurri])
                 }
             }
         )
-        await store.send(.spotlight(.delegate(.searchFood("eggplant")))) {
-            $0.tab = .foodList
-            $0.foodList.destination = nil
-            $0.foodList.foodSearch.isFocused = true
+        await store.send(.start)
+        foodContinuation.yield(foods)
+        mealContinuation.yield([.chimichurri])
+        foodContinuation.finish()
+        mealContinuation.finish()
+        await store.finish()
+    }
+
+    func testHandleSelectedItem_food() async throws {
+        let store = TestStore(
+            initialState: SpotlightReducer.State(),
+            reducer: {
+                SpotlightReducer()
+            },
+            withDependencies: {
+                $0.databaseClient.getFoodId = {
+                    XCTAssertEqual($0, Food.chiliPepper.id)
+                    return .chiliPepper
+                }
+            }
+        )
+        let activity = NSUserActivity(activityType: "test")
+        activity.userInfo?[CSSearchableItemActivityIdentifier] = "foodId:\(Food.chiliPepper.id!)"
+        await store.send(.handleSelectedItem(activity))
+        await store.receive {
+            guard case .delegate(.showFoodDetails(.chiliPepper)) = $0 else { return false }
+            return true
         }
-        await store.receive(\.foodList.foodSearch.updateQuery) {
-            $0.foodList.foodSearch.query = "eggplant"
+    }
+
+    func testHandleSelectedItem_meal() async throws {
+        let store = TestStore(
+            initialState: SpotlightReducer.State(),
+            reducer: {
+                SpotlightReducer()
+            },
+            withDependencies: {
+                $0.databaseClient.getMealId = {
+                    XCTAssertEqual($0, 1)
+                    return .chimichurri
+                }
+            }
+        )
+        let activity = NSUserActivity(activityType: "test")
+        activity.userInfo?[CSSearchableItemActivityIdentifier] = "mealId:\(Meal.chimichurri.id!)"
+        await store.send(.handleSelectedItem(activity))
+        await store.receive {
+            guard case .delegate(.showMealDetails(.chimichurri)) = $0 else { return false }
+            return true
         }
-        await store.receive(\.foodList.foodSearch.searchStarted) {
-            $0.foodList.foodSearch.isSearching = true
-        }
-        await store.receive(\.foodList.foodSearch.result)
-        await store.receive(\.foodList.foodSearch.searchEnded) {
-            $0.foodList.foodSearch.isSearching = false
+    }
+
+    func testSpotlightSearchInApp() async throws {
+        let store = TestStore(
+            initialState: SpotlightReducer.State(),
+            reducer: {
+                SpotlightReducer()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        let activity = NSUserActivity(activityType: "test")
+        activity.userInfo?[CSSearchQueryString] = "eggplant"
+        await store.send(.handleSearchInApp(activity))
+        await store.receive {
+            guard case .delegate(.searchFood("eggplant")) = $0 else { return false }
+            return true
         }
     }
 }

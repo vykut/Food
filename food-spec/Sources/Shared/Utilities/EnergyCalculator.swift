@@ -1,7 +1,7 @@
 import Foundation
 
-public struct EnergyCalculator {
-    public struct EnergyBreakdown: Hashable {
+public struct EnergyCalculator: Sendable {
+    public struct EnergyBreakdown: Hashable, Sendable {
         public let protein: Energy
         public let carbohydrate: Energy
         public let fat: Energy

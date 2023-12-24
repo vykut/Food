@@ -11,11 +11,11 @@ import FoodObservation
 public struct FoodList {
     @ObservableState
     public struct State: Equatable {
-        var foodSearch: FoodSearch.State
-        var foodObservation: FoodObservation.State
-        var sortStrategy: Food.SortStrategy
-        var sortOrder: SortOrder
-        @Presents var destination: Destination.State?
+        public var foodSearch: FoodSearch.State
+        public var foodObservation: FoodObservation.State
+        public var sortStrategy: Food.SortStrategy
+        public var sortOrder: SortOrder
+        @Presents public var destination: Destination.State?
 
         var recentSearches: [Food] {
             foodObservation.foods
@@ -56,15 +56,8 @@ public struct FoodList {
         case foodSearch(FoodSearch.Action)
         case foodObservation(FoodObservation.Action)
         case updateRecentFoodsSortingStrategy(Food.SortStrategy)
-        case spotlight(Spotlight)
         case showGenericAlert
         case destination(PresentationAction<Destination.Action>)
-
-        @CasePathable
-        public enum Spotlight {
-            case handleSelectedFood(NSUserActivity)
-            case handleSearchInApp(NSUserActivity)
-        }
     }
 
     enum CancelID {
@@ -139,10 +132,6 @@ public struct FoodList {
                     showGenericAlert(state: &state)
                     return .none
 
-                case .spotlight:
-                    // handled in SpotlightReducer
-                    return .none
-
                 case .destination:
                     return .none
             }
@@ -150,7 +139,6 @@ public struct FoodList {
         .ifLet(\.$destination, action: \.destination) {
             Destination()
         }
-//        SpotlightReducer()
     }
 
     private func showGenericAlert(state: inout State) {
