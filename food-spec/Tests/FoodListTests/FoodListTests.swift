@@ -161,11 +161,11 @@ final class FoodListTests: XCTestCase {
                 $0.uuid = .constant(.init(0))
             }
         )
-        await store.send(.foodObservation(.updateFoods([]))) {
+        await store.send(.foodObservation(.delegate(.foodsChanged([])))) {
             $0.foodSearch.isFocused = true
         }
-        await store.send(.foodObservation(.updateFoods([.eggplant, .ribeye]))) {
-            $0.foodObservation.foods = [.eggplant, .ribeye]
+        await store.send(.foodObservation(.delegate(.foodsChanged([.eggplant, .ribeye])))) {
+            $0.recentSearches = [.eggplant, .ribeye]
         }
         XCTAssertEqual(store.state.isSortMenuDisabled, false)
     }
@@ -279,8 +279,8 @@ final class FoodListTests: XCTestCase {
                 $0.uuid = .constant(.init(0))
             }
         )
-        await store.send(.foodObservation(.updateFoods([.eggplant, .ribeye]))) {
-            $0.foodObservation.foods = [.eggplant, .ribeye]
+        await store.send(.foodObservation(.delegate(.foodsChanged(([.eggplant, .ribeye]))))) {
+            $0.recentSearches = [.eggplant, .ribeye]
         }
         await store.send(.didDeleteRecentFoods(.init(integer: 1)))
         await store.send(.didDeleteRecentFoods(.init(integer: 1)))
@@ -326,7 +326,7 @@ final class FoodListTests: XCTestCase {
         )
         await store.send(.foodObservation(.startObservation))
         continuation.yield([])
-        await store.receive(\.foodObservation.updateFoods) {
+        await store.receive(\.foodObservation.delegate.foodsChanged) {
             $0.foodSearch.isFocused = true
         }
 
@@ -345,8 +345,8 @@ final class FoodListTests: XCTestCase {
             $0.foodSearch.isSearching = false
         }
         continuation.yield([.eggplant])
-        await store.receive(\.foodObservation.updateFoods) {
-            $0.foodObservation.foods = [.eggplant]
+        await store.receive(\.foodObservation.delegate.foodsChanged) {
+            $0.recentSearches = [.eggplant]
         }
 
         // food details
@@ -390,8 +390,8 @@ final class FoodListTests: XCTestCase {
             $0.foodSearch.isSearching = false
         }
         continuation.yield([.eggplant, .ribeye])
-        await store.receive(\.foodObservation.updateFoods) {
-            $0.foodObservation.foods = [.eggplant, .ribeye]
+        await store.receive(\.foodObservation.delegate.foodsChanged) {
+            $0.recentSearches = [.eggplant, .ribeye]
         }
 
         // food details
@@ -432,16 +432,16 @@ final class FoodListTests: XCTestCase {
             $0.foodObservation.sortOrder = .forward
         }
         continuation.yield([.ribeye, .eggplant])
-        await store.receive(\.foodObservation.updateFoods) {
-            $0.foodObservation.foods = [.ribeye, .eggplant]
+        await store.receive(\.foodObservation.delegate.foodsChanged) {
+            $0.recentSearches = [.ribeye, .eggplant]
         }
 
         // delete
         store.dependencies.databaseClient.deleteFoods = { _ in }
         await store.send(.didDeleteRecentFoods([0, 1]))
         continuation.yield([])
-        await store.receive(\.foodObservation.updateFoods) {
-            $0.foodObservation.foods = []
+        await store.receive(\.foodObservation.delegate.foodsChanged) {
+            $0.recentSearches = []
             $0.foodSearch.isFocused = true
         }
 

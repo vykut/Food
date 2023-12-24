@@ -71,9 +71,9 @@ final class MealListTests: XCTestCase {
             }
         )
         store.exhaustivity = .off
-        await store.send(.mealObservation(.updateMeals(meals)))
+        await store.send(.mealObservation(.delegate(.mealsChanged(meals))))
         await store.send(.onDelete([0, 1]))
-        await store.send(.mealObservation(.updateMeals([meals[0]])))
+        await store.send(.mealObservation(.delegate(.mealsChanged([meals[0]]))))
         store.assert {
             $0.mealsWithNutritionalValues = [
                 .init(meal: meals[0], perTotal: .zero, perServing: .zero)
@@ -115,7 +115,7 @@ final class MealListTests: XCTestCase {
         )
         await store.send(.mealObservation(.startObservation))
         continuation.yield([])
-        await store.receive(\.mealObservation.updateMeals)
+        await store.receive(\.mealObservation.delegate.mealsChanged)
         XCTAssertEqual(store.state.showsAddMealPrompt, true)
         await store.send(.plusButtonTapped) {
             $0.destination = .mealForm(.init())
@@ -124,8 +124,7 @@ final class MealListTests: XCTestCase {
             $0.destination = .mealDetails(.init(meal: .chimichurri))
         }
         continuation.yield([.chimichurri])
-        await store.receive(\.mealObservation.updateMeals) {
-            $0.mealObservation.meals = [.chimichurri]
+        await store.receive(\.mealObservation.delegate.mealsChanged) {
             $0.mealsWithNutritionalValues = [
                 .init(meal: .chimichurri, perTotal: .zero, perServing: .zero)
             ]
@@ -174,8 +173,7 @@ final class MealListTests: XCTestCase {
         }
         await store.send(.onDelete(.init(integer: 0)))
         continuation.yield([])
-        await store.receive(\.mealObservation.updateMeals) {
-            $0.mealObservation.meals = []
+        await store.receive(\.mealObservation.delegate.mealsChanged) {
             $0.mealsWithNutritionalValues = []
         }
         XCTAssertEqual(store.state.showsAddMealPrompt, true)

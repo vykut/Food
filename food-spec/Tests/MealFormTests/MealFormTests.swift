@@ -235,7 +235,7 @@ final class MealFormTests: XCTestCase {
             $0.addIngredients = .init()
         }
         store.exhaustivity = .off
-        await store.send(.addIngredients(.presented(.foodObservation(.updateFoods([.chiliPepper, .coriander, .garlic, .oliveOil, .oregano, .parsley, .redWineVinegar])))))
+        await store.send(.addIngredients(.presented(.foodObservation(.delegate(.foodsChanged([.chiliPepper, .coriander, .garlic, .oliveOil, .oregano, .parsley, .redWineVinegar]))))))
         await store.send(.addIngredients(.presented(.ingredientPickers(.element(id: 1, action: .updateSelection(true))))))
         await store.send(.addIngredients(.presented(.ingredientPickers(.element(id: 2, action: .updateSelection(true))))))
         await store.send(.addIngredients(.presented(.ingredientPickers(.element(id: 3, action: .updateSelection(true))))))

@@ -36,13 +36,13 @@ public struct MealObservation: Sendable {
     }
 
     @CasePathable
-    public enum Action {
+    public enum Action: Hashable {
         case startObservation
         case updateSortStrategy(Meal.SortStrategy, SortOrder)
         case delegate(Delegate)
 
         @CasePathable
-        public enum Delegate {
+        public enum Delegate: Hashable {
             case mealsChanged([Meal])
         }
     }

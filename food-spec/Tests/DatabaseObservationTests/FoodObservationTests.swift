@@ -17,7 +17,6 @@ final class FoodObservationTests: XCTestCase {
             }
         )
         store.assert {
-            $0.foods = []
             $0.sortStrategy = .name
             $0.sortOrder = .forward
         }
@@ -51,12 +50,8 @@ final class FoodObservationTests: XCTestCase {
                 $0.uuid = .constant(.init(0))
             }
         )
-        await store.send(.updateFoods([.chiliPepper, .redWineVinegar])) {
-            $0.foods = [.chiliPepper, .redWineVinegar]
-        }
-        await store.send(.updateFoods([])) {
-            $0.foods = []
-        }
+        await store.send(.delegate(.foodsChanged([.chiliPepper, .redWineVinegar])))
+        await store.send(.delegate(.foodsChanged([])))
     }
 
     func testUpdateSortStrategy() async throws {
@@ -103,13 +98,9 @@ final class FoodObservationTests: XCTestCase {
         )
         await store.send(.startObservation)
         continuation.yield([.chiliPepper])
-        await store.receive(\.updateFoods) {
-            $0.foods = [.chiliPepper]
-        }
+        await store.receive(.delegate(.foodsChanged([.chiliPepper])))
         continuation.yield([.chiliPepper, .redWineVinegar]) 
-        await store.receive(\.updateFoods) {
-            $0.foods = [.chiliPepper, .redWineVinegar]
-        }
+        await store.receive(.delegate(.foodsChanged([.chiliPepper, .redWineVinegar])))
         (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         store.dependencies.databaseClient.observeFoods = { s, o in
             XCTAssertEqual(s, .name)
@@ -120,9 +111,7 @@ final class FoodObservationTests: XCTestCase {
             $0.sortOrder = .reverse
         }
         continuation.yield([.redWineVinegar, .chiliPepper])
-        await store.receive(\.updateFoods) {
-            $0.foods = [.redWineVinegar, .chiliPepper]
-        }
+        await store.receive(.delegate(.foodsChanged([.redWineVinegar, .chiliPepper])))
 
         continuation.finish()
         await store.finish()

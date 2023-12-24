@@ -17,7 +17,6 @@ final class MealObservationTests: XCTestCase {
             }
         )
         store.assert {
-            $0.meals = []
             $0.sortStrategy = .name
             $0.sortOrder = .forward
         }
@@ -46,12 +45,8 @@ final class MealObservationTests: XCTestCase {
                 $0.uuid = .constant(.init(0))
             }
         )
-        await store.send(.updateMeals([.chimichurri, .mock(id: 23, ingredients: [])])) {
-            $0.meals = [.chimichurri, .mock(id: 23, ingredients: [])]
-        }
-        await store.send(.updateMeals([])) {
-            $0.meals = []
-        }
+        await store.send(.delegate(.mealsChanged([.chimichurri, .mock(id: 23, ingredients: [])])))
+        await store.send(.delegate(.mealsChanged([])))
     }
 
     func testUpdateSortStrategy() async throws {
@@ -93,13 +88,9 @@ final class MealObservationTests: XCTestCase {
         )
         await store.send(.startObservation)
         continuation.yield([.chimichurri])
-        await store.receive(\.updateMeals) {
-            $0.meals = [.chimichurri]
-        }
+        await store.receive(.delegate(.mealsChanged([.chimichurri])))
         continuation.yield([.chimichurri, .mock(id: 123, ingredients: [])])
-        await store.receive(\.updateMeals) {
-            $0.meals = [.chimichurri, .mock(id: 123, ingredients: [])]
-        }
+        await store.receive(.delegate(.mealsChanged([.chimichurri, .mock(id: 123, ingredients: [])])))
         (stream, continuation) = AsyncStream.makeStream(of: [Meal].self)
         store.dependencies.databaseClient.observeMeals = { s, o in
             XCTAssertEqual(s, .name)
@@ -110,9 +101,7 @@ final class MealObservationTests: XCTestCase {
             $0.sortOrder = .reverse
         }
         continuation.yield([.mock(id: 123, ingredients: []), .chimichurri])
-        await store.receive(\.updateMeals) {
-            $0.meals = [.mock(id: 123, ingredients: []), .chimichurri]
-        }
+        await store.receive(.delegate(.mealsChanged([.mock(id: 123, ingredients: []), .chimichurri])))
 
         continuation.finish()
         await store.finish()

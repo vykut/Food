@@ -85,8 +85,7 @@ final class AddIngredientsTests: XCTestCase {
         )
         await store.send(.foodObservation(.startObservation))
         continuation.yield([.chiliPepper, .coriander, .garlic, .oliveOil, .oregano])
-        await store.receive(\.foodObservation.updateFoods) {
-            $0.foodObservation.foods = [.chiliPepper, .coriander, .garlic, .oliveOil, .oregano]
+        await store.receive(\.foodObservation.delegate.foodsChanged) {
             $0.ingredientPickers = .init(
                 uniqueElements: [
                     .init(food: .chiliPepper),
@@ -177,7 +176,7 @@ final class AddIngredientsTests: XCTestCase {
             }
         )
         store.exhaustivity = .off
-        await store.send(.foodObservation(.updateFoods([.chiliPepper, .coriander, .garlic, .oliveOil, .oregano]))) {
+        await store.send(.foodObservation(.delegate(.foodsChanged([.chiliPepper, .coriander, .garlic, .oliveOil, .oregano])))) {
             $0.ingredientPickers = .init(
                 uncheckedUniqueElements: [
                     .init(food: .chiliPepper),
@@ -231,7 +230,7 @@ final class AddIngredientsTests: XCTestCase {
         )
         await store.send(.foodSearch(.updateFocus(false)))
 
-        await store.send(.foodObservation(.updateFoods([.chiliPepper, .coriander, .garlic, .parsley, .redWineVinegar]))) {
+        await store.send(.foodObservation(.delegate(.foodsChanged([.chiliPepper, .coriander, .garlic, .parsley, .redWineVinegar])))) {
             $0.ingredientPickers = .init(
                 uncheckedUniqueElements: [
                     .init(

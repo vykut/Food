@@ -104,8 +104,8 @@ final class FoodSelectionTests: XCTestCase {
         await store.send(.updateSelection([1, 2, 3])) {
             $0.selectedFoodIds = [1, 2, 3]
         }
-        await store.send(.foodObservation(.updateFoods([eggplant, oliveOil, ribeye]))) {
-            $0.foodObservation.foods = [eggplant, oliveOil, ribeye]
+        await store.send(.foodObservation(.delegate(.foodsChanged([eggplant, oliveOil, ribeye])))) {
+            $0.foods = [eggplant, oliveOil, ribeye]
         }
         await store.send(.compareButtonTapped(.energy)) {
             $0.foodComparison = .init(
@@ -124,6 +124,28 @@ final class FoodSelectionTests: XCTestCase {
         }
         continuation.finish()
         await store.finish()
+    }
+
+    func testSelectedId_afterFoodIsDeleted() async throws {
+        let store = TestStore(
+            initialState: FoodSelection.State(),
+            reducer: {
+                FoodSelection()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        await store.send(.foodObservation(.delegate(.foodsChanged([.init(id: 1, name: "1"), .init(id: 2, name: "2")])))) {
+            $0.foods = [.init(id: 1, name: "1"), .init(id: 2, name: "2")]
+        }
+        await store.send(.updateSelection([0, 1])) {
+            $0.selectedFoodIds = [0, 1]
+        }
+        await store.send(.foodObservation(.delegate(.foodsChanged([.eggplant, .init(id: 1, name: "1"), .ribeye])))) {
+            $0.foods = [.eggplant, .init(id: 1, name: "1"), .ribeye]
+            $0.selectedFoodIds = [1]
+        }
     }
 }
 
