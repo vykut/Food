@@ -40,7 +40,7 @@ public struct SpotlightReducer: Sendable {
                             }
                         },
                         .run { _ in
-                            let observation = databaseClient.observeMeals()
+                            let observation = databaseClient.observeMeals(sortedBy: .name, order: .forward)
                             for await meals in observation {
                                 try await spotlightClient.index(meals: meals)
                             }

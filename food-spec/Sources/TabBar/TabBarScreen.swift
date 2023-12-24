@@ -36,9 +36,22 @@ public struct TabBarScreen: View {
             )
         }
         .tabItem {
-            Label("Search", systemImage: "magnifyingglass")
+            Label("Food", systemImage: "fish")
         }
         .tag(Tab.foodList)
+    }
+
+    @MainActor
+    private var mealList: some View {
+        NavigationStack {
+            MealListScreen(
+                store: store.scope(state: \.mealList, action: \.mealList)
+            )
+        }
+        .tabItem {
+            Label("Meals", systemImage: "takeoutbag.and.cup.and.straw")
+        }
+        .tag(Tab.mealList)
     }
 
     @MainActor
@@ -52,19 +65,6 @@ public struct TabBarScreen: View {
             Label("Compare", systemImage: "shuffle")
         }
         .tag(Tab.foodSelection)
-    }
-
-    @MainActor
-    private var mealList: some View {
-        NavigationStack {
-            MealListScreen(
-                store: store.scope(state: \.mealList, action: \.mealList)
-            )
-        }
-        .tabItem {
-            Label("Meals", systemImage: "fork.knife")
-        }
-        .tag(Tab.mealList)
     }
 }
 

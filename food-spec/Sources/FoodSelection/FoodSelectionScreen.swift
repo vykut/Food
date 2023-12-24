@@ -48,14 +48,10 @@ public struct FoodSelectionScreen: View {
     }
 
     private var searchResultsSection: some View {
-        Section("Results") {
+        Section {
             ForEach(self.store.searchResults, id: \.id) { item in
                 LabeledListRow(title: item.name.capitalized)
                     .selectionDisabled(self.store.state.isSelectionDisabled(for: item))
-            }
-            if self.store.foodSearch.shouldShowNoResults {
-                ContentUnavailableView.search(text: self.store.foodSearch.query)
-                    .id(UUID())
             }
             if self.store.foodSearch.isSearching {
                 HStack {
@@ -69,7 +65,7 @@ public struct FoodSelectionScreen: View {
     }
 
     private var recentSearchesSection: some View {
-        Section("Recent searches") {
+        Section {
             ForEach(self.store.foods, id: \.id) { item in
                 LabeledListRow(title: item.name.capitalized)
                     .selectionDisabled(self.store.state.isSelectionDisabled(for: item))

@@ -34,3 +34,11 @@ extension MealDB {
         )
     }
 }
+
+extension Meal.SortStrategy {
+    var column: Column {
+        switch self {
+            case .name: MealDB.Columns.name
+        }
+    }
+}

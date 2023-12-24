@@ -3,11 +3,11 @@ import Shared
 import Database
 import FoodComparison
 import Search
-import FoodObservation
+import DatabaseObservation
 import ComposableArchitecture
 
 @Reducer
-public struct FoodSelection {
+public struct FoodSelection: Sendable {
     @ObservableState
     public struct State: Hashable {
         var selectedFoodIds: Set<Int64?> = []

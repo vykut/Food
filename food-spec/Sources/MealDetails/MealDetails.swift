@@ -6,7 +6,7 @@ import FoodComparison
 import ComposableArchitecture
 
 @Reducer 
-public struct MealDetails {
+public struct MealDetails: Sendable {
     @ObservableState
     public struct State: Hashable {
         var meal: Meal

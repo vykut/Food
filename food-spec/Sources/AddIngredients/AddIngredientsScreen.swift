@@ -59,11 +59,6 @@ public struct AddIngredientsScreen: View {
                 .padding(.horizontal)
         }
 
-        if self.store.foodSearch.shouldShowNoResults {
-            ContentUnavailableView.search(text: self.store.foodSearch.query)
-                .id(UUID())
-        }
-
         if self.store.foodSearch.isSearching {
             HStack {
                 Spacer()
@@ -120,7 +115,7 @@ public struct DefaultKeyboardToolbar: ToolbarContent {
                 ),
                 reducer: {
                     AddIngredients()
-                        .dependency(\.databaseClient.getRecentFoods, { _, _ in
+                        .dependency(\.databaseClient.getAllFoods, { _, _ in
                             [
                                 .preview(id: 1),
                                 .preview(id: 2),

@@ -3,11 +3,11 @@ import Shared
 import IngredientPicker
 import Database
 import Search
-import FoodObservation
+import DatabaseObservation
 import ComposableArchitecture
 
 @Reducer
-public struct AddIngredients {
+public struct AddIngredients: Sendable {
     public typealias IngredientPickers = IdentifiedArray<FoodID, IngredientPicker.State>
     public typealias FoodID = Int64?
 

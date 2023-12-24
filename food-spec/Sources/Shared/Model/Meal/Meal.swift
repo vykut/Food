@@ -23,16 +23,3 @@ public struct Meal: Hashable, Sendable {
         self.instructions = instructions
     }
 }
-
-public extension Meal {
-    static var preview: Self {
-        .init(
-            name: "Preview",
-            ingredients: [
-                .preview
-            ],
-            servings: 2,
-            instructions: "Some notes"
-        )
-    }
-}

@@ -4,7 +4,7 @@ import Shared
 import QuantityPicker
 
 @Reducer
-public struct FoodComparison {
+public struct FoodComparison: Sendable {
     @ObservableState
     public struct State: Hashable {
         var originalFoods: [Food]

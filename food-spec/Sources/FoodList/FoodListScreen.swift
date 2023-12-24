@@ -47,21 +47,17 @@ public struct FoodListScreen: View {
         .onFirstAppear {
             self.store.send(.onFirstAppear)
         }
-        .navigationTitle("Search")
+        .navigationTitle("Food")
     }
 
     private var searchResultsSection: some View {
-        Section("Results") {
+        Section {
             ForEach(self.store.foodSearch.searchResults, id: \.id) { item in
                 ListButton {
                     self.store.send(.didSelectSearchResult(item))
                 } label: {
                     FoodListRow(food: item)
                 }
-            }
-            if self.store.foodSearch.shouldShowNoResults {
-                ContentUnavailableView.search(text: self.store.foodSearch.query)
-                    .id(UUID())
             }
             if self.store.foodSearch.isSearching {
                 HStack {
@@ -86,8 +82,6 @@ public struct FoodListScreen: View {
             .onDelete { offsets in
                 self.store.send(.didDeleteRecentFoods(offsets))
             }
-        } header: {
-            Text("Recent Searches")
         } footer: {
             Text("Values per \(Quantity.grams(100).formatted(width: .wide))")
                 .font(.footnote)

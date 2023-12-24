@@ -4,7 +4,7 @@ import Shared
 import ComposableArchitecture
 
 @Reducer
-public struct FoodObservation {
+public struct FoodObservation: Sendable {
     @ObservableState
     public struct State: Hashable {
         fileprivate let observationId: UUID
@@ -67,7 +67,7 @@ public struct FoodObservation {
         .run { send in
             let observation = databaseClient.observeFoods(sortedBy: state.sortStrategy, order: state.sortOrder)
             for await foods in observation {
-                await send(.updateFoods(foods))
+                await send(.updateFoods(foods), animation: .default)
             }
         }
         .cancellable(id: state.observationId, cancelInFlight: true)

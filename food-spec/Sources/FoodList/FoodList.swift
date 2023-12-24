@@ -5,10 +5,10 @@ import Shared
 import FoodDetails
 import UserPreferences
 import Search
-import FoodObservation
+import DatabaseObservation
 
 @Reducer
-public struct FoodList {
+public struct FoodList: Sendable {
     @ObservableState
     public struct State: Equatable {
         public var foodSearch: FoodSearch.State

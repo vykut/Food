@@ -25,3 +25,12 @@ extension MealDB: FetchableRecord, MutablePersistableRecord {
         id = inserted.rowID
     }
 }
+
+extension MealDB {
+    enum Columns {
+        static let id = Column(CodingKeys.id)
+        static let name = Column(CodingKeys.name)
+        static let servings = Column(CodingKeys.servings)
+        static let instructions = Column(CodingKeys.instructions)
+    }
+}

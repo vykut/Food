@@ -2,7 +2,7 @@ import Foundation
 import Shared
 import XCTest
 import ComposableArchitecture
-@testable import FoodObservation
+@testable import DatabaseObservation
 
 @MainActor
 final class FoodObservationTests: XCTestCase {
