@@ -32,7 +32,6 @@ final class FoodListTests: XCTestCase {
                 sortStrategy: .name,
                 sortOrder: .forward
             )
-            state.billboard = .init(banner: nil)
             state.destination = nil
         }
         XCTAssertEqual(store.state.isSortMenuDisabled, true)
@@ -66,7 +65,6 @@ final class FoodListTests: XCTestCase {
                 sortStrategy: .energy,
                 sortOrder: .reverse
             )
-            state.billboard = .init(banner: nil)
             state.destination = nil
         }
     }
