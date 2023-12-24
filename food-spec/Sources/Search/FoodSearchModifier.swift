@@ -10,6 +10,7 @@ struct FoodSearchModifier: ViewModifier {
             .searchable(
                 text: self.$store.query.sending(\.updateQuery).animation(),
                 isPresented: self.$store.isFocused.sending(\.updateFocus).animation(),
+                placement: .navigationBarDrawer(displayMode: .always),
                 prompt: prompt
             )
             .submitLabel(.search)
