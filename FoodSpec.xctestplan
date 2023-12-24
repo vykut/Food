@@ -25,7 +25,6 @@
     },
     {
       "skippedTests" : [
-        "BillboardReducerTests",
         "SpotlightReducerTests"
       ],
       "target" : {

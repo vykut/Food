@@ -2,7 +2,6 @@ import Foundation
 import Database
 import ComposableArchitecture
 import Shared
-import Ads
 import FoodDetails
 import UserPreferences
 import Search
@@ -16,7 +15,6 @@ public struct FoodList {
         var foodObservation: FoodObservation.State
         var sortStrategy: Food.SortStrategy
         var sortOrder: SortOrder
-        var billboard: Billboard = .init()
         @Presents var destination: Destination.State?
 
         var recentSearches: [Food] {
@@ -29,10 +27,6 @@ public struct FoodList {
 
         var isSortMenuDisabled: Bool {
             recentSearches.count < 2
-        }
-
-        public struct Billboard: Equatable {
-            var banner: BillboardAd?
         }
 
         public init() { 
@@ -62,15 +56,9 @@ public struct FoodList {
         case foodSearch(FoodSearch.Action)
         case foodObservation(FoodObservation.Action)
         case updateRecentFoodsSortingStrategy(Food.SortStrategy)
-        case billboard(Billboard)
         case spotlight(Spotlight)
         case showGenericAlert
         case destination(PresentationAction<Destination.Action>)
-
-        @CasePathable
-        public enum Billboard {
-            case showBanner(BillboardAd?)
-        }
 
         @CasePathable
         public enum Spotlight {
@@ -151,10 +139,6 @@ public struct FoodList {
                     showGenericAlert(state: &state)
                     return .none
 
-                case .billboard:
-                    // handled in BillboardReducer
-                    return .none
-
                 case .spotlight:
                     // handled in SpotlightReducer
                     return .none
@@ -167,7 +151,6 @@ public struct FoodList {
             Destination()
         }
 //        SpotlightReducer()
-//        BillboardReducer()
     }
 
     private func showGenericAlert(state: inout State) {

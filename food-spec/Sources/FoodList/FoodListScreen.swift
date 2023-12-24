@@ -1,6 +1,5 @@
 import SwiftUI
 import ComposableArchitecture
-import Ads
 import Spotlight
 import Shared
 import FoodDetails
@@ -20,12 +19,6 @@ public struct FoodListScreen: View {
                 recentSearchesSection
             } else {
                 ContentUnavailableView("Search for food", systemImage: "magnifyingglass")
-            }
-        }
-        .safeAreaInset(edge: .bottom) {
-            if let ad = self.store.billboard.banner {
-                BillboardBannerView(advert: ad, hideDismissButtonAndTimer: true)
-                    .padding([.horizontal, .bottom])
             }
         }
         .toolbar {
