@@ -1,109 +1,168 @@
+import Foundation
 import XCTest
-import ComposableArchitecture
-import Spotlight
 import Shared
-@testable import TabBar
+import ComposableArchitecture
+@testable import Search
 
 @MainActor
-final class SpotlightReducerTests: XCTestCase {
-    func testStart() async throws {
-        let (foodStream, foodContinuation) = AsyncStream.makeStream(of: [Food].self)
-        let (mealStream, mealContinuation) = AsyncStream.makeStream(of: [Meal].self)
-        let chiliPepper = Food.chiliPepper
-        let redWineVinegar = Food.redWineVinegar
-        let foods = [chiliPepper, redWineVinegar]
+final class MealSearchTests: XCTestCase {
+    func testStateInitialization() async throws {
         let store = TestStore(
-            initialState: SpotlightReducer.State(),
+            initialState: MealSearch.State(),
             reducer: {
-                SpotlightReducer()
-            },
-            withDependencies: {
-                $0.uuid = .constant(.init(0))
-                $0.databaseClient.observeFoods = {
-                    XCTAssertEqual($0, .name)
-                    XCTAssertEqual($1, .forward)
-                    return foodStream
-                }
-                $0.databaseClient.observeMeals = { _, _ in
-                    mealStream
-                }
-                $0.spotlightClient.indexFoods = {
-                    XCTAssertNoDifference($0, foods)
-                }
-                $0.spotlightClient.indexMeals = {
-                    XCTAssertNoDifference($0, [.chimichurri])
-                }
-            }
-        )
-        await store.send(.start)
-        foodContinuation.yield(foods)
-        mealContinuation.yield([.chimichurri])
-        foodContinuation.finish()
-        mealContinuation.finish()
-        await store.finish()
-    }
-
-    func testHandleSelectedItem_food() async throws {
-        let store = TestStore(
-            initialState: SpotlightReducer.State(),
-            reducer: {
-                SpotlightReducer()
-            },
-            withDependencies: {
-                $0.databaseClient.getFoodId = {
-                    XCTAssertEqual($0, Food.chiliPepper.id)
-                    return .chiliPepper
-                }
-            }
-        )
-        let activity = NSUserActivity(activityType: "test")
-        activity.userInfo?[CSSearchableItemActivityIdentifier] = "foodId:\(Food.chiliPepper.id!)"
-        await store.send(.handleSelectedItem(activity))
-        await store.receive {
-            guard case .delegate(.showFoodDetails(.chiliPepper)) = $0 else { return false }
-            return true
-        }
-    }
-
-    func testHandleSelectedItem_meal() async throws {
-        let store = TestStore(
-            initialState: SpotlightReducer.State(),
-            reducer: {
-                SpotlightReducer()
-            },
-            withDependencies: {
-                $0.databaseClient.getMealId = {
-                    XCTAssertEqual($0, 1)
-                    return .chimichurri
-                }
-            }
-        )
-        let activity = NSUserActivity(activityType: "test")
-        activity.userInfo?[CSSearchableItemActivityIdentifier] = "mealId:\(Meal.chimichurri.id!)"
-        await store.send(.handleSelectedItem(activity))
-        await store.receive {
-            guard case .delegate(.showMealDetails(.chimichurri)) = $0 else { return false }
-            return true
-        }
-    }
-
-    func testSpotlightSearchInApp() async throws {
-        let store = TestStore(
-            initialState: SpotlightReducer.State(),
-            reducer: {
-                SpotlightReducer()
+                MealSearch()
             },
             withDependencies: {
                 $0.uuid = .constant(.init(0))
             }
         )
-        let activity = NSUserActivity(activityType: "test")
-        activity.userInfo?[CSSearchQueryString] = "eggplant"
-        await store.send(.handleSearchInApp(activity))
-        await store.receive {
-            guard case .delegate(.searchFood("eggplant")) = $0 else { return false }
-            return true
+        store.assert {
+            $0.query = ""
+            $0.isFocused = false
+            $0.isSearching = false
         }
+    }
+
+    func testFocus() async throws {
+        let store = TestStore(
+            initialState: MealSearch.State(),
+            reducer: {
+                MealSearch()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        await store.send(.updateFocus(true)) {
+            $0.isFocused = true
+        }
+        await store.send(.updateFocus(false)) {
+            $0.isFocused = false
+        }
+    }
+
+    func testQuery() async throws {
+        let didInsert = false
+        let store = TestStore(
+            initialState: MealSearch.State(),
+            reducer: {
+                MealSearch()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+                $0.databaseClient.getMeals = { query, _, _ in
+                    if query == "mock" {
+                        [.mock(id: 123, ingredients: [])]
+                    } else {
+                        [.mock(id: 123, ingredients: []), .chimichurri]
+                    }
+                }
+            }
+        )
+        await store.send(.updateQuery("mock")) {
+            $0.query = "mock"
+        }
+        await store.receive(\.searchStarted) {
+            $0.isSearching = true
+        }
+        await store.receive(\.result) {
+            $0.searchResults = [.mock(id: 123, ingredients: [])]
+        }
+        await store.receive(\.searchEnded) {
+            $0.isSearching = false
+        }
+        await store.send(.updateQuery("mock"))
+        await store.send(.updateQuery("")) {
+            $0.query = ""
+            $0.searchResults = []
+        }
+    }
+
+    func testQueryError() async throws {
+        let store = TestStore(
+            initialState: MealSearch.State(),
+            reducer: {
+                MealSearch()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+                $0.continuousClock = ImmediateClock()
+                $0.databaseClient.getMeals = { _, _, _ in
+                    struct Failure: Error { }
+                    throw Failure()
+                }
+                $0.databaseClient.numberOfFoods = { _ in 0 }
+            }
+        )
+        await store.send(.updateQuery("asd")) {
+            $0.query = "asd"
+        }
+        await store.receive(\.searchStarted) {
+            $0.isSearching = true
+        }
+        await store.receive(\.error) {
+            $0.alert = .init {
+                TextState("Something went wrong. Please try again later.")
+            }
+        }
+        await store.receive(\.searchEnded) {
+            $0.isSearching = false
+        }
+    }
+
+    func testSearchSubmitted() async throws {
+        let store = TestStore(
+            initialState: {
+                var state = MealSearch.State()
+                state.query = "asd"
+                return state
+            }(),
+            reducer: {
+                MealSearch()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+                $0.continuousClock = ImmediateClock()
+                $0.foodClient.getFoods = { _ in [] }
+                $0.databaseClient.numberOfFoods = { _ in 1 }
+                $0.databaseClient.getMeals = { _, _, _ in [.chimichurri] }
+            }
+        )
+        await store.send(.searchSubmitted)
+        await store.receive(\.searchStarted) {
+            $0.isSearching = true
+        }
+        await store.receive(\.result) {
+            $0.searchResults = [.chimichurri]
+        }
+        await store.receive(\.searchEnded) {
+            $0.isSearching = false
+        }
+    }
+
+    func testUpdateSortStrategy() async throws {
+        let store = TestStore(
+            initialState: MealSearch.State(),
+            reducer: {
+                MealSearch()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        await store.send(.updateSortStrategy(.name, .reverse)) {
+            $0.sortStrategy = .name
+            $0.sortOrder = .reverse
+        }
+    }
+}
+
+fileprivate extension Ingredient {
+    static var zero: Self {
+        .init(
+            food: .zero,
+            quantity: .zero
+        )
     }
 }
 
@@ -120,7 +179,6 @@ fileprivate extension Meal {
 
     static var chimichurri: Self {
         Meal(
-            id: 1,
             name: "Chimichurri",
             ingredients: [
                 .init(

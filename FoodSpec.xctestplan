@@ -24,9 +24,6 @@
       }
     },
     {
-      "skippedTests" : [
-        "SpotlightReducerTests"
-      ],
       "target" : {
         "containerPath" : "container:food-spec",
         "identifier" : "FoodListTests",
@@ -120,8 +117,8 @@
     {
       "target" : {
         "containerPath" : "container:food-spec",
-        "identifier" : "FoodObservationTests",
-        "name" : "FoodObservationTests"
+        "identifier" : "DatabaseObservationTests",
+        "name" : "DatabaseObservationTests"
       }
     }
   ],

@@ -11,6 +11,9 @@ final class MealListTests: XCTestCase {
             initialState: MealList.State(),
             reducer: {
                 MealList()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         store.assert {
@@ -20,42 +23,14 @@ final class MealListTests: XCTestCase {
         XCTAssertEqual(store.state.showsAddMealPrompt, true)
     }
 
-    func testOnFirstAppear() async throws {
-        let meals: [Meal] = [
-            .mock(id: 1, ingredients: [.chiliPepper, .redWineVinegar]),
-            .mock(id: 2, ingredients: [.coriander, .oliveOil]),
-            .mock(id: 3, ingredients: [.oregano, .parsley]),
-        ]
-        let (stream, continuation) = AsyncStream.makeStream(of: [Meal].self)
+    func testPlusButton() async throws {
         let store = TestStore(
             initialState: MealList.State(),
             reducer: {
                 MealList()
             },
             withDependencies: {
-                $0.databaseClient.observeMeals = { stream }
-                $0.nutritionalValuesCalculator = .zero
-            }
-        )
-        await store.send(.onFirstAppear)
-        continuation.yield(meals)
-        await store.receive(\.onMealsUpdate) {
-            $0.mealsWithNutritionalValues = [
-                .init(meal: meals[0], perTotal: .zero, perServing: .zero),
-                .init(meal: meals[1], perTotal: .zero, perServing: .zero),
-                .init(meal: meals[2], perTotal: .zero, perServing: .zero),
-            ]
-        }
-        XCTAssertEqual(store.state.showsAddMealPrompt, false)
-        continuation.finish()
-        await store.finish()
-    }
-
-    func testPlusButton() async throws {
-        let store = TestStore(
-            initialState: MealList.State(),
-            reducer: {
-                MealList()
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.plusButtonTapped) {
@@ -68,6 +43,9 @@ final class MealListTests: XCTestCase {
             initialState: MealList.State(),
             reducer: {
                 MealList()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.mealTapped(.chimichurri)) {
@@ -81,32 +59,26 @@ final class MealListTests: XCTestCase {
             .mock(id: 2, ingredients: [.coriander, .oliveOil]),
             .mock(id: 3, ingredients: [.oregano, .parsley]),
         ]
-        let (stream, continuation) = AsyncStream.makeStream(of: [Meal].self)
         let store = TestStore(
             initialState: MealList.State(),
             reducer: {
                 MealList()
             },
             withDependencies: {
-                $0.databaseClient.observeMeals = { stream }
-                $0.databaseClient.deleteMeal = { XCTAssert(meals.contains($0)) }
+                $0.uuid = .constant(.init(0))
+                $0.databaseClient.deleteMeals = { XCTAssert(meals.contains($0[0...1])) }
                 $0.nutritionalValuesCalculator = .zero
             }
         )
         store.exhaustivity = .off
-        await store.send(.onFirstAppear)
-        continuation.yield(meals)
-        await store.receive(\.onMealsUpdate)
+        await store.send(.mealObservation(.updateMeals(meals)))
         await store.send(.onDelete([0, 1]))
-        continuation.yield([meals[0]])
-        await store.receive(\.onMealsUpdate)
+        await store.send(.mealObservation(.updateMeals([meals[0]])))
         store.assert {
             $0.mealsWithNutritionalValues = [
                 .init(meal: meals[0], perTotal: .zero, perServing: .zero)
             ]
         }
-        continuation.finish()
-        await store.finish()
     }
 
     func testMealSaved() async throws {
@@ -114,6 +86,9 @@ final class MealListTests: XCTestCase {
             initialState: MealList.State(),
             reducer: {
                 MealList()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         await store.send(.plusButtonTapped) {
@@ -132,16 +107,15 @@ final class MealListTests: XCTestCase {
                 MealList()
             },
             withDependencies: {
-                $0.databaseClient.observeMeals = { stream }
-                $0.databaseClient.deleteMeal = { meal in
-                    XCTAssertNoDifference(meal, meal)
-                }
+                $0.uuid = .constant(.init(0))
+                $0.databaseClient.observeMeals = { _, _ in stream }
+                $0.databaseClient.deleteMeals = { _ in }
                 $0.nutritionalValuesCalculator = .zero
             }
         )
-        await store.send(.onFirstAppear)
+        await store.send(.mealObservation(.startObservation))
         continuation.yield([])
-        await store.receive(\.onMealsUpdate)
+        await store.receive(\.mealObservation.updateMeals)
         XCTAssertEqual(store.state.showsAddMealPrompt, true)
         await store.send(.plusButtonTapped) {
             $0.destination = .mealForm(.init())
@@ -150,7 +124,8 @@ final class MealListTests: XCTestCase {
             $0.destination = .mealDetails(.init(meal: .chimichurri))
         }
         continuation.yield([.chimichurri])
-        await store.receive(\.onMealsUpdate) {
+        await store.receive(\.mealObservation.updateMeals) {
+            $0.mealObservation.meals = [.chimichurri]
             $0.mealsWithNutritionalValues = [
                 .init(meal: .chimichurri, perTotal: .zero, perServing: .zero)
             ]
@@ -165,9 +140,42 @@ final class MealListTests: XCTestCase {
         await store.send(.destination(.dismiss)) {
             $0.destination = nil
         }
+        store.dependencies.databaseClient.getMeals = { q, s, o in
+            XCTAssertEqual(q, "chim")
+            XCTAssertEqual(s, .name)
+            XCTAssertEqual(o, .forward)
+            return [.chimichurri]
+        }
+        await store.send(.mealSearch(.updateFocus(true))) {
+            $0.mealSearch.isFocused = true
+        }
+        await store.send(.mealSearch(.updateQuery("chim"))) {
+            $0.mealSearch.query = "chim"
+        }
+        await store.receive(\.mealSearch.searchStarted) {
+            $0.mealSearch.isSearching = true
+        }
+        await store.receive(\.mealSearch.result) {
+            $0.mealSearch.searchResults = [.chimichurri]
+            $0.searchResults = [
+                .init(meal: .chimichurri, perTotal: .zero, perServing: .zero)
+            ]
+        }
+        await store.receive(\.mealSearch.searchEnded) {
+            $0.mealSearch.isSearching = false
+        }
+        await store.send(.mealSearch(.updateFocus(false))) {
+            $0.mealSearch.isFocused = false
+            $0.searchResults = []
+            $0.mealSearch.searchResults = []
+        }
+        store.dependencies.databaseClient.deleteMeals = {
+            XCTAssertNoDifference($0, [.chimichurri])
+        }
         await store.send(.onDelete(.init(integer: 0)))
         continuation.yield([])
-        await store.receive(\.onMealsUpdate) {
+        await store.receive(\.mealObservation.updateMeals) {
+            $0.mealObservation.meals = []
             $0.mealsWithNutritionalValues = []
         }
         XCTAssertEqual(store.state.showsAddMealPrompt, true)

@@ -74,6 +74,18 @@ public struct MealList: Sendable {
                     }
                     return .none
 
+                case .mealSearch(.updateFocus(let focused)):
+                    if !focused {
+                        state.searchResults = []
+                    }
+                    return .none
+
+                case .mealSearch(.updateQuery(let query)):
+                    if query.isEmpty {
+                        state.searchResults = []
+                    }
+                    return .none
+
                 case .plusButtonTapped:
                     state.destination = .mealForm(.init())
                     return .none

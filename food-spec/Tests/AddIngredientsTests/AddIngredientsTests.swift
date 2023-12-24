@@ -165,7 +165,7 @@ final class AddIngredientsTests: XCTestCase {
             withDependencies: {
                 $0.continuousClock = ImmediateClock()
                 $0.uuid = .constant(.init(0))
-                $0.databaseClient.getRecentFoods = { sortedBy, order in
+                $0.databaseClient.getAllFoods = { sortedBy, order in
                     XCTAssertEqual(sortedBy, .name)
                     XCTAssertEqual(order, .forward)
 
