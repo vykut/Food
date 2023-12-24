@@ -7,13 +7,19 @@ import DependenciesMacros
 @DependencyClient
 public struct DatabaseClient {
     // MARK: Foods
-    public var observeFoods: (_ sortedBy: Column, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
-    public var getRecentFoods: (_ sortedBy: Column, _ order: SortOrder) async throws -> [Food]
+    public var observeFoods: (_ sortedBy: Food.SortStrategy, _ order: SortOrder) -> AsyncStream<[Food]> = { _, _ in .finished }
+    public var getRecentFoods: (_ sortedBy: Food.SortStrategy, _ order: SortOrder) async throws -> [Food]
+    public var numberOfFoods: (_ matching: String) async throws -> Int
+    public var getFoods: (_ matching: String, _ sortedBy: Food.SortStrategy, _ order: SortOrder) async throws -> [Food]
     public var getFood: (_ name: String) async throws -> Food?
     @DependencyEndpoint(method: "insert")
     public var insertFood: (_ food: Food) async throws -> Food
+    @DependencyEndpoint(method: "insert")
+    public var insertFoods: (_ foods: [Food]) async throws -> [Food]
     @DependencyEndpoint(method: "delete")
     public var deleteFood: (_ food: Food) async throws -> Void
+    @DependencyEndpoint(method: "delete")
+    public var deleteFoods: (_ foods: [Food]) async throws -> Void
 
     // MARK: Meals
     public var observeMeals: () -> AsyncStream<[Meal]> = { .finished }
@@ -44,15 +50,31 @@ extension DatabaseClient: DependencyKey {
             return try Meal.fetchAll(db, request)
         }
         return .init(
-            observeFoods: { column, order in
+            observeFoods: { strategy, order in
                 let observation = ValueObservation.tracking {
-                    try fetchFoods(db: $0, sortedBy: column, order: order)
+                    try fetchFoods(db: $0, sortedBy: strategy.column, order: order)
                 }
                 return AsyncStream(observation.values(in: db))
             },
-            getRecentFoods: { column, order in
+            getRecentFoods: { strategy, order in
                 return try await db.read {
-                    try fetchFoods(db: $0, sortedBy: column, order: order)
+                    try fetchFoods(db: $0, sortedBy: strategy.column, order: order)
+                }
+            },
+            numberOfFoods: { matching in
+                try await db.read {
+                    try FoodDB
+                        .filter(Column("name").like("%\(matching)%"))
+                        .fetchCount($0)
+                }
+            },
+            getFoods: { matching, strategy, order in
+                try await db.read {
+                    let column = strategy.column
+                    let request = FoodDB
+                        .filter(Column("name").like("%\(matching)%"))
+                        .order(order == .forward ? column : column.desc)
+                    return try Food.fetchAll($0, request)
                 }
             },
             getFood: { name in
@@ -68,9 +90,30 @@ extension DatabaseClient: DependencyKey {
                     return Food(foodDb: foodDb)
                 }
             },
+            insertFoods: { foods in
+                try await db.write {
+                    do {
+                        var insertedFoods: [Food] = []
+                        for food in foods {
+                            var foodDb = FoodDB(food: food)
+                            try foodDb.upsert($0)
+                            insertedFoods.append(Food(foodDb: foodDb))
+                        }
+                        return insertedFoods
+                    } catch {
+                        try $0.rollback()
+                        throw error
+                    }
+                }
+            },
             deleteFood: { food in
                 try await db.write {
                     _ = try FoodDB.deleteOne($0, key: food.id)
+                }
+            },
+            deleteFoods: { foods in
+                try await db.write {
+                    _ = try FoodDB.deleteAll($0, keys: foods.map(\.id))
                 }
             },
             observeMeals: {

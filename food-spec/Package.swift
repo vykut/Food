@@ -27,6 +27,7 @@ let package = Package(
         .library(name: "AddIngredients"),
         .library(name: "IngredientPicker"),
         .library(name: "QuantityPicker"),
+        .library(name: "Search"),
         .library(name: "Shared"),
     ],
     dependencies: [
@@ -38,16 +39,18 @@ let package = Package(
     ],
     targets: [
         .feature(name: "TabBar", dependencies: ["FoodList", "FoodSelection", "MealList"]),
-        .feature(name: "FoodList", dependencies: ["FoodDetails", "API", "Database", "UserPreferences", "Ads", "Spotlight"]),
+        .feature(name: "FoodList", dependencies: ["FoodDetails", "Search", "FoodObservation", "Database", "UserPreferences", "Ads", "Spotlight"]),
         .feature(name: "FoodDetails", dependencies: ["QuantityPicker"]),
-        .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison"]),
+        .feature(name: "FoodSelection", dependencies: ["Database", "FoodComparison", "Search", "FoodObservation"]),
         .feature(name: "FoodComparison", dependencies: ["QuantityPicker"]),
         .feature(name: "MealList", dependencies: ["Database", "MealForm", "MealDetails"]),
         .feature(name: "MealDetails", dependencies: ["FoodDetails", "FoodComparison", "MealForm"]),
         .feature(name: "MealForm", dependencies: ["Database", "AddIngredients"]),
-        .feature(name: "AddIngredients", dependencies: ["Database", "IngredientPicker"]),
+        .feature(name: "AddIngredients", dependencies: ["Database", "IngredientPicker", "Search", "FoodObservation"]),
         .feature(name: "IngredientPicker", dependencies: ["QuantityPicker"]),
         .feature(name: "QuantityPicker"),
+        .feature(name: "Search", dependencies: ["API", "Database"]),
+        .feature(name: "FoodObservation", dependencies: ["Database"]),
 
         .client(name: "UserPreferences", dependencies: ["UserDefaults", asyncSemaphoreDependency]),
         .client(name: "UserDefaults"),
@@ -78,6 +81,8 @@ let package = Package(
         .featureTests(for: "AddIngredients"),
         .featureTests(for: "IngredientPicker"),
         .featureTests(for: "QuantityPicker"),
+        .featureTests(for: "Search"),
+        .featureTests(for: "FoodObservation"),
 
         .testTarget(for: "API"),
         .testTarget(for: "Shared"),

@@ -80,7 +80,7 @@ fileprivate func setupDatabase(_ writer: any DatabaseWriter) throws {
     migrator.registerMigration("createMeal") { db in
         try db.create(table: "mealDB") { t in
             t.autoIncrementedPrimaryKey("id")
-            t.column("name", .text).notNull().unique(onConflict: .replace)
+            t.column("name", .text).notNull()
             t.column("servings", .double).notNull()
             t.column("instructions")
         }

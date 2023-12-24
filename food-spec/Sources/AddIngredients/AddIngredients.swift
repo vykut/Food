@@ -2,21 +2,33 @@ import Foundation
 import Shared
 import IngredientPicker
 import Database
+import Search
+import FoodObservation
 import ComposableArchitecture
 
 @Reducer
 public struct AddIngredients {
+    public typealias IngredientPickers = IdentifiedArray<FoodID, IngredientPicker.State>
     public typealias FoodID = Int64?
 
     @ObservableState
     public struct State: Hashable {
         var initialIngredients: [Ingredient]
-        var ingredientPickers: IdentifiedArray<FoodID, IngredientPicker.State> = .init(id: \.food.id)
+        var ingredientPickers: IngredientPickers = .init(id: \.food.id)
+        var foodSearch: FoodSearch.State = .init()
+        var foodObservation: FoodObservation.State = .init()
 
         public var selectedIngredients: [Ingredient] {
             ingredientPickers
                 .filter(\.isSelected)
                 .map(\.ingredient)
+        }
+
+        var searchResults: IngredientPickers {
+            let results = Set(foodSearch.searchResults.map(\.id))
+            return ingredientPickers.filter { picker in
+                results.contains(picker.food.id)
+            }
         }
 
         public init(ingredients: [Ingredient] = []) {
@@ -32,41 +44,41 @@ public struct AddIngredients {
 
     @CasePathable
     public enum Action {
-        case onFirstAppear
-        case updateFoods([Food])
         case ingredientPickers(IdentifiedAction<FoodID, IngredientPicker.Action>)
+        case foodSearch(FoodSearch.Action)
+        case foodObservation(FoodObservation.Action)
         case doneButtonTapped
     }
 
     public init() { }
 
-    @Dependency(\.databaseClient) private var databaseClient
     @Dependency(\.dismiss) private var dismiss
 
     public var body: some ReducerOf<Self> {
+        Scope(state: \.foodObservation, action: \.foodObservation) {
+            FoodObservation()
+        }
+        Scope(state: \.foodSearch, action: \.foodSearch) {
+            FoodSearch()
+        }
         Reduce { state, action in
             switch action {
-                case .onFirstAppear:
-                    return .run { [databaseClient] send in
-                        let foods = try await databaseClient.getRecentFoods(sortedBy: Column("name"), order: .forward)
-                        await send(.updateFoods(foods))
-                    }
-
-                    // todo: when reducer is initialized with nonempty ingredients, put them at the top of the list, if any is deselected, move it in the list (sort it)
-                    // don't move pickers up and down based on selection as it can be bad UX to the user
-
-                case .updateFoods(let foods):
-                    for food in foods {
-                        if let alreadySelectedIngredient = state.initialIngredients.first(where: { $0.food.id == food.id }) {
-                            let ingredientPicker = IngredientPicker.State(
-                                food: food,
-                                quantity: alreadySelectedIngredient.quantity
-                            )
-                            state.ingredientPickers.updateOrAppend(ingredientPicker)
+                case .foodObservation(.updateFoods(let newFoods)):
+                    var pickers: IngredientPickers = .init(id: \.food.id)
+                    for food in newFoods {
+                        if let picker = state.ingredientPickers[id: food.id] {
+                            pickers.append(picker)
                         } else {
-                            state.ingredientPickers.updateOrAppend(.init(food: food))
+                            pickers.append(.init(food: food))
                         }
                     }
+                    state.ingredientPickers = pickers
+                    return .none
+
+                case .foodObservation:
+                    return .none
+
+                case .foodSearch:
                     return .none
 
                 case .ingredientPickers:

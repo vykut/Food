@@ -14,12 +14,15 @@ final class SpotlightReducerTests: XCTestCase {
             initialState: FoodList.State(),
             reducer: {
                 SpotlightReducer()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+                $0.spotlightClient.indexFoods = {
+                    XCTAssertNoDifference($0, foods)
+                }
             }
         )
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, foods)
-        }
-        await store.send(.onRecentFoodsChange(foods))
+        await store.send(.foodObservation(.updateFoods(foods)))
     }
 
     func testSpotlightSelection() async throws {
@@ -28,12 +31,15 @@ final class SpotlightReducerTests: XCTestCase {
             initialState: FoodList.State(),
             reducer: {
                 SpotlightReducer()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
+                $0.databaseClient.getFood = {
+                    XCTAssertNoDifference($0, eggplant.name)
+                    return eggplant
+                }
             }
         )
-        store.dependencies.databaseClient.getFood = {
-            XCTAssertNoDifference($0, eggplant.name)
-            return eggplant
-        }
         let activity = NSUserActivity(activityType: "mock")
         activity.userInfo?[CSSearchableItemActivityIdentifier] = eggplant.name
         await store.send(.spotlight(.handleSelectedFood(activity)))
@@ -46,13 +52,16 @@ final class SpotlightReducerTests: XCTestCase {
             initialState: FoodList.State(),
             reducer: {
                 SpotlightReducer()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         let activity = NSUserActivity(activityType: "mock")
         activity.userInfo?[CSSearchQueryString] = eggplant.name
         await store.send(.spotlight(.handleSearchInApp(activity)))
-        await store.receive(\.updateSearchFocus)
-        await store.receive(\.updateSearchQuery)
+        await store.receive(\.foodSearch.updateFocus)
+        await store.receive(\.foodSearch.updateQuery)
     }
 
     func testSpotlightSearchInApp_foodDetailsAlreadyPresented() async throws {
@@ -65,13 +74,16 @@ final class SpotlightReducerTests: XCTestCase {
             }(),
             reducer: {
                 SpotlightReducer()
+            },
+            withDependencies: {
+                $0.uuid = .constant(.init(0))
             }
         )
         let activity = NSUserActivity(activityType: "mock")
         activity.userInfo?[CSSearchQueryString] = eggplant.name
         await store.send(.spotlight(.handleSearchInApp(activity)))
         await store.receive(\.destination.dismiss)
-        await store.receive(\.updateSearchFocus)
-        await store.receive(\.updateSearchQuery)
+        await store.receive(\.foodSearch.updateFocus)
+        await store.receive(\.foodSearch.updateQuery)
     }
 }

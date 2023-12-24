@@ -13,7 +13,7 @@ public struct IngredientPickerView: View {
 
     public var body: some View {
         DisclosureGroup(
-            isExpanded: self.$store.isSelected.sending(\.updateSelection)
+            isExpanded: self.$store.isSelected.sending(\.updateSelection).animation()
         ) {
             QuantityPickerView(
                 store: self.store.scope(

@@ -18,8 +18,8 @@ public struct TabBarScreen: View {
             selection: $store.tab.sending(\.updateTab),
             content: {
                 foodList
-                foodSelection
                 mealList
+                foodSelection
             }
         )
     }
@@ -45,7 +45,7 @@ public struct TabBarScreen: View {
             )
         }
         .tabItem {
-            Label("Food Comparison", systemImage: "shuffle")
+            Label("Compare", systemImage: "shuffle")
         }
         .tag(Tab.foodSelection)
     }

@@ -14,423 +14,279 @@ final class FoodListTests: XCTestCase {
             initialState: FoodList.State(),
             reducer: {
                 FoodList()
+            },
+            withDependencies: {
+                $0.userPreferencesClient.getPreferences = { .init() }
+                $0.uuid = .constant(.init(0))
             }
         )
 
         store.assert { state in
-            state.recentFoodsSortingStrategy = .name
-            state.recentFoodsSortingOrder = .forward
-            state.searchQuery = ""
-            state.isSearchFocused = false
-            state.recentFoods = []
-            state.searchResults = []
-            state.shouldShowNoResults = false
-            state.destination = nil
+            state.sortStrategy = .name
+            state.sortOrder = .forward
+            state.foodSearch = .init(
+                sortStrategy: .name,
+                sortOrder: .forward
+            )
+            state.foodObservation = .init(
+                sortStrategy: .name,
+                sortOrder: .forward
+            )
             state.billboard = .init(banner: nil)
+            state.destination = nil
         }
+        XCTAssertEqual(store.state.isSortMenuDisabled, true)
     }
 
-    func test_onTask() async throws {
+    func testStateDefaultInitializer_hasUserPreferences() async throws {
         let store = TestStore(
             initialState: FoodList.State(),
             reducer: {
                 FoodList()
             },
             withDependencies: {
-                $0.userPreferencesClient = .init(
-                    getPreferences: {
-                        .init(
-                            recentSearchesSortingStrategy: FoodList.State.SortingStrategy.energy.rawValue,
-                            recentSearchesSortingOrder: .reverse
-                        )
-                    },
-                    setPreferences: { _ in
-                        XCTFail()
-                    },
-                    observeChanges: {
-                        .finished
-                    }
-                )
+                $0.userPreferencesClient.getPreferences = {
+                    .init(
+                        recentSearchesSortStrategy: .energy,
+                        recentSearchesSortOrder: .reverse
+                    )
+                }
+                $0.uuid = .constant(.init(0))
             }
         )
-        let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, [])
-        }
-        store.dependencies.billboardClient.getRandomBanners = {
-            .finished()
-        }
-        store.dependencies.databaseClient.observeFoods = { strategy, order in
-            XCTAssertEqual(strategy.name, "energy")
-            XCTAssertEqual(order, .reverse)
-            return stream
-        }
 
-        await store.send(.onFirstAppear)
-        await store.receive(\.startObservingRecentFoods)
-        continuation.yield([])
-        await store.receive(\.onRecentFoodsChange) {
-            $0.isSearchFocused = true
+        store.assert { state in
+            state.sortStrategy = .energy
+            state.sortOrder = .reverse
+            state.foodSearch = .init(
+                sortStrategy: .energy,
+                sortOrder: .reverse
+            )
+            state.foodObservation = .init(
+                sortStrategy: .energy,
+                sortOrder: .reverse
+            )
+            state.billboard = .init(banner: nil)
+            state.destination = nil
         }
-        XCTAssertNoDifference(store.state.shouldShowRecentSearches, false)
-        XCTAssertNoDifference(store.state.shouldShowPrompt, true)
-        XCTAssertNoDifference(store.state.shouldShowSpinner, false)
-        XCTAssertNoDifference(store.state.shouldShowSearchResults, false)
-        continuation.finish()
-        await store.finish()
     }
 
-    func test_onTask_hasRecentFoods() async throws {
-        let food = Food.preview
+    func testOnFirstAppear() async throws {
         let store = TestStore(
             initialState: FoodList.State(),
             reducer: {
                 FoodList()
             },
             withDependencies: {
-                $0.userPreferencesClient = .init(
-                    getPreferences: {
-                        .init(
-                            recentSearchesSortingStrategy: FoodList.State.SortingStrategy.energy.rawValue,
-                            recentSearchesSortingOrder: .reverse
-                        )
-                    },
-                    setPreferences: { _ in
-
-                    },
-                    observeChanges: {
-                        .finished
-                    }
-                )
+                $0.userPreferencesClient.getPreferences = {
+                    .init(
+                        recentSearchesSortStrategy: .energy,
+                        recentSearchesSortOrder: .reverse
+                    )
+                }
+                $0.uuid = .constant(.init(0))
             }
         )
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, [food])
-        }
-        store.dependencies.billboardClient.getRandomBanners = {
-            .finished()
-        }
-        let (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
-        store.dependencies.databaseClient.observeFoods = { strategy, order in
-            XCTAssertEqual(strategy.name, "energy")
-            XCTAssertEqual(order, .reverse)
-            return stream
-        }
 
         await store.send(.onFirstAppear)
-        await store.receive(\.startObservingRecentFoods)
-        continuation.yield([food])
-        await store.receive(\.onRecentFoodsChange) {
-            $0.recentFoods = [food]
-        }
-
-        XCTAssertNoDifference(store.state.isSearchFocused, false)
-        XCTAssertNoDifference(store.state.shouldShowRecentSearches, true)
-        XCTAssertNoDifference(store.state.shouldShowPrompt, false)
-        XCTAssertNoDifference(store.state.shouldShowSpinner, false)
-        XCTAssertNoDifference(store.state.shouldShowSearchResults, false)
-
-        continuation.finish()
-        await store.finish()
     }
 
-    func testFullFlow_newInstallation() async throws {
-        let eggplantApi = FoodApiModel.eggplant
-        let eggplant = Food(foodApiModel: eggplantApi)
-        let ribeyeApi = FoodApiModel.ribeye
-        let ribeye = Food(foodApiModel: ribeyeApi)
+    func testUpdateRecentFoodsSortingStrategy() async throws {
         let store = TestStore(
             initialState: FoodList.State(),
             reducer: {
                 FoodList()
             },
             withDependencies: {
-                $0.mainQueue = .immediate
-                $0.userPreferencesClient = .init(
-                    getPreferences: {
-                        .init(
-                            recentSearchesSortingStrategy: FoodList.State.SortingStrategy.energy.rawValue,
-                            recentSearchesSortingOrder: .reverse
-                        )
-                    },
-                    setPreferences: { _ in
+                $0.userPreferencesClient.getPreferences = {
+                    .init()
+                }
+                $0.userPreferencesClient.setPreferences = { modify in
+                    var prefs = UserPreferences()
+                    modify(&prefs)
+                    XCTAssertNoDifference(prefs, .init(recentSearchesSortStrategy: .energy, recentSearchesSortOrder: .forward))
 
-                    },
-                    observeChanges: {
-                        .finished
-                    }
-                )
+                }
+                $0.databaseClient.observeFoods = {
+                    XCTAssertEqual($0, .energy)
+                    XCTAssertEqual($1, .forward)
+                    return .finished
+                }
+                $0.uuid = .constant(.init(0))
             }
         )
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, [])
+        await store.send(.updateRecentFoodsSortingStrategy(.energy)) {
+            $0.sortStrategy = .energy
         }
-        store.dependencies.billboardClient.getRandomBanners = {
-            .init {
-                $0.yield(.preview)
-                $0.finish()
-            }
+        await store.receive(\.foodSearch.updateSortStrategy) {
+            $0.foodSearch.sortStrategy = .energy
+            $0.foodSearch.sortOrder = .forward
         }
-        var (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
-        store.dependencies.databaseClient.observeFoods = { strategy, order in
-            XCTAssertEqual(strategy.name, "energy")
-            XCTAssertEqual(order, .reverse)
-            return stream
-        }
-
-        await store.send(.onFirstAppear)
-        await store.receive(\.startObservingRecentFoods)
-        await store.receive(\.billboard.showBanner) {
-            $0.billboard.banner = .preview
-        }
-        continuation.yield([])
-        await store.receive(\.onRecentFoodsChange) {
-            $0.isSearchFocused = true
-        }
-        XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
-        XCTAssertNoDifference(store.state.shouldShowRecentSearches, false)
-        XCTAssertNoDifference(store.state.shouldShowPrompt, true)
-        XCTAssertNoDifference(store.state.shouldShowSpinner, false)
-        XCTAssertNoDifference(store.state.shouldShowSearchResults, false)
-
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, [eggplant])
-        }
-        store.dependencies.foodClient.getFoods = { _ in [eggplantApi] }
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertNoDifference($0, .preview)
-            return $0
-        }
-        await store.send(.updateSearchQuery("C")) {
-            $0.searchQuery = "C"
-            $0.shouldShowNoResults = false
-            $0.searchResults = []
-            $0.inlineFood = nil
-        }
-        await store.receive(\.startSearching) {
-            $0.isSearching = true
-        }
-        XCTAssertEqual(store.state.shouldShowSpinner, true)
-        await store.receive(\.didReceiveSearchFoods) {
-            $0.inlineFood = .init(food: .preview)
-            $0.isSearching = false
-        }
-        XCTAssertEqual(store.state.shouldShowSpinner, false)
-        continuation.yield([eggplant])
-        await store.receive(\.onRecentFoodsChange) {
-            $0.recentFoods = [eggplant]
-        }
-        XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
-
-        await store.send(.updateSearchQuery("")) {
-            $0.searchQuery = ""
-            $0.shouldShowNoResults = false
-            $0.searchResults = []
-            $0.inlineFood = nil
-            $0.isSearching = false
-        }
-        store.exhaustivity = .off(showSkippedAssertions: true)
-        store.dependencies.foodClient.getFoods = { _ in [] }
-        await store.send(.updateSearchQuery("R"))
-        await store.send(.updateSearchQuery("Ri"))
-        await store.send(.updateSearchQuery("Rib"))
-        await store.send(.updateSearchQuery("Ribe"))
-        await store.send(.updateSearchQuery("Ribey"))
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, [ribeye, eggplant])
-        }
-        store.dependencies.foodClient.getFoods = { _ in [ribeyeApi] }
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertEqual($0, ribeye)
-            return $0
-        }
-        await store.send(.updateSearchQuery("Ribeye")) {
-            $0.searchQuery = "Ribeye"
-            $0.shouldShowNoResults = false
-        }
-        store.exhaustivity = .on
-        await store.receive(\.startSearching) {
-            $0.isSearching = true
-        }
-        await store.receive(\.didReceiveSearchFoods) {
-            $0.isSearching = false
-            $0.inlineFood = .init(food: ribeye)
-        }
-        await store.send(.onRecentFoodsChange([ribeye, eggplant])) {
-            $0.recentFoods = [ribeye, eggplant]
-        }
-        XCTAssertNoDifference(store.state.isSortMenuDisabled, false)
-
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, [eggplant, ribeye])
-        }
-        (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
-        store.dependencies.databaseClient.observeFoods = { strategy, order in
-            XCTAssertEqual(strategy.name, "carbohydrate")
-            XCTAssertEqual(order, .forward)
-            return stream
+        await store.receive(\.foodObservation.updateSortStrategy) {
+            $0.foodObservation.sortStrategy = .energy
+            $0.foodObservation.sortOrder = .forward
         }
         store.dependencies.userPreferencesClient.setPreferences = { modify in
             var prefs = UserPreferences()
             modify(&prefs)
-            XCTAssertNoDifference(prefs, .init(recentSearchesSortingStrategy: "carbohydrate", recentSearchesSortingOrder: .forward))
-        }
-        await store.send(.updateRecentFoodsSortingStrategy(.carbohydrate)) {
-            $0.recentFoodsSortingStrategy = .carbohydrate
-            $0.recentFoodsSortingOrder = .forward
-        }
-        await store.receive(\.startObservingRecentFoods)
-        continuation.yield([eggplant, ribeye])
-        await store.receive(\.onRecentFoodsChange) {
-            $0.recentFoods = [eggplant, ribeye]
-        }
-        XCTAssertNoDifference(store.state.isSortMenuDisabled, false)
+            XCTAssertNoDifference(prefs, .init(recentSearchesSortStrategy: .energy, recentSearchesSortOrder: .reverse))
 
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, [ribeye, eggplant])
         }
-        (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
-        store.dependencies.databaseClient.observeFoods = { strategy, order in
-            XCTAssertEqual(strategy.name, "carbohydrate")
-            XCTAssertEqual(order, .reverse)
-            return stream
+        store.dependencies.databaseClient.observeFoods = {
+            XCTAssertEqual($0, .energy)
+            XCTAssertEqual($1, .reverse)
+            return .finished
         }
-        store.dependencies.userPreferencesClient.setPreferences = { modify in
-            var prefs = UserPreferences()
-            modify(&prefs)
-            XCTAssertNoDifference(prefs, .init(recentSearchesSortingStrategy: "carbohydrate", recentSearchesSortingOrder: .reverse))
+        await store.send(.updateRecentFoodsSortingStrategy(.energy)) {
+            $0.sortStrategy = .energy
+            $0.sortOrder = .reverse
         }
-        await store.send(.updateRecentFoodsSortingStrategy(.carbohydrate)) {
-            $0.recentFoodsSortingStrategy = .carbohydrate
-            $0.recentFoodsSortingOrder = .reverse
+        await store.receive(\.foodSearch.updateSortStrategy) {
+            $0.foodSearch.sortStrategy = .energy
+            $0.foodSearch.sortOrder = .reverse
         }
-        await store.receive(\.startObservingRecentFoods)
-        continuation.yield([ribeye, eggplant])
-        await store.receive(\.onRecentFoodsChange) {
-            $0.recentFoods = [ribeye, eggplant]
+        await store.receive(\.foodObservation.updateSortStrategy) {
+            $0.foodObservation.sortStrategy = .energy
+            $0.foodObservation.sortOrder = .reverse
         }
-
-        store.dependencies.spotlightClient.indexFoods = {
-            XCTAssertNoDifference($0, [eggplant])
-        }
-        store.dependencies.databaseClient.deleteFood = {
-            XCTAssertNoDifference($0, ribeye)
-        }
-        await store.send(.didDeleteRecentFoods(.init(integer: 0)))
-        await store.send(.onRecentFoodsChange([eggplant])) {
-            $0.recentFoods = [eggplant]
-        }
-        XCTAssertNoDifference(store.state.isSortMenuDisabled, true)
-
-        await store.send(.didSelectRecentFood(eggplant)) {
-            $0.destination = .foodDetails(.init(food: eggplant))
-        }
-
-        continuation.finish()
-        await store.finish()
     }
 
-    func testMultipleSearchResults() async throws {
-        let eggplantApi = FoodApiModel.eggplant
-        let eggplant = Food(foodApiModel: eggplantApi)
-        let ribeyeApi = FoodApiModel.ribeye
-        let ribeye = Food(foodApiModel: ribeyeApi)
+    func testIntegrationWithFoodObservation() async throws {
         let store = TestStore(
             initialState: FoodList.State(),
             reducer: {
                 FoodList()
             },
             withDependencies: {
-                $0.mainQueue = .immediate
+                $0.userPreferencesClient.getPreferences = {
+                    .init()
+                }
+                $0.uuid = .constant(.init(0))
             }
         )
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertNoDifference($0, eggplant)
-            return $0
+        await store.send(.foodObservation(.updateFoods([]))) {
+            $0.foodSearch.isFocused = true
         }
-        await store.send(.didReceiveSearchFoods([eggplantApi, ribeyeApi])) {
-            $0.searchResults = [eggplant, ribeye]
+        await store.send(.foodObservation(.updateFoods([.eggplant, .ribeye]))) {
+            $0.foodObservation.foods = [.eggplant, .ribeye]
         }
-        await store.send(.didSelectSearchResult(eggplant)) {
-            $0.destination = .foodDetails(.init(food: eggplant))
-        }
+        XCTAssertEqual(store.state.isSortMenuDisabled, false)
     }
 
-    func testSearchError() async throws {
+    func testIntegrationWithFoodSearch() async throws {
+        var didSearch = false
         let store = TestStore(
             initialState: FoodList.State(),
             reducer: {
                 FoodList()
             },
             withDependencies: {
-                $0.mainQueue = .immediate
-            }
-        )
-        store.dependencies.foodClient.getFoods = { _ in
-            struct FoodError: Error { }
-            throw FoodError()
-        }
-        await store.send(.updateSearchQuery("eggplant")) {
-            $0.searchQuery = "eggplant"
-        }
-        await store.receive(\.startSearching) {
-            $0.isSearching = true
-        }
-        await store.receive(\.didReceiveSearchFoods) {
-            $0.shouldShowNoResults = true
-            $0.isSearching = false
-        }
-        await store.receive(\.showGenericAlert) {
-            $0.destination = .alert(.init {
-                TextState("Something went wrong. Please try again later.")
-            })
-        }
-    }
-
-    func testSearchBarFocus() async throws {
-        let store = TestStore(
-            initialState: FoodList.State(),
-            reducer: {
-                FoodList()
-            },
-            withDependencies: {
-                $0.mainQueue = .immediate
-            }
-        )
-        await store.send(.updateSearchFocus(true)) {
-            $0.isSearchFocused = true
-        }
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertNoDifference($0, .eggplant)
-            return $0
-        }
-        await store.send(.didReceiveSearchFoods([.eggplant])) {
-            $0.inlineFood = .init(food: .eggplant)
-        }
-        await store.send(.updateSearchFocus(false)) {
-            $0.isSearchFocused = false
-            $0.inlineFood = nil
-        }
-    }
-
-    func testDeletion_error() async throws {
-        let store = TestStore(
-            initialState: {
-                var state = FoodList.State()
-                state.recentFoods = [.preview]
-                return state
-            }(),
-            reducer: {
-                FoodList()
-            },
-            withDependencies: {
-                $0.databaseClient.deleteFood = { _ in
-                    struct Failure: Error { }
-                    throw Failure()
+                $0.continuousClock = ImmediateClock()
+                $0.userPreferencesClient.getPreferences = {
+                    .init()
+                }
+                $0.uuid = .constant(.init(0))
+                $0.databaseClient.getFoods = { q, s, o in
+                    if didSearch {
+                        [.eggplant, .ribeye]
+                    } else {
+                        [.ribeye]
+                    }
+                }
+                $0.databaseClient.insertFoods = {
+                    XCTAssertNoDifference($0, [.init(foodApiModel: .preview)])
+                    return $0
+                }
+                $0.foodClient.getFoods = { q in
+                    didSearch = true
+                    return [.eggplant]
                 }
             }
         )
-        await store.send(.didDeleteRecentFoods(.init(integer: 0)))
+        await store.send(.foodSearch(.updateFocus(true))) {
+            $0.foodSearch.isFocused = true
+        }
+        await store.send(.foodSearch(.updateQuery("eggplant"))) {
+            $0.foodSearch.query = "eggplant"
+        }
+        await store.receive(\.foodSearch.searchStarted) {
+            $0.foodSearch.isSearching = true
+        }
+        await store.receive(\.foodSearch.result) {
+            $0.foodSearch.searchResults = [.ribeye]
+        }
+        await store.receive(\.foodSearch.result) {
+            $0.foodSearch.searchResults = [.eggplant, .ribeye]
+        }
+        await store.receive(\.foodSearch.searchEnded) {
+            $0.foodSearch.isSearching = false
+        }
+    }
+
+    func testRecentFoodSelection() async throws {
+        let store = TestStore(
+            initialState: FoodList.State(),
+            reducer: {
+                FoodList()
+            },
+            withDependencies: {
+                $0.userPreferencesClient.getPreferences = {
+                    .init()
+                }
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        await store.send(.didSelectRecentFood(.eggplant)) {
+            $0.destination = .foodDetails(.init(food: .eggplant))
+        }
+    }
+
+    func testSearchResultSelection() async throws {
+        let store = TestStore(
+            initialState: FoodList.State(),
+            reducer: {
+                FoodList()
+            },
+            withDependencies: {
+                $0.userPreferencesClient.getPreferences = {
+                    .init()
+                }
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        await store.send(.didSelectSearchResult(.eggplant)) {
+            $0.destination = .foodDetails(.init(food: .eggplant))
+        }
+    }
+
+    func testFoodDeletion() async throws {
+        var didDelete = false
+        let store = TestStore(
+            initialState: FoodList.State(),
+            reducer: {
+                FoodList()
+            },
+            withDependencies: {
+                $0.userPreferencesClient.getPreferences = {
+                    .init()
+                }
+                $0.databaseClient.deleteFoods = {
+                    if didDelete {
+                        struct Failure: Error { }
+                        throw Failure()
+                    } else {
+                        XCTAssertNoDifference($0, [.ribeye])
+                        didDelete = true
+                    }
+                }
+                $0.uuid = .constant(.init(0))
+            }
+        )
+        await store.send(.foodObservation(.updateFoods([.eggplant, .ribeye]))) {
+            $0.foodObservation.foods = [.eggplant, .ribeye]
+        }
+        await store.send(.didDeleteRecentFoods(.init(integer: 1)))
+        await store.send(.didDeleteRecentFoods(.init(integer: 1)))
         await store.receive(\.showGenericAlert) {
             $0.destination = .alert(.init {
                 TextState("Something went wrong. Please try again later.")
@@ -438,121 +294,162 @@ final class FoodListTests: XCTestCase {
         }
     }
 
-    func testIntegrationWithSpotlight_foodSelection() async throws {
-        let eggplant = Food.eggplant
+    func testFullFlowNewInstallation() async throws {
+        var (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
         let store = TestStore(
             initialState: FoodList.State(),
             reducer: {
                 FoodList()
+            },
+            withDependencies: {
+                $0.continuousClock = ImmediateClock()
+                $0.userPreferencesClient.getPreferences = {
+                    .init()
+                }
+                $0.uuid = .constant(.init(0))
+                $0.databaseClient.observeFoods = { _, _ in stream }
+                var didSearch = false
+                $0.databaseClient.getFoods = { q, s, o in
+                    XCTAssertEqual(q, "eggplant")
+                    XCTAssertEqual(s, .name)
+                    XCTAssertEqual(o, .forward)
+                    return if didSearch {
+                        [.eggplant]
+                    } else {
+                        []
+                    }
+                }
+                $0.databaseClient.insertFoods = { $0 }
+                $0.foodClient.getFoods = {
+                    XCTAssertEqual($0, "eggplant")
+                    didSearch = true
+                    return [.eggplant]
+                }
             }
         )
-        store.dependencies.databaseClient.getFood = {
-            XCTAssertNoDifference($0, eggplant.name)
-            return eggplant
+        await store.send(.foodObservation(.startObservation))
+        continuation.yield([])
+        await store.receive(\.foodObservation.updateFoods) {
+            $0.foodSearch.isFocused = true
         }
-        let activity = NSUserActivity(activityType: "mock")
-        activity.userInfo?[CSSearchableItemActivityIdentifier] = eggplant.name
-        await store.send(.spotlight(.handleSelectedFood(activity)))
-        await store.receive(\.didSelectRecentFood) {
-            $0.destination = .foodDetails(.init(food: eggplant))
-        }
-    }
 
-    func testIntegrationWithSpotlight_search() async throws {
-        let eggplant = Food.eggplant
-        let store = TestStore(
-            initialState: {
-                var state = FoodList.State()
-                state.destination = .foodDetails(.init(food: eggplant))
-                return state
-            }(),
-            reducer: {
-                FoodList()
-            }
-        )
-        store.dependencies.mainQueue = .immediate
-        store.dependencies.foodClient.getFoods = {
-            XCTAssertNoDifference($0, eggplant.name)
-            return [.eggplant]
+        // search
+        await store.send(.foodSearch(.updateQuery("eggplant"))) {
+            $0.foodSearch.query = "eggplant"
         }
-        store.dependencies.databaseClient.insertFood = {
-            XCTAssertNoDifference($0, eggplant)
-            return eggplant
+        await store.receive(\.foodSearch.searchStarted) {
+            $0.foodSearch.isSearching = true
         }
-        let activity = NSUserActivity(activityType: "mock")
-        activity.userInfo?[CSSearchQueryString] = eggplant.name
-        await store.send(.spotlight(.handleSearchInApp(activity)))
-        await store.receive(\.destination.dismiss) {
+        await store.receive(\.foodSearch.result)
+        await store.receive(\.foodSearch.result) {
+            $0.foodSearch.searchResults = [.eggplant]
+        }
+        await store.receive(\.foodSearch.searchEnded) {
+            $0.foodSearch.isSearching = false
+        }
+        continuation.yield([.eggplant])
+        await store.receive(\.foodObservation.updateFoods) {
+            $0.foodObservation.foods = [.eggplant]
+        }
+
+        // food details
+        await store.send(.didSelectSearchResult(.eggplant)) {
+            $0.destination = .foodDetails(.init(food: .eggplant))
+        }
+        await store.send(.destination(.dismiss)) {
             $0.destination = nil
         }
-        await store.receive(\.updateSearchFocus) {
-            $0.isSearchFocused = true
-        }
-        await store.receive(\.updateSearchQuery) {
-            $0.searchQuery = eggplant.name
-        }
-        await store.receive(\.startSearching) {
-            $0.isSearching = true
-        }
-        await store.receive(\.didReceiveSearchFoods) {
-            $0.inlineFood = .init(food: eggplant)
-            $0.isSearching = false
-        }
-    }
 
-    func testIntegrationWithBillboard_multipleAds() async throws {
-        let firstAd = BillboardAd.preview
-        let secondAd = BillboardAd(
-            appStoreID: "id",
-            name: "secondAd",
-            title: "secondTitle",
-            description: "secondDescription",
-            media: .cachesDirectory,
-            backgroundColor: "red",
-            textColor: "black",
-            tintColor: "blue",
-            fullscreen: true,
-            transparent: true
-        )
-        let store = TestStore(
-            initialState: FoodList.State(),
-            reducer: {
-                FoodList()
+        // search
+        var didSearch = false
+        store.dependencies.databaseClient.getFoods = { q, s, o in
+            XCTAssertEqual(q, "ribeye")
+            XCTAssertEqual(s, .name)
+            XCTAssertEqual(o, .forward)
+            return if didSearch {
+                [.ribeye]
+            } else {
+                []
             }
-        )
-        store.exhaustivity = .off
-        store.dependencies.userPreferencesClient = .init(
-            getPreferences: {
-                .init(
-                    recentSearchesSortingStrategy: FoodList.State.SortingStrategy.energy.rawValue,
-                    recentSearchesSortingOrder: .reverse
-                )
-            },
-            setPreferences: { _ in
+        }
+        store.dependencies.foodClient.getFoods = {
+            XCTAssertEqual($0, "ribeye")
+            didSearch = true
+            return [.ribeye]
+        }
+        await store.send(.foodSearch(.updateQuery("ribeye"))) {
+            $0.foodSearch.query = "ribeye"
+        }
+        await store.receive(\.foodSearch.searchStarted) {
+            $0.foodSearch.isSearching = true
+        }
+        await store.receive(\.foodSearch.result) {
+            $0.foodSearch.searchResults = []
+        }
+        await store.receive(\.foodSearch.result) {
+            $0.foodSearch.searchResults = [.ribeye]
+        }
+        await store.receive(\.foodSearch.searchEnded) {
+            $0.foodSearch.isSearching = false
+        }
+        continuation.yield([.eggplant, .ribeye])
+        await store.receive(\.foodObservation.updateFoods) {
+            $0.foodObservation.foods = [.eggplant, .ribeye]
+        }
 
-            },
-            observeChanges: {
-                .finished
-            }
-        )
-        store.dependencies.billboardClient.getRandomBanners = {
-            .init {
-                $0.yield(firstAd)
-                $0.yield(nil)
-                $0.yield(secondAd)
-                $0.finish()
-            }
+        // food details
+        await store.send(.foodSearch(.updateQuery(""))) {
+            $0.foodSearch.query = ""
+            $0.foodSearch.searchResults = []
         }
-        await store.send(.onFirstAppear)
-        await store.receive(\.billboard.showBanner) {
-            $0.billboard.banner = firstAd
+        await store.send(.foodSearch(.updateFocus(false))) {
+            $0.foodSearch.isFocused = false
         }
-        await store.receive(\.billboard.showBanner) {
-            $0.billboard.banner = nil
+        await store.send(.didSelectRecentFood(.ribeye)) {
+            $0.destination = .foodDetails(.init(food: .ribeye))
         }
-        await store.receive(\.billboard.showBanner) {
-            $0.billboard.banner = secondAd
+        XCTAssertEqual(store.state.isSortMenuDisabled, false)
+
+        // sort strategy
+        (stream, continuation) = AsyncStream.makeStream(of: [Food].self)
+        store.dependencies.databaseClient.observeFoods = {
+            XCTAssertEqual($0, .fat)
+            XCTAssertEqual($1, .forward)
+            return stream
         }
+        store.dependencies.userPreferencesClient.setPreferences = { modify in
+            var prefs = UserPreferences()
+            modify(&prefs)
+            XCTAssertNoDifference(prefs, .init(recentSearchesSortStrategy: .fat, recentSearchesSortOrder: .forward))
+        }
+        await store.send(.updateRecentFoodsSortingStrategy(.fat)) {
+            $0.sortStrategy = .fat
+            $0.sortOrder = .forward
+        }
+        await store.receive(\.foodSearch.updateSortStrategy) {
+            $0.foodSearch.sortStrategy = .fat
+            $0.foodSearch.sortOrder = .forward
+        }
+        await store.receive(\.foodObservation.updateSortStrategy) {
+            $0.foodObservation.sortStrategy = .fat
+            $0.foodObservation.sortOrder = .forward
+        }
+        continuation.yield([.ribeye, .eggplant])
+        await store.receive(\.foodObservation.updateFoods) {
+            $0.foodObservation.foods = [.ribeye, .eggplant]
+        }
+
+        // delete
+        store.dependencies.databaseClient.deleteFoods = { _ in }
+        await store.send(.didDeleteRecentFoods([0, 1]))
+        continuation.yield([])
+        await store.receive(\.foodObservation.updateFoods) {
+            $0.foodObservation.foods = []
+            $0.foodSearch.isFocused = true
+        }
+
+        continuation.finish()
+        await store.finish()
     }
 }
 

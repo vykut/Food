@@ -39,6 +39,18 @@ public extension Food {
 }
 
 public extension Food {
+    enum SortStrategy: String, Codable, Identifiable, Hashable, CaseIterable, Sendable {
+        case name
+        case energy
+        case carbohydrate
+        case protein
+        case fat
+
+        public var id: Self { self }
+    }
+}
+
+public extension Food {
     static var preview: Self {
         preview(id: nil)
     }

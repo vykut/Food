@@ -2,6 +2,6 @@ import Foundation
 import Shared
 
 public struct UserPreferences: Codable, Hashable {
-    public var recentSearchesSortingStrategy: String?
-    public var recentSearchesSortingOrder: SortOrder?
+    public var recentSearchesSortStrategy: Food.SortStrategy?
+    public var recentSearchesSortOrder: SortOrder?
 }

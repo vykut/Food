@@ -23,10 +23,15 @@ extension FoodClient: DependencyKey {
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
             request.setValue(apiKeys.ninja, forHTTPHeaderField: "X-Api-Key")
-            let (data, _) = try await session.data(for: request)
-            let items = try JSONDecoder().decode([FoodApiModel].self, from: data)
-            let foodsWithValidServingSize = items.filter(hasValidServingSize)
-            return foodsWithValidServingSize
+            do {
+                let (data, _) = try await session.data(for: request)
+                let items = try JSONDecoder().decode([FoodApiModel].self, from: data)
+                let foodsWithValidServingSize = items.filter(hasValidServingSize)
+                return foodsWithValidServingSize
+            } catch {
+                try Task.checkCancellation()
+                throw error
+            }
         }
     )
 
