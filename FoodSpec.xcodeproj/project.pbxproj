@@ -25,6 +25,7 @@
 		EC43E5652B175A160007CD40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EC47C94A2B27285C00D30381 /* AppFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFeature.swift; sourceTree = "<group>"; };
 		EC47C9502B272C1E00D30381 /* food-spec */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = "food-spec"; sourceTree = "<group>"; };
+		EC642A242B38650E00A7DAE7 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 		EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = FoodSpec.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -46,6 +47,7 @@
 				EC7DC28A2B1E02B600BC8FD5 /* FoodSpec.xctestplan */,
 				EC47C9502B272C1E00D30381 /* food-spec */,
 				EC43E5582B175A140007CD40 /* FoodSpec */,
+				EC642A212B3864B900A7DAE7 /* ci_scripts */,
 				EC47C9512B27323B00D30381 /* Frameworks */,
 				EC43E5572B175A140007CD40 /* Products */,
 			);
@@ -94,6 +96,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		EC642A212B3864B900A7DAE7 /* ci_scripts */ = {
+			isa = PBXGroup;
+			children = (
+				EC642A242B38650E00A7DAE7 /* ci_post_clone.sh */,
+			);
+			path = ci_scripts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
